@@ -6,6 +6,9 @@ import { FileInfo } from "../models/file-info";
 import { connectToRepository } from "./services/user-service";
 import { transfer_direct_from_file } from './services/upload-service';
 
+// Set env
+process.env.NODE_ENV = 'development'
+
 function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -22,7 +25,10 @@ function createWindow() {
   mainWindow.loadFile(path.join(__dirname, "../../index.html"));
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+
+  if (process.env.NODE_ENV !== 'production') {
+    mainWindow.webContents.openDevTools();
+  }
 }
 
 function createMenu() {
@@ -77,7 +83,7 @@ app.on("window-all-closed", () => {
 });
 
 ipcMain.on('doConnection', (event: IpcMainEvent, givenSettings: string[]) => {
-  console.log('\nipcMain.on(doConnect): \ngivenSettings: ' + givenSettings);
+  //console.log('\nipcMain.on(doConnect): \ngivenSettings: ' + givenSettings);
   try {
     connectToRepository(givenSettings[0], givenSettings[1], (status, user, datasetList) => {
       if( status == 200 ) {
@@ -90,17 +96,16 @@ ipcMain.on('doConnection', (event: IpcMainEvent, givenSettings: string[]) => {
   } catch (error) {
     // connectionFailed
   }
-
 })
 
 ipcMain.on('datasetSelected', (event: IpcMainEvent, persistentId: string) => {
-  console.log('\nipcMain.on(datasetSelected): \ndataset: ' + persistentId);
+  //console.log('\nipcMain.on(datasetSelected): \ndataset: ' + persistentId);
   process.env.dest_dataset = persistentId;
   event.reply('selectFiles', '~/Downloads');
 })
 
 ipcMain.on('filesSelected', (event: IpcMainEvent, files: FileInfo[]) => {
-  console.log('\nipcMain.on(filesSelected): \nfiles: ' + JSON.stringify(files));
+  //console.log('\nipcMain.on(filesSelected): \nfiles: ' + JSON.stringify(files));
   event.reply('selectedFiles', files);
   transfer_files(process.env.dest_dataset, files);
 })
@@ -108,7 +113,7 @@ ipcMain.on('filesSelected', (event: IpcMainEvent, files: FileInfo[]) => {
 const transfer_files = async (persistentId: string, files: FileInfo[]): Promise<void> => {
   try {
     const result = await transfer_direct_from_file(persistentId, files);
-    console.log("\nresult: " + result.number_of_files);
+    //console.log("\nresult: " + result.number_of_files);
   } catch (error) {
     console.error(error);
   }

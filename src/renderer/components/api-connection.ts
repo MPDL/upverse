@@ -64,7 +64,7 @@ export class ApiConnection extends Cmp<HTMLDivElement, HTMLFormElement> {
       //const [token, url] = apiSettings;
       //this.clearInputs();
       // check connection and load user and his datasets
-      console.log('\nipcRenderer.send(doConnection): \napiSettings: '+apiSettings);
+      //console.log('\nipcRenderer.send(doConnection): \napiSettings: '+apiSettings);
       ipcRenderer.send('doConnection', apiSettings);
 
     }

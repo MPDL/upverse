@@ -21,8 +21,8 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
 
   configure():void {
     ipcRenderer.on('selectedFiles', (event: Event, files: FileInfo[])  => {
-      console.log('\nipcRenderer.on(selectedFiles): \nfiles: ' + JSON.stringify(files));
-      console.log("event " + JSON.stringify(event));
+      //console.log('\nipcRenderer.on(selectedFiles): \nfiles: ' + JSON.stringify(files));
+      //console.log("event " + JSON.stringify(event));
       if(files.length) {
         this.enteredFiles = files;
         this.renderContent();

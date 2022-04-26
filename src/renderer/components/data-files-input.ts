@@ -24,8 +24,8 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
     this.element.addEventListener('submit', this.submitHandler.bind(this));
 
     ipcRenderer.on('selectFiles', (event: Event, folder: string)  => {
-      console.log('\nipcRenderer.on(selectFiles): \nfolder: ' + folder);
-      console.log("event " + JSON.stringify(event));
+      //console.log('\nipcRenderer.on(selectFiles): \nfolder: ' + folder);
+      //console.log("event " + JSON.stringify(event));
       this.filesSelectElement.disabled = false;
       this.submitButtonElement.disabled = false;
     })
@@ -71,11 +71,7 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
           lastModifiedDate: new Date(file.lastModified)
       });
     });
-    // if (filesToUpload instanceof FileList) {
-      //const [dataset] = destDataset;
-      //this.clearInputs();
-      // TO-DO fix it:
-    console.log('\nipcRenderer.send(filesSelected): \nfilesToUpload: '+JSON.stringify(filesToUpload));
+    //console.log('\nipcRenderer.send(filesSelected): \nfilesToUpload: '+JSON.stringify(filesToUpload));
     ipcRenderer.send('filesSelected', filesToUpload);
   }
 

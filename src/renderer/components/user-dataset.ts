@@ -19,8 +19,8 @@ export class UserDataset extends Cmp<HTMLDivElement, HTMLDivElement> {
     this.element.addEventListener('change', this.changeHandler.bind(this));
 
     ipcRenderer.on('selectDataset', (event: Event, datasets: {name:string, global_id: string}[])  => {
-      console.log('\nipcRenderer.on(selectDataset): \ndatasets: ' + JSON.stringify(datasets));
-      console.log("event " + JSON.stringify(event));
+      //console.log('\nipcRenderer.on(selectDataset): \ndatasets: ' + JSON.stringify(datasets));
+      //console.log("event " + JSON.stringify(event));
       this.datasetSelectElement.disabled = false;
       this.datasetSelectElement.options.length = 1;
       datasets.forEach(dataset => {
@@ -58,9 +58,8 @@ export class UserDataset extends Cmp<HTMLDivElement, HTMLDivElement> {
     event.preventDefault();
     const destDataset = this.gatherUserInput();
     if (Array.isArray(destDataset)) {
-      //const [dataset] = destDataset;
       //this.clearInputs();
-      console.log('\nipcRenderer.send(datasetSelected): \ndestDataset: '+destDataset);
+      //console.log('\nipcRenderer.send(datasetSelected): \ndestDataset: '+destDataset);
       ipcRenderer.send('datasetSelected', destDataset);
     }
   }

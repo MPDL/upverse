@@ -12,13 +12,14 @@ export const getApiUser = async (connection: Connection, callback: (last: string
     });
 
     request.on('response', (response) => {
+        /*
         console.log('\n--- getCurrentUser ---\n');  // DEBUG
         console.log(`STATUS: ${response.statusCode}`);
         console.log(`HEADERS: ${JSON.stringify(response.headers, undefined, 2)}`);
-
+        */
         connection.setStatus(response.statusCode);
         response.on('data', (chunk) => {
-            console.log("\nresponse.on chunk: " + chunk);
+            //console.log("\nresponse.on chunk: " + chunk);
             const responseData = JSON.parse(chunk.toString());
 
             callback(responseData.data.lastName, responseData.data.firstName);
@@ -57,10 +58,11 @@ export const getUserDatasets = async (connection: Connection, author: string, da
     });
 
     request.on('response', (response) => {
+        /*
         console.log('\n--- getUserDatasets ---\n');  // DEBUG
         console.log(`STATUS: ${response.statusCode}`);
         console.log(`HEADERS: ${JSON.stringify(response.headers, undefined, 2)}`);
-
+        */
         response.on('data', (chunk) => {
             const responseData = JSON.parse(chunk.toString());
 
@@ -68,7 +70,7 @@ export const getUserDatasets = async (connection: Connection, author: string, da
                 datasetList.push(Object.assign({}, new DatasetInfo(item.name, item.global_id)));
                 //addDataset(item.name, item.global_id);
             })
-            console.log("\nresponse.on chunk: " + chunk);
+            //console.log("\nresponse.on chunk: " + chunk);
             callback(datasetList);
         })
     });
