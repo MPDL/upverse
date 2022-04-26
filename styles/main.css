@@ -1,0 +1,29 @@
+.main {
+  flex: 1 0 auto;
+  width: 100%;
+  background: var(--slate-gray-3);
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  padding: 5rem 0;
+  transition: filter 0.2s;
+  z-index: -1;
+}
+
+.main::after {
+  content: "\00a0";
+  display: block;
+  height: 0;
+  visibility: hidden;
+}
+
+.main > .container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+#givenFilesHead {
+  visibility: hidden;
+}
+

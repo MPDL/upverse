@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
+    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
+    <title>Uploader</title>
+    <link rel="stylesheet" href="./styles/styles.css" />
+    <script src="./dist/renderer/renderer.js"></script>
+  </head>
+  <body class="layout -default">
+    <header class="header">
+      <div class="container">
+        <div class="col-md-12 mb-0">
+          <div id="app-author"></div>
+        </div>
+        <div class="col-md-12 mb-3">
+          <div class="row">
+            <div class="col-md-8">
+              <div id="app-connection"></div>
+            </div>
+            <div class="col-md-4">
+              <div id="app-dataset"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-12 mb-3">
+          <div class="row">
+              <div id="app-files"></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="container">
+        <div class="col-md-12 mb-3">
+          <hr class="my-3">
+          <div id="app-file-list"></div>
+          <hr class="my-3">
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-tagline float-start">
+          research data <span class="text-danger">uploader</span>
+        </div>
+        <a href="http://mpdl.mpg.de">
+          <img class="img-fluid float-end" alt="mpdl-logo" src="assets/images/logos/mpdl.mpg-logo.svg" />
+        </a>
+
+      </div>
+    </footer>
+    
+    <template id="user-author">
+      <div class="d-flex justify-content-end">
+        <span id="author"><i class="bi bi-person text-secondary"></i></span>
+      </div>
+    </template>
+
+    <template id="api-connection">
+      <form class="row">
+        <div class="col-md-6">
+          <label class="form-label" for="token">API Token</label>
+          <input type="text" class="form-control" id="token" placeholder="API Token"
+            value="997095e5-2910-4ccf-a920-e4f6f00fa3a3" />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="url">API URL</label>
+          <div class="input-group">
+            <input type="text" class="form-control" id="url" placeholder="API Url"
+              value="https://dev-edmond2.mpdl.mpg.de/api" />
+            <button type="submit" id="connection" class="btn btn-secondary d-block"><i class="bi bi-link"></i> Connect</button>
+          </div>
+        </div>
+      </form>
+    </template>
+
+    <template id="user-dataset">
+      <div class="col-md-12">
+        <label class="form-label" for="dataset">Destination dataset</label>
+        <select id="dataset" class="form-control" disabled>
+          <option value="" selected="">- Select your dataset -</option>
+        </select>
+      </div>
+    </template>
+
+    <template id="data-files">
+      <form class="row">
+        <div class="col-md-8 d-flex justify-content-start align-items-center">
+          <label class="mb-0 me-2 form-label" for="files">To upload data </label>
+          <input type="file" id="files" disabled className='form-control' multiple=""/>
+        </div>
+        <div class="col-md-4 d-flex justify-content-end">
+          <button type="submit" id="upload" disabled class="btn btn-secondary d-block ms-auto"><i class="bi bi-upload"></i> Upload</button>
+        </div>
+      </form>
+    </template>
+
+    <template id="data-file-list">
+      <div class="col-md-12">
+       <table id="file-list"></table>
+      </div>
+    </template>
+
+    <script src="./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
