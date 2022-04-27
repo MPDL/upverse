@@ -3,7 +3,6 @@ import * as Validation from '../util/validation.js';
 import Cmp from './base-component.js';
 import { ipcRenderer } from 'electron';
 
-// ProjectInput Class
 export class UserDataset extends Cmp<HTMLDivElement, HTMLDivElement> {
   datasetSelectElement: HTMLSelectElement;
 
@@ -18,7 +17,7 @@ export class UserDataset extends Cmp<HTMLDivElement, HTMLDivElement> {
   configure():void {
     this.element.addEventListener('change', this.changeHandler.bind(this));
 
-    ipcRenderer.on('selectDataset', (event: Event, datasets: {name:string, global_id: string}[])  => {
+    ipcRenderer.on('selectDataset', (event: Event, datasets: {name: string, global_id: string}[])  => {
       //console.log('\nipcRenderer.on(selectDataset): \ndatasets: ' + JSON.stringify(datasets));
       //console.log("event " + JSON.stringify(event));
       this.datasetSelectElement.disabled = false;

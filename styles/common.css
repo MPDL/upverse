@@ -40,16 +40,19 @@ button {
 [type="submit"]:active,
 [type="submit"]:focus,
 [type="submit"]:hover,
+/*
 button:active,
 button:focus,
 button:hover {
-  background: var(--mpg-sky-blue-0);
-  background: var(--mpg-slate-gray-2);
+*/
+button {
+  background: var(--mpdl-light-blue);
+  /*background: var(--mpg-slate-gray-2);*/
 }
 
 [type="submit"][disabled],
 button[disabled] {
-  color: var(--mpg-sky-blue-2);
+  color: var(--mpg-slate-gray-2);
   pointer-events: none;
 }
 
@@ -140,16 +143,24 @@ input[type="file"] {
 }
 
 input[type="file"]::-webkit-file-upload-button {
-  border: 1px solid var(--mpg-yellow-green-2);
+  border: 1px solid transparent;
   border-radius: 4px;
-  color: var(--mpg-slate-gray-0);
+  background: var(--mpg-slate-gray-1);
+  color: var(--sand-orange-3);
   font-size: 0.9rem;
+  font-weight: 800;
   margin-right: 1rem;
 }
 
 input[type="file"]::-webkit-file-upload-button:hover {
-  background-color: var(--mpg-yellow-green-2);
+  background: var(--mpdl-light-blue);
+  color: white;
 }
+
+input[type="file"]:disabled::-webkit-file-upload-button {
+  background-color: var(--mpg-slate-gray-1);
+  color: var(--mpg-slate-gray-2);
+} 
 
 select:hover {
   border-color: var(--mpg-yellow-green-2);

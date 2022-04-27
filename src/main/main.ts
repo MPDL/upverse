@@ -34,22 +34,38 @@ function createWindow() {
 function createMenu() {
   // Create main app menu
   const template: Electron.MenuItemConstructorOptions[] = [
-    {
-      label: app.getName(),
-      submenu: [
-        {
-          role: 'about',
+      {
+        label: app.getName(),
+        submenu: [
+          {
+            role: 'about',
+          },
+          {
+            label: 'Save',
+            click() {
+              console.log("save");
+            }
+          },
+          { type: 'separator' },
+          { role: 'quit' }
+        ]
+      },
+      {
+        label: 'Developer',
+        submenu: [{
+          role: 'reload'
         },
         {
-          label: 'Save',
-          click() {
-            console.log("save");
-          }
+          role: 'forceReload'
         },
-        { type: 'separator' },
-        { role: 'quit' }
-      ]
-    }
+        {
+          type: 'separator'
+        },
+        {
+          role: 'toggleDevTools'
+        },
+        ]
+      }
   ];
 
   // Build menu

@@ -3,7 +3,6 @@ import * as Validation from '../util/validation.js';
 import Cmp from './base-component.js';
 import { ipcRenderer } from 'electron';
 
-// ProjectInput Class
 export class ApiConnection extends Cmp<HTMLDivElement, HTMLFormElement> {
   tokenInputElement: HTMLInputElement;
   urlInputElement: HTMLInputElement;

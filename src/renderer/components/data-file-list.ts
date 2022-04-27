@@ -4,7 +4,6 @@ import Cmp from './base-component.js';
 import { FileInfo } from "../../models/file-info";
 import { ipcRenderer } from 'electron';
 
-// ProjectInput Class
 export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
   fileListElement: HTMLTableElement;
   enteredFiles: FileInfo[];
