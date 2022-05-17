@@ -26,14 +26,12 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
       });
 
       ipcRenderer.on('descriptionFor', (event: Event, file: FileInfo)  => {
-        console.log('\nipcRenderer.on(descriptionFor): \nfile: ' + JSON.stringify(file));
         dataFiles.updateDataFile(file);
       })
 
-      ipcRenderer.on('done', (event: Event, dummy: string)  => {
+      ipcRenderer.on('end', (event: Event, dummy: string)  => {
         dataFiles.clear();
         this.element.querySelector('ul')!.innerHTML = '';
-        console.log('\nipcRenderer.on(done): \nfiles: ' + dataFiles.getAll().length);
       })    
   }
 

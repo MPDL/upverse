@@ -117,9 +117,10 @@ ipcMain.on('filesSelected', (event: IpcMainEvent, files: FileInfo[]) => {
 const transfer_files = async (event: IpcMainEvent, persistentId: string, files: FileInfo[]): Promise<void> => {
   try {
     const result = await transfer_direct_from_file(persistentId, files);
-    event.reply('done', '');    
+    event.reply('end', '');    
   } catch (error) {
     console.error(error);
-    new Notification({ title: 'Upload', body: error }).show()
+    new Notification({ title: 'Upload Failed!', body: error }).show();
+    event.reply('end', ''); 
   }
 }

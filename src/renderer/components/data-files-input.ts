@@ -31,7 +31,7 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
       this.submitButtonElement.disabled = false;
     })
 
-    ipcRenderer.on('done', (event: Event, dummy: string)  => {
+    ipcRenderer.on('end', (event: Event, dummy: string)  => {
       this.submitButtonElement.innerHTML = '<i class="bi bi-upload"></i> Upload'
       this.filesSelectElement.value = null;
     })  
