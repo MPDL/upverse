@@ -1,19 +1,13 @@
 .header {
-    overflow: hidden;
     background: var(--mpg-slate-gray-0);
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-    z-index: 2;
+    padding: 0.5rem 0;
 }
 
 .header::before {
     position: fixed;
-    top: 0;
     left: 0;
+    top: 0;
     width: 100%;
-    pointer-events: none;
-    content: "";
-    display: block;
     height: 4rem;
     right: calc(50% - 1.5rem);
 }
@@ -41,20 +35,6 @@
     position: relative;
 }
 
-.header-tagline {
-    font-size: 1.2rem;
-    line-height: 1rem;
-    color: whitesmoke;
-    font-variation-settings: "wght" 600;
-    margin: 0rem 1rem 2rem 1rem;
-    width: auto;
+#author {
+    color: var(--yellow-green-3);
 }
-
-@media (min-width: 768px) {
-    .header-tagline {
-        font-size: 1.8rem;
-        text-align: end;
-    }
-}
-
-

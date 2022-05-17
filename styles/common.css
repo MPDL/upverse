@@ -21,6 +21,7 @@ body {
 
 .btn, button {
   color: var(--sand-orange-3);
+  border: none;
   font-size: 0.8rem;
   font-weight: 800;
   letter-spacing: 0.1em;
@@ -28,55 +29,23 @@ body {
   text-transform: uppercase;
 }
 
-[type="submit"],
-button {
+button:disabled {
+  opacity: .5;
+  pointer-events: none;
+}
+
+button[type="submit"] {
   line-height: 1.1;
   background: var(--mpg-slate-gray-1);
-  border: none;
   padding: 0.5rem 1rem;
   padding: 0.375rem 0.75rem;
 }
 
-[type="submit"]:active,
-[type="submit"]:focus,
 [type="submit"]:hover,
-/*
-button:active,
-button:focus,
-button:hover {
-*/
+[type="submit"]:focus,
+[type="submit"]:active,
 button {
   background: var(--mpdl-light-blue);
-  /*background: var(--mpg-slate-gray-2);*/
-}
-
-[type="submit"][disabled],
-button[disabled] {
-  color: var(--mpg-slate-gray-2);
-  pointer-events: none;
-}
-
-[type="reset"],
-button {
-  line-height: 1.1;
-  text-transform: uppercase;
-  background: var(--mpdl-orange);
-  padding: 0.375rem 0.75rem;
-}
-
-[type="reset"]:active,
-[type="reset"]:focus,
-[type="reset"]:hover,
-button:active,
-button:focus,
-button:hover {
-  background: var(--mpg-sand-orange-0);
-}
-
-[type="reset"][disabled],
-button[disabled] {
-  color: var(--mpg-sand-orange-2);
-  pointer-events: none;
 }
 
 img {
@@ -125,17 +94,22 @@ img {
   margin-bottom: 0;
 }
 
-.form-control:focus,
-.form-control:hover {
-  border-color: var(--mpg-yellow-green-2);
-}
-
 .form-control {
   font-size: 0.9rem;
   line-height: 1.2;
   color: var(--mpg-slate-gray-0);
   background-color: var(--mpg-light-gray);
   border: 1px solid var(--mpg-slate-gray-2);
+}
+
+.form-control:focus,
+.form-control:hover {
+  border-color: var(--mpg-yellow-green-2);
+}
+
+.form-control:disabled {
+  opacity: .75;
+  pointer-events: none;
 }
 
 input[type="file"] {
@@ -158,8 +132,8 @@ input[type="file"]::-webkit-file-upload-button:hover {
 }
 
 input[type="file"]:disabled::-webkit-file-upload-button {
-  background-color: var(--mpg-slate-gray-1);
-  color: var(--mpg-slate-gray-2);
+  opacity: .5;
+  pointer-events: none;
 } 
 
 select:hover {

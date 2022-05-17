@@ -13,11 +13,13 @@ export const transfer_direct_from_file = async (persistentId: string, items: Fil
 
         for (const item of items) {
             const item_info: FileInfo = {
+                id: item.id,
                 name: item.name,
                 size: item.size,
                 type: item.type,
                 lastModifiedDate: new Date(item.lastModifiedDate),
-                path: item.path
+                path: item.path,
+                description: item.description
             };
        
             console.log('attempting to upload ' + item_info.name + 'from ' + item_info.path);

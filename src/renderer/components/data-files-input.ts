@@ -1,7 +1,7 @@
-import * as Validation from '../util/validation.js';
+import * as Validation from '../util/validation';
 
 import Cmp from './base-component.js';
-import { FileInfo } from "../../models/file-info";
+import { dataFiles } from '../data-files';
 import { ipcRenderer } from 'electron';
 
 export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
@@ -20,14 +20,21 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
   }
 
   configure():void {
+    this.element.addEventListener('change', this.changeHandler.bind(this));
     this.element.addEventListener('submit', this.submitHandler.bind(this));
 
     ipcRenderer.on('selectFiles', (event: Event, folder: string)  => {
-      //console.log('\nipcRenderer.on(selectFiles): \nfolder: ' + folder);
-      //console.log("event " + JSON.stringify(event));
       this.filesSelectElement.disabled = false;
+    })
+
+    ipcRenderer.on('filesSelected', (event: Event, dummy: string)  => {
       this.submitButtonElement.disabled = false;
     })
+
+    ipcRenderer.on('done', (event: Event, dummy: string)  => {
+      this.submitButtonElement.innerHTML = '<i class="bi bi-upload"></i> Upload'
+      this.filesSelectElement.value = null;
+    })  
 
   }
 
@@ -50,28 +57,27 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
       return enteredFiles;
     }
   }
-/*
-  private clearInputs() {
-    this.datasetSelectElement.value = '';
-  }
-*/
 
   private submitHandler(event: Event) {
     event.preventDefault();
+    dataFiles.getAll().forEach((file) => {
+      console.log(JSON.stringify(file))
+    })
+    this.submitButtonElement.disabled = true;
+    this.submitButtonElement.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Doing...'
+
+    ipcRenderer.send('filesSelected', dataFiles.getAll());
+  }
+
+  private changeHandler(event: Event) {
+    event.preventDefault();
     const enteredFiles = this.gatherUserInput();
+
     const files = Array.from(enteredFiles);
-    const filesToUpload: FileInfo[] = [];
     files.forEach((file) => {
-      filesToUpload.push({
-          name: file.name,
-          path: file.path,
-          type: file.type,
-          size: file.size,
-          lastModifiedDate: new Date(file.lastModified)
-      });
+      dataFiles.addFile(file);
     });
-    //console.log('\nipcRenderer.send(filesSelected): \nfilesToUpload: '+JSON.stringify(filesToUpload));
-    ipcRenderer.send('filesSelected', filesToUpload);
+    this.submitButtonElement.disabled = false;
   }
 
 }

@@ -20,6 +20,8 @@ export class ApiConnection extends Cmp<HTMLDivElement, HTMLFormElement> {
 
   configure():void {
     this.element.addEventListener('submit', this.submitHandler.bind(this));
+    this.tokenInputElement.value = process.env.admin_api_key;
+    this.urlInputElement.value = process.env.dv_base_uri;
   }
 
   renderContent():void {console.log("renderContent")}
@@ -49,23 +51,12 @@ export class ApiConnection extends Cmp<HTMLDivElement, HTMLFormElement> {
       return [enteredToken, enteredUrl];
     }
   }
-/*
-  private clearInputs() {
-    this.tokenInputElement.value = '';
-    this.urlInputElement.value = '';
-  }
-*/
 
   private submitHandler(event: Event) {
     event.preventDefault();
     const apiSettings = this.gatherUserInput();
     if (Array.isArray(apiSettings)) {
-      //const [token, url] = apiSettings;
-      //this.clearInputs();
-      // check connection and load user and his datasets
-      //console.log('\nipcRenderer.send(doConnection): \napiSettings: '+apiSettings);
       ipcRenderer.send('doConnection', apiSettings);
-
     }
   }
 }

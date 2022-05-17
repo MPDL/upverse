@@ -1,14 +1,16 @@
-export interface FileInfo {
-  name: string;
-  path: string;
-  size: number;
-  type: string;
-  lastModifiedDate?: Date;
-  description?: string;
-  storage_url?: string; 
-  storage_id?: string;
-  part_size?: number;
-  etag?: string;
-  etags?: string[];
-  final_result?: number;
+export class FileInfo {
+  constructor (
+    public id: number,
+    public name: string,
+    public path: string,
+    public size: number,
+    public type: string,
+    public lastModifiedDate?: Date,
+    public description?: string,
+    public storage_url?: string, 
+    public storage_id?: string,
+    public part_size?: number,
+    public etag?: string,
+    public etags?: string[],
+    public final_result?: number) {}
 }

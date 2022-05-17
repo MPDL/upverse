@@ -1,13 +1,15 @@
 .footer {
-    position: fixed;
+    padding: 0.5rem 0;
+    background: var(--mpg-dark-blue);
+    font-size: .57143rem;
+}
+
+.footer::before {
     left: 0;
     bottom: 0;
     width: 100%;
-    overflow: hidden;
-    padding: 0.5rem 0 0 0;
     height: 3rem;
-    background: var(--mpg-dark-blue);
-    font-size: .57143rem;
+    position: fixed;
 }
 
 .footer img {

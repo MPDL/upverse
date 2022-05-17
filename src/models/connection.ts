@@ -12,6 +12,14 @@ export class Connection {
         this.status = status;
     }
 
+    setUrl(url: string) {
+        this.url = url;
+    }
+
+    setToken(token: string) {
+        this.token = token;
+    }
+
     getStatus(): number {
         return this.status;
     }
