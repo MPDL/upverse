@@ -8,7 +8,7 @@
     "lint": "eslint -c .eslintrc --ext .ts ./src",
     "start": "npm run build && electron ./dist/main/main.js"
   },
-  "repository": "https://github.com/electron/electron-quick-start-typescript",
+  "repository": "https://github.com/MPDL/upverse",
   "keywords": [
     "edmond",
     "research",
@@ -20,6 +20,7 @@
   "author": "MPDL Collections",
   "license": "MIT",
   "devDependencies": {
+    "@types/bootstrap": "^5.1.11",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "electron": "^17.1.2",
