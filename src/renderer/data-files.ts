@@ -26,6 +26,7 @@ export class DataFiles {
         this.dataFiles.length,
         selectedFile.name,
         selectedFile.path,
+        selectedFile.webkitRelativePath,
         selectedFile.size,
         selectedFile.type,
         new Date(selectedFile.lastModified)

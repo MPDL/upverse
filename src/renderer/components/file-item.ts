@@ -22,13 +22,12 @@ export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
   }
 
   configure():void {
-    this.element.addEventListener('submit', this.submitHandler.bind(this));
     this.element.addEventListener('change', this.changeHandler.bind(this));
   }
 
   renderContent():void {
     this.element.id = this.fileInfo.id.toString();
-    this.element.querySelector('#path')!.textContent = this.fileInfo.path;
+    this.element.querySelector('#path')!.textContent = this.fileInfo.relativePath;
     this.element.querySelector('#type')!.textContent = this.fileInfo.type;
     this.element.querySelector('#size')!.textContent = this.fileInfo.size.toString();
     this.element.querySelector('input')!.textContent = this.fileInfo.description;
@@ -53,16 +52,10 @@ export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
     }
   }
 
-  private submitHandler(event: Event) {
+  private changeHandler(event: Event) {
     event.preventDefault();
     this.fileInfo.description = this.gatherUserInput();
-    console.log('\nFileItem onSubmit:\n' + this.element.id + "\n" + this.element.querySelector('input')!.value);
-    this.element.querySelector('button')!.innerHTML = '<i class="bi bi-check"></i>';
     ipcRenderer.send('descriptionFor', this.fileInfo);
   }
 
-  private changeHandler(event: Event) {
-    event.preventDefault();
-    this.element.querySelector('button')!.innerHTML = '<i class="bi bi-arrow-return-left"></i>';
-  }
 }

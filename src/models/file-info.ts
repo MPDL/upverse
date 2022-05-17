@@ -3,6 +3,7 @@ export class FileInfo {
     public id: number,
     public name: string,
     public path: string,
+    public relativePath: string,
     public size: number,
     public type: string,
     public lastModifiedDate?: Date,

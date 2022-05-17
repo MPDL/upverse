@@ -19,6 +19,7 @@ export const transfer_direct_from_file = async (persistentId: string, items: Fil
                 type: item.type,
                 lastModifiedDate: new Date(item.lastModifiedDate),
                 path: item.path,
+                relativePath: item.relativePath,
                 description: item.description
             };
        

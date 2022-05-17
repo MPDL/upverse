@@ -76,7 +76,7 @@ export const directUpload = async (doi: string, item: FileInfo): Promise<FileInf
         }
         else if (uploadUrlResponse.data.urls) {
             console.log("\nDirect Upload - Multiple URLs found");
-            const checksum = calculateChecksum(item.path);
+            const checksum = calculateChecksum(item.relativePath.replace(item.name,''));
             for (const key in uploadUrlResponse.data.urls) {
                 const partNumber: number = +key;
                 const url = uploadUrlResponse.data.urls[key];
@@ -170,7 +170,7 @@ export const addDirectUploadFiles = async (doi: string, items: FileInfo[]): Prom
     const json = [];
     for (const item of items) {
         json.push({
-            description: item.description, directoryLabel: item.path,
+            description: item.description, directoryLabel: item.relativePath.replace(item.name,''),
             storageIdentifier: item.storage_id, fileName: item.name, mimeType: item.type, md5Hash: item.etag
         })
     }
