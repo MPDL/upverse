@@ -108,6 +108,10 @@ ipcMain.on('datasetSelected', (event: IpcMainEvent, persistentId: string) => {
   event.reply('selectFiles', '~/Downloads');
 })
 
+ipcMain.on('removeItem', (event: IpcMainEvent, file: FileInfo)  => {
+  event.reply('removeItem', file);
+})
+
 ipcMain.on('filesSelected', (event: IpcMainEvent, files: FileInfo[]) => {
   event.reply('selectedFiles', files);
 
@@ -116,7 +120,7 @@ ipcMain.on('filesSelected', (event: IpcMainEvent, files: FileInfo[]) => {
 
 const transfer_files = async (event: IpcMainEvent, persistentId: string, files: FileInfo[]): Promise<void> => {
   try {
-    const result = await transfer_direct_from_file(persistentId, files);
+    const result = await transfer_direct_from_file(event, persistentId, files);
     event.reply('end', '');    
   } catch (error) {
     console.error(error);

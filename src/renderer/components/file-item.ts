@@ -8,21 +8,41 @@ export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
  {
   private fileInfo: FileInfo;
   descriptionElement: HTMLInputElement;
+  actionsElement: HTMLDivElement;
 
   constructor(listId: string,fileInfo: FileInfo) {
-    super('data-file-item', listId, true, 'uploadItems');
+    super('data-file-item', listId, false, 'uploadItems');
     this.fileInfo = fileInfo;
 
     this.descriptionElement = this.element.querySelector(
       'input'
     ) as HTMLInputElement;
 
+    this.actionsElement = this.element.querySelector(
+      '#actions'
+    ) as HTMLDivElement;
+
     this.configure();
     this.renderContent();
   }
 
   configure():void {
+    this.element.addEventListener('submit', this.submitHandler.bind(this));
     this.element.addEventListener('change', this.changeHandler.bind(this));
+    
+    ipcRenderer.on('selectedFiles', (event: Event, dummy: string)  => {
+      this.actionsElement!.innerHTML = '<i class="bi bi-hourglass"></i>'
+    })  
+
+    ipcRenderer.on('actionFor' + this.fileInfo.id.toString(), (event: Event, action: string)  => {
+      if (action === 'start') {
+        this.actionsElement!.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
+      } else if (action === 'success') {
+        this.actionsElement!.innerHTML = '<i class="bi bi-check2-circle"></i>'
+      } else if (action === 'fail') {
+        this.actionsElement!.innerHTML = '<i class="bi bi-x-circle"></i>'
+      }
+    })  
   }
 
   renderContent():void {
@@ -55,7 +75,10 @@ export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
   private changeHandler(event: Event) {
     event.preventDefault();
     this.fileInfo.description = this.gatherUserInput();
-    ipcRenderer.send('descriptionFor', this.fileInfo);
   }
 
+  private submitHandler(event: Event) {
+    event.preventDefault();
+    ipcRenderer.send('removeItem', this.fileInfo);
+  }
 }

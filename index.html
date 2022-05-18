@@ -103,7 +103,7 @@
 
   <template id="data-file-list">
     <div class="col-md-12">
-      <section class="files">
+      <section class="file">
         <ul></ul>
       </section>
     </div>
@@ -111,15 +111,20 @@
 
   <template id="data-file-item">
     <div>
-      <li class="row">
+      <li>
         <form class="row">
-          <div class="col-md-6">
+          <div class="col-md-5">
             <span id="type"></span>:&nbsp;
-            <strong id="path"></strong><br />
+            <strong id="path" class="text-break"></strong><br />
             size: <span id="size"></span>
           </div>
           <div class="col-md-6">
               <input type="text" id="description" class="form-control" placeholder="Description">
+          </div>
+          <div class="col-md-1">
+            <div class="float-end" id="actions">
+              <button class="btn btn-secondary" type="submit"><i class="bi bi-x-lg"></i></button>
+            </div>
           </div>
         </form>
       </li>

@@ -20,16 +20,18 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
   }
 
   configure():void {
-      dataFiles.addListener((files: FileInfo[]) => {
+    ipcRenderer.setMaxListeners(1000);
+
+    dataFiles.addListener((files: FileInfo[]) => {
         this.selectedFiles = files;
         this.renderItems();
       });
 
-      ipcRenderer.on('descriptionFor', (event: Event, file: FileInfo)  => {
-        dataFiles.updateDataFile(file);
+    ipcRenderer.on('removeItem', (event: Event, file: FileInfo)  => {
+        dataFiles.removeDataFile(file);
       })
 
-      ipcRenderer.on('end', (event: Event, dummy: string)  => {
+    ipcRenderer.on('end', (event: Event, dummy: string)  => {
         dataFiles.clear();
         this.element.querySelector('ul')!.innerHTML = '';
       })    

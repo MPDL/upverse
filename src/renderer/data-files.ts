@@ -35,6 +35,13 @@ export class DataFiles {
       this.listener(this.dataFiles.slice());
     }
 
+    removeDataFile(file: FileInfo) {
+      const position = this.dataFiles.findIndex(element => element.id === file.id);
+      this.dataFiles.splice(position, 1);
+      console.log("DataFile removed!");
+      this.listener(this.dataFiles.slice());      
+    }
+
     updateDataFile(file: FileInfo) {
       if (file.id < this.dataFiles.length) {
         this.dataFiles[file.id].description = file.description;

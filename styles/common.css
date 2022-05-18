@@ -89,13 +89,14 @@ img {
 
 .form-label {
   color: var(--sky-blue-3);
+  font-size: 0.9rem;
   font-weight: 600;
   margin-left: 4px;
   margin-bottom: 0;
 }
 
 .form-control {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   line-height: 1.2;
   color: var(--mpg-slate-gray-0);
   background-color: var(--mpg-light-gray);

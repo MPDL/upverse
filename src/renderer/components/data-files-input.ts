@@ -64,7 +64,7 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
       console.log(JSON.stringify(file))
     })
     this.submitButtonElement.disabled = true;
-    this.submitButtonElement.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Doing...'
+    this.submitButtonElement.innerHTML = 'Uploading...'
 
     ipcRenderer.send('filesSelected', dataFiles.getAll());
   }

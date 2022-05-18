@@ -1,9 +1,10 @@
 import { addDirectUploadFiles, directUpload } from '../controllers/direct-upload';
 
 import { FileInfo } from '../../models/file-info';
+import { IpcMainEvent } from "electron";
 import { axios_error_handler } from '../base/service/error.handler';
 
-export const transfer_direct_from_file = async (persistentId: string, items: FileInfo[]): Promise<Record<string, unknown>> => {
+export const transfer_direct_from_file = async (event: IpcMainEvent, persistentId: string, items: FileInfo[]): Promise<Record<string, unknown>> => {
     try {
         //const items = [];
         const files = [];
@@ -25,10 +26,10 @@ export const transfer_direct_from_file = async (persistentId: string, items: Fil
        
             console.log('attempting to upload ' + item_info.name + 'from ' + item_info.path);
 
-
+            event.sender.send('actionFor'+item_info.id.toString(),'start');
             //Step 1 for direct upload: Upload files to object storage
             await directUpload(persistentId, item_info);
-
+            event.sender.send('actionFor'+item_info.id.toString(),'success');
             uploaded.push(item_info);
 
 
