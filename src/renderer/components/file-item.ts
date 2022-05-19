@@ -42,6 +42,7 @@ export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
       } else if (action === 'fail') {
         this.actionsElement!.innerHTML = '<i class="bi bi-x-circle"></i>'
       }
+      this.actionsElement!.scrollIntoView();
     })  
   }
 
