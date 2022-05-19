@@ -51,7 +51,10 @@ export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
     this.element.querySelector('#path')!.textContent = this.fileInfo.relativePath;
     this.element.querySelector('#type')!.textContent = this.fileInfo.type;
     this.element.querySelector('#size')!.textContent = this.fileInfo.size.toString();
-    this.element.querySelector('input')!.textContent = this.fileInfo.description;
+    if (this.fileInfo.description) {
+      this.element.querySelector('input')!.value = this.fileInfo.description;
+    }
+    
   }
 
   private gatherUserInput(): string {
@@ -80,6 +83,9 @@ export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
 
   private submitHandler(event: Event) {
     event.preventDefault();
+    console.log(
+      "ipcRenderer.send('removeItem', this.fileInfo)"
+    );
     ipcRenderer.send('removeItem', this.fileInfo);
   }
 }

@@ -115,7 +115,8 @@ img {
 }
 
 input[type="file"] {
-  color: var(--mpg-sky-blue-1);
+  /* color: var(--mpg-sky-blue-1); */
+  color: rgba(0, 0, 0, 0);
 }
 
 input[type="file"]::-webkit-file-upload-button {

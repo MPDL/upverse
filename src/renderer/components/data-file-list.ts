@@ -9,9 +9,9 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
   selectedFiles: FileInfo[];
 
   constructor() {
-    super('data-file-list', 'app-file-list', true, 'file2upload-list');
+    super("data-file-list", "app-file-list", true, "file2upload-list");
     this.fileListElement = this.element.querySelector(
-      '#file-list'
+      "#file-list"
     ) as HTMLUListElement;
     this.selectedFiles = [];
 
@@ -19,37 +19,38 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
     this.renderHeader();
   }
 
-  configure():void {
-    ipcRenderer.setMaxListeners(1000);
+  configure(): void {
+    ipcRenderer.setMaxListeners(2000);
 
     dataFiles.addListener((files: FileInfo[]) => {
-        this.selectedFiles = files;
-        this.renderItems();
-      });
+      this.selectedFiles = files;
+      this.renderItems();
+    });
 
-    ipcRenderer.on('removeItem', (event: Event, file: FileInfo)  => {
-        dataFiles.removeDataFile(file);
-      })
+    ipcRenderer.on("removeItem", (event: Event, file: FileInfo) => {
+      dataFiles.removeDataFile(file);
+    });
 
-    ipcRenderer.on('end', (event: Event, result: Record<string, unknown>)  => {
-        dataFiles.clear();
-        this.element.querySelector('ul')!.innerHTML = `<h1>${result.files} files uploaded to ${result.destination}.</h1>`;
-      })    
+    ipcRenderer.on("end", (event: Event, result: Record<string, unknown>) => {
+      dataFiles.clear();
+      this.element.querySelector(
+        "ul"
+      )!.innerHTML = `<h5>${result.files}<i> files uploaded to </i>${result.destination}</h5>`;
+    });
   }
 
-  renderHeader():void {
-    const listId = 'research-files-list';
-    this.element.querySelector('ul')!.id = listId;
+  renderHeader(): void {
+    const listId = "research-files-list";
+    this.element.querySelector("ul")!.id = listId;
   }
 
   private renderItems() {
     const listEl = document.getElementById(
-      'research-files-list'
+      "research-files-list"
     )! as HTMLUListElement;
-    listEl.innerHTML = '';
+    listEl.innerHTML = "";
     for (const fileInfo of this.selectedFiles) {
-      new FileItem(this.element.querySelector('ul')!.id, fileInfo);
+      new FileItem(this.element.querySelector("ul")!.id, fileInfo);
     }
   }
-
 }

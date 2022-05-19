@@ -72,12 +72,13 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
   private changeHandler(event: Event) {
     event.preventDefault();
     const enteredFiles = this.gatherUserInput();
-
-    const files = Array.from(enteredFiles);
-    files.forEach((file) => {
-      dataFiles.addFile(file);
-    });
-    this.submitButtonElement.disabled = false;
+    if (enteredFiles) {
+      const files = Array.from(enteredFiles);
+      files.forEach((file) => {
+        dataFiles.addFile(file);
+      });
+      this.submitButtonElement.disabled = false;
+    }
   }
 
 }

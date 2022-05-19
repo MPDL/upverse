@@ -109,6 +109,9 @@ ipcMain.on('datasetSelected', (event: IpcMainEvent, persistentId: string) => {
 })
 
 ipcMain.on('removeItem', (event: IpcMainEvent, file: FileInfo)  => {
+  console.log(
+    "ipcMain.on('removeItem', (event: IpcMainEvent, file: FileInfo)"
+  );
   event.reply('removeItem', file);
 })
 
