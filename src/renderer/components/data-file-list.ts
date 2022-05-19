@@ -31,9 +31,9 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
         dataFiles.removeDataFile(file);
       })
 
-    ipcRenderer.on('end', (event: Event, dummy: string)  => {
+    ipcRenderer.on('end', (event: Event, result: Record<string, unknown>)  => {
         dataFiles.clear();
-        this.element.querySelector('ul')!.innerHTML = '';
+        this.element.querySelector('ul')!.innerHTML = `<h1>${result.files} files uploaded to ${result.destination}.</h1>`;
       })    
   }
 
