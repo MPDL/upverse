@@ -3,13 +3,13 @@ import * as path from "path";
 import { BrowserWindow, IpcMainEvent, Menu, Notification, app, ipcMain } from "electron";
 
 import { FileInfo } from "../models/file-info";
-import { Store } from "./store";
+import { Settings } from "./settings";
 import { connectToRepository } from "./services/user-service";
 import { transfer_direct_from_file } from './services/upload-service';
 
 // Set env
 process.env.isDev = 'true';
-const isDev = (process.env.isDev === 'true')
+const isDev = (process.env.isDev === 'true');
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -40,7 +40,7 @@ function createMenu() {
             label: 'Save',
             click() {
               if (isDev) console.log("save");
-              Store.save();
+              Settings.save();
             }
           },
           { type: 'separator' },
@@ -71,7 +71,7 @@ function createMenu() {
 }
 
 app.on("ready", () => {
-  new Store();
+  new Settings();
   createWindow();
   createMenu();
 
@@ -88,10 +88,10 @@ app.on("window-all-closed", () => {
 
 ipcMain.on('doConnection', (event: IpcMainEvent, givenSettings: string[]) => {
   try {
-    connectToRepository(givenSettings[0], givenSettings[1], (status, user, datasetList) => {
-      if( status == 200 ) {
-        process.env.admin_api_key = givenSettings[0];
-        process.env.dv_base_uri = givenSettings[1];
+    process.env.admin_api_key = givenSettings[0];
+    process.env.dv_base_uri = givenSettings[1];
+    connectToRepository((user, datasetList) => {
+      if( Settings.settingsData.getStatus() == 200 ) {
         event.reply('authenticated', [user.getAuthor()]); 
         event.reply('selectDataset', datasetList); 
       }

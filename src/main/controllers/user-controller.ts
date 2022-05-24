@@ -1,23 +1,23 @@
 import { Notification, net } from "electron";
 
-import { Connection } from "../../models/connection";
 import { DatasetInfo } from "../../models/dataset-info";
+import { Settings } from "../settings";
 
 const isDev = (process.env.isDev === 'true')
 
-export const getApiUser = async (connection: Connection, callback: (last: string, first: string) => void): Promise<void> => {
+export const getApiUser = async (callback: (last: string, first: string) => void): Promise<void> => {
     try {
         let msg = "";
         const apiCall = '/users/:me';
 
         const request = net.request({
             method: 'GET',
-            url: connection.getUrl() + apiCall
+            url: process.env.dv_base_uri + apiCall
         });
 
         request.on('response', (response) => {
+            Settings.settingsData.setStatus(response.statusCode)
             if(response.statusCode === 200) {
-                connection.setStatus(response.statusCode);
                 response.on('data', (chunk) => {
                     const responseData = JSON.parse(chunk.toString());
 
@@ -45,7 +45,7 @@ export const getApiUser = async (connection: Connection, callback: (last: string
         });
 
         request.setHeader('Content-Type', 'application/json');
-        request.setHeader('X-Dataverse-key', connection.getToken());
+        request.setHeader('X-Dataverse-key', process.env.admin_api_key);
         request.end();
 
     } catch (err) {
@@ -53,14 +53,14 @@ export const getApiUser = async (connection: Connection, callback: (last: string
     }
 };
 
-export const getUserDatasets = async (connection: Connection, author: string, datasetList: DatasetInfo[], callback: ( datasetList: DatasetInfo[]) => void): Promise<void> => {
+export const getUserDatasets = async (author: string, datasetList: DatasetInfo[], callback: ( datasetList: DatasetInfo[]) => void): Promise<void> => {
     try {
         let msg = "";
         const apiCall = '/search?q=' + author;
 
         const request = net.request({
             method: 'GET',
-            url: connection.getUrl() + apiCall
+            url: process.env.dv_base_uri + apiCall
         });
 
         request.on('response', (response) => {
@@ -93,7 +93,7 @@ export const getUserDatasets = async (connection: Connection, author: string, da
         });
 
         request.setHeader('Content-Type', 'application/json');
-        request.setHeader('X-Dataverse-key', connection.getToken());
+        request.setHeader('X-Dataverse-key', process.env.admin_api_key);
         request.end();
     } catch (err) {
         new Notification({ title: 'Connect', body: 'Error getting datasets!' }).show();

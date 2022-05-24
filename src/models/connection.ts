@@ -3,11 +3,6 @@ export class Connection {
     private token: string;
     private status: number;
 
-    constructor(url: string, token: string) {
-        this.url = url;
-        this.token = token;
-    }
-
     setStatus(status: number): void {
         this.status = status;
     }
