@@ -1,8 +1,9 @@
+import { ipcRenderer, shell } from 'electron';
+
 import Cmp from './base-component.js';
 import { FileInfo } from "../../models/file-info";
 import { FileItem } from './file-item';
 import { dataFiles } from '../data-files';
-import { ipcRenderer } from 'electron';
 
 export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
   fileListElement: HTMLUListElement;
@@ -35,8 +36,15 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
       dataFiles.clear();
       this.element.querySelector(
         "ul"
-      )!.innerHTML = `<h5>${result.files}<i> files uploaded to </i>${result.destination}</h5>`;
+      )!.innerHTML = `<h5>${result.files}<i> files uploaded to </i>${result.destination}</h5>
+        <br>
+        <button id="appserver" class="btn btn-secondary" type="submit"><i class="bi bi-card-checklist"></i> Open Edmond on your browser</button>`;
+      this.element.querySelector("#appserver")!.addEventListener('click', this.clickHandler.bind(this));  
     });
+  }
+
+  private clickHandler(event: Event) {
+    shell.openExternal(process.env.dv_base_uri.replace('/api',''));
   }
 
   renderHeader(): void {
