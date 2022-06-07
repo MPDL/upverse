@@ -2,11 +2,15 @@
   "name": "upverse",
   "version": "1.0.0",
   "description": "Direct file upload to research data repository",
+  "main": "dist/main/main.js",
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf dist && tsc",
     "watch": "tsc -w",
     "lint": "eslint -c .eslintrc --ext .ts ./src",
-    "start": "npm run build && electron ./dist/main/main.js"
+    "start": "npm run build && electron .",
+    "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/favicons/favicon.icns --prune=true --out=release-builds",
+    "package-win": "electron-packager . --overwrite --platform=win32 --arch=x64 --icon=assets/favicons/favicon.ico --prune=false --out=release-builds --version-string.CompanyName=MPDL --version-string.FileDescription=Uploader --version-string.ProductName=\"Upverse\"",
+    "package-linux": "electron-packager . --overwrite --platform=linux --arch=x64 --icon=assets/favicons/favicon --prune=false --out=release-builds"
   },
   "repository": "https://github.com/MPDL/upverse",
   "keywords": [
@@ -24,6 +28,7 @@
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "electron": "^17.1.2",
+    "electron-packager": "^15.4.0",
     "eslint": "^7.32.0",
     "typescript": "^4.5.5"
   },

@@ -8,7 +8,7 @@ import { connectToRepository } from "./services/user-service";
 import { transfer_direct_from_file } from './services/upload-service';
 
 // Set env
-process.env.isDev = 'true';
+process.env.isDev = 'false';
 const isDev = (process.env.isDev === 'true');
 
 function createWindow() {
@@ -23,10 +23,10 @@ function createWindow() {
     },
   });
 
-  mainWindow.loadFile(path.join(__dirname, "../../index.html"));
+  mainWindow.loadURL(`file://${__dirname}/../../index.html`);
 
   // Open the DevTools.
-  if (process.env.NODE_ENV !== 'production') {
+  if (isDev) {
     mainWindow.webContents.openDevTools();
   }
 }
