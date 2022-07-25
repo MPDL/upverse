@@ -9,11 +9,30 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
   fileListElement: HTMLUListElement;
   selectedFiles: FileInfo[];
 
+  firstPageElement: HTMLLinkElement;
+  previousPageElement: HTMLLinkElement;
+  nextPageElement: HTMLLinkElement;
+  lastPageElement: HTMLLinkElement;
+
+  lastPointer = 0;
+
   constructor() {
     super("data-file-list", "app-file-list", true, "file2upload-list");
     this.fileListElement = this.element.querySelector(
       "#file-list"
     ) as HTMLUListElement;
+    this.firstPageElement = this.element.querySelector(
+      "#firstPage"
+    ) as HTMLLinkElement;
+    this.previousPageElement = this.element.querySelector(
+      "#previousPage"
+    ) as HTMLLinkElement; 
+    this.nextPageElement = this.element.querySelector(
+      "#nextPage"
+    ) as HTMLLinkElement; 
+    this.lastPageElement = this.element.querySelector(
+      "#lastPage"
+    ) as HTMLLinkElement;     
     this.selectedFiles = [];
 
     this.configure();
@@ -25,7 +44,24 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
 
     dataFiles.addListener((files: FileInfo[]) => {
       this.selectedFiles = files;
-      this.renderItems();
+      this.renderItems(0);
+      this.renderPaginator();
+    });
+
+    this.firstPageElement.addEventListener("click", () => {
+      this.renderItems(0);
+    });
+
+    this.previousPageElement.addEventListener("click", () => {
+      this.renderItems(this.lastPointer == 0 ? (this.selectedFiles.length - 10) : (this.lastPointer -= 10))
+    });
+
+    this.nextPageElement.addEventListener("click", () => {
+      this.renderItems(this.lastPointer == this.selectedFiles.length - 10 ? (0) : (this.lastPointer += 10))
+    });
+
+    this.lastPageElement.addEventListener("click", () => {
+      this.renderItems(this.selectedFiles.length - 10)
     });
 
     ipcRenderer.on("removeItem", (event: Event, file: FileInfo) => {
@@ -52,13 +88,19 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
     this.element.querySelector("ul")!.id = listId;
   }
 
-  private renderItems() {
+  renderPaginator(): void {
+    this.element.querySelector("nav")!.style.visibility = "visible";
+  }  
+
+  private renderItems(itemPointer: number = 0) {
     const listEl = document.getElementById(
       "research-files-list"
     )! as HTMLUListElement;
     listEl.innerHTML = "";
-    for (const fileInfo of this.selectedFiles) {
+    for (const fileInfo of this.selectedFiles.slice(itemPointer, itemPointer + 10)) {
       new FileItem(this.element.querySelector("ul")!.id, fileInfo);
     }
+    this.lastPointer = itemPointer;
   }
+
 }

@@ -112,13 +112,16 @@ const directUploadPart = async (url: string, fileStream: ReadStream, size: numbe
                 'Content-Length': size as unknown as string,
                 //'Content-Type': item.type,
                 'x-amz-tagging': 'dv-state=temp',
-
             },
             // ridiculously enough axios has a max. content length of 10M by default
             // maxContentLength & maxBodyLength have to be set independently ...
             maxContentLength: Infinity,
             maxBodyLength: Infinity,
-            data: fileStream
+            data: fileStream,            
+            onUploadProgress: (progressEvent: ProgressEvent) => {
+                //var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                console.log("\nProgress: " + progressEvent);
+            }
         }
         const resp = await axios(cfg);
         console.log("\nEnding Direct Upload for one part");

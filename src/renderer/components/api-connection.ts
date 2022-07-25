@@ -38,7 +38,7 @@ export class ApiConnection extends Cmp<HTMLDivElement, HTMLFormElement> {
     const urlValidatable: Validation.Validatable = {
       value: enteredUrl,
       required: true,
-      minLength: 30
+      minLength: 20
     };
 
     if (
