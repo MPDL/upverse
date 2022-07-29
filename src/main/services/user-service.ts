@@ -13,8 +13,7 @@ export const connectToRepository = async (callback: (user:UserInfo, datasetList:
   try {
     getApiUser((lastName:string, firstName:string) => {
       user = new UserInfo(lastName, firstName);
-      datasetList = [];
-      getUserDatasets(user.getAuthor(), datasetList, (datasetList: DatasetInfo[]) => {
+      getUserDatasets(user.getAuthor(), (datasetList: DatasetInfo[]) => {
         callback(user, datasetList);
       });
     })

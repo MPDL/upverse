@@ -53,10 +53,11 @@ export const getApiUser = async (callback: (last: string, first: string) => void
     }
 };
 
-export const getUserDatasets = async (author: string, datasetList: DatasetInfo[], callback: ( datasetList: DatasetInfo[]) => void): Promise<void> => {
+export const getUserDatasets = async (author: string, callback: (datasetList: DatasetInfo[]) => void): Promise<void> => {
     try {
         let msg = "";
         const apiCall = '/search?q=' + author + '&per_page=100';
+        let datasetList:DatasetInfo[];
 
         const request = net.request({
             method: 'GET',
@@ -64,16 +65,20 @@ export const getUserDatasets = async (author: string, datasetList: DatasetInfo[]
         });
 
         request.on('response', (response) => {
+            let data = "";
+            datasetList = [];
             if(response.statusCode === 200) {
                 response.on('data', (chunk) => {
-                    const responseData = JSON.parse(chunk.toString());
-
+                    console.log(chunk.toString());
+                    data += chunk.toString();
+                });
+                response.on('end', () => {
+                    const responseData = JSON.parse(data.toString());
                     responseData.data.items.forEach((item: {name:string, global_id:string}) => {
                         datasetList.push(Object.assign({}, new DatasetInfo(item.name, item.global_id)));
-                        console.log("datasetList.length: " + datasetList.length);
                     })
                     callback(datasetList);
-                })
+                });
             } else new Notification({ title: 'Connect', body: 'No datasets found!' }).show();
         });
         request.on('finish', () => {

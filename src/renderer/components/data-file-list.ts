@@ -57,11 +57,12 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
     });
 
     this.nextPageElement.addEventListener("click", () => {
-      this.renderItems(this.lastPointer <= this.selectedFiles.length - 10 ? (this.lastPointer += 10) : (this.selectedFiles.length - 10));
+      this.renderItems(this.selectedFiles.length <= 10 ? (0) : (this.lastPointer < this.selectedFiles.length - 10 ? (this.lastPointer += 10) : (this.lastPointer)));
     });
 
     this.lastPageElement.addEventListener("click", () => {
-      this.renderItems(this.selectedFiles.length - 10);
+      this.renderItems(this.selectedFiles.length <= 10 ? (0) : (this.lastPointer > this.selectedFiles.length - 10 ? (this.lastPointer) : (this.lastPointer  += 10)));
+      //this.renderItems(this.selectedFiles.length - 10);
     });
 
     ipcRenderer.on("removeItem", (event: Event, file: FileInfo) => {

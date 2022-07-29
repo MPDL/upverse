@@ -30,6 +30,10 @@ body {
   text-transform: uppercase;
 }
 
+.btn:focus {
+  box-shadow: none;
+}
+
 button:disabled {
   opacity: .5;
   pointer-events: none;
