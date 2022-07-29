@@ -143,6 +143,10 @@ select:hover {
   border-color: var(--mpg-yellow-green-2);
 }
 
+select.form-control {
+  overflow: scroll;
+}
+
 p {
   color: var(--mpg-slate-gray-0);
 }

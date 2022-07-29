@@ -40,7 +40,7 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
   }
 
   configure(): void {
-    ipcRenderer.setMaxListeners(2000);
+    ipcRenderer.setMaxListeners(65000);
 
     dataFiles.addListener((files: FileInfo[]) => {
       this.selectedFiles = files;
@@ -53,15 +53,15 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
     });
 
     this.previousPageElement.addEventListener("click", () => {
-      this.renderItems(this.lastPointer == 0 ? (this.selectedFiles.length - 10) : (this.lastPointer -= 10))
+      this.renderItems(this.lastPointer < 10 ? (0) : (this.lastPointer -= 10));
     });
 
     this.nextPageElement.addEventListener("click", () => {
-      this.renderItems(this.lastPointer == this.selectedFiles.length - 10 ? (0) : (this.lastPointer += 10))
+      this.renderItems(this.lastPointer <= this.selectedFiles.length - 10 ? (this.lastPointer += 10) : (this.selectedFiles.length - 10));
     });
 
     this.lastPageElement.addEventListener("click", () => {
-      this.renderItems(this.selectedFiles.length - 10)
+      this.renderItems(this.selectedFiles.length - 10);
     });
 
     ipcRenderer.on("removeItem", (event: Event, file: FileInfo) => {
