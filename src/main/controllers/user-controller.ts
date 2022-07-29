@@ -56,7 +56,7 @@ export const getApiUser = async (callback: (last: string, first: string) => void
 export const getUserDatasets = async (author: string, datasetList: DatasetInfo[], callback: ( datasetList: DatasetInfo[]) => void): Promise<void> => {
     try {
         let msg = "";
-        const apiCall = '/search?q=' + author;
+        const apiCall = '/search?q=' + author + '&per_page=100';
 
         const request = net.request({
             method: 'GET',
@@ -70,6 +70,7 @@ export const getUserDatasets = async (author: string, datasetList: DatasetInfo[]
 
                     responseData.data.items.forEach((item: {name:string, global_id:string}) => {
                         datasetList.push(Object.assign({}, new DatasetInfo(item.name, item.global_id)));
+                        console.log("datasetList.length: " + datasetList.length);
                     })
                     callback(datasetList);
                 })

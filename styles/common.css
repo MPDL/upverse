@@ -139,12 +139,12 @@ input[type="file"]:disabled::-webkit-file-upload-button {
   pointer-events: none;
 } 
 
-select:hover {
-  border-color: var(--mpg-yellow-green-2);
+select {
+  overflow-y: scroll; 
 }
 
-select.form-control {
-  overflow: scroll;
+select:hover {
+  border-color: var(--mpg-yellow-green-2);
 }
 
 p {
