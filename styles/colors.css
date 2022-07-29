@@ -66,7 +66,7 @@
     --mpdl-orange: #d45a00;
     --mpdl-yellow: #f2b200;
     --mpdl-green: #60850c;
-    --mpdl-light-blue: #0084bc;
+    --mpdl-light-blue: rgb(0, 132, 188);
     --mpdl-blue: #00387d;
     --mpdl-purple: #5a117d;
 }

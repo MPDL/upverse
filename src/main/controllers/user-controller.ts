@@ -69,7 +69,6 @@ export const getUserDatasets = async (author: string, callback: (datasetList: Da
             datasetList = [];
             if(response.statusCode === 200) {
                 response.on('data', (chunk) => {
-                    console.log(chunk.toString());
                     data += chunk.toString();
                 });
                 response.on('end', () => {

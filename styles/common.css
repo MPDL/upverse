@@ -50,7 +50,7 @@ button[type="submit"] {
 [type="submit"]:focus,
 [type="submit"]:active,
 button {
-  background: var(--mpdl-light-blue);
+  background: rgba(0, 132, 188, 0.50);
 }
 
 img {
@@ -134,7 +134,7 @@ input[type="file"]::-webkit-file-upload-button {
 }
 
 input[type="file"]::-webkit-file-upload-button:hover {
-  background: var(--mpdl-light-blue);
+  background: rgba(0, 132, 188, 0.50);
   color: white;
 }
 
