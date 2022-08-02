@@ -35,7 +35,7 @@ const getUploadUrls = async (doi: string, size: number) => {
         size: size
     }
     try {
-        const response = await request('get', '/datasets/:persistentId/uploadurls', params, process.env.admin_api_key, null);
+        const response = await (await request('get', '/datasets/:persistentId/uploadurls', params, process.env.admin_api_key, null));
         if (response && (response.data as any).data) { // eslint-disable-line
             const data = (response.data as any); // eslint-disable-line
             return data;
@@ -117,10 +117,10 @@ const directUploadPart = async (url: string, fileStream: ReadStream, size: numbe
             // maxContentLength & maxBodyLength have to be set independently ...
             maxContentLength: Infinity,
             maxBodyLength: Infinity,
-            data: fileStream,            
-            onUploadProgress: (progressEvent: ProgressEvent) => {
-                //var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                console.log("\nProgress: " + progressEvent);
+            data: fileStream,
+            onUploadProgress: ( progressEvent ) => {
+                var completed = Math.round( (progressEvent.loaded * 100) / progressEvent.total );
+                console.log( completed );
             }
         }
         const resp = await axios(cfg);

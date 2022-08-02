@@ -22,7 +22,7 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
   configure():void {
     this.element.addEventListener('change', this.changeHandler.bind(this));
     this.element.addEventListener('submit', this.submitHandler.bind(this));
-
+ 
     ipcRenderer.on('selectFiles', (event: Event, folder: string)  => {
       this.filesSelectElement.disabled = false;
     })
