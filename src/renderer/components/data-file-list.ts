@@ -73,14 +73,22 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
       dataFiles.clear();
       this.element.querySelector(
         "ul"
-      )!.innerHTML = `<h5>${result.files}<i> files uploaded to </i>${result.destination}</h5>
+      )!.innerHTML = `<div id="upload-done">
+        <h5>${result.files}<i> files uploaded to </i>${result.destination}</h5>
         <br>
-        <button id="appserver" class="btn btn-secondary" type="submit"><i class="bi bi-card-checklist"></i> Open Edmond on your browser</button>`;
+        <button id="appserver" class="btn btn-secondary" type="submit"><i class="bi bi-card-checklist"></i> Open Edmond on your browser</button>
+        </div>`;
         this.element.querySelector(
           ".pagination"
         )!.innerHTML = "";      
       this.element.querySelector("#appserver")!.addEventListener('click', this.clickHandler.bind(this));
     });
+
+    ipcRenderer.on('selectFiles', (event: Event, folder: string)  => {
+      this.element.querySelector(
+        "ul"
+      )!.innerHTML = '';
+    })
   }
 
   private clickHandler(event: Event) {

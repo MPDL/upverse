@@ -105,7 +105,7 @@ ipcMain.on('doConnection', (event: IpcMainEvent, givenSettings: string[]) => {
 
 ipcMain.on('datasetSelected', (event: IpcMainEvent, persistentId: string) => {
   process.env.dest_dataset = persistentId;
-  event.reply('selectFiles', '~/Downloads');
+  event.reply('selectFiles', '~/Downloads/');
 })
 
 ipcMain.on('removeItem', (event: IpcMainEvent, file: FileInfo)  => {
