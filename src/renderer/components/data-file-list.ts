@@ -78,9 +78,9 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
         <br>
         <button id="appserver" class="btn btn-secondary" type="submit"><i class="bi bi-card-checklist"></i> Open Edmond on your browser</button>
         </div>`;
-        this.element.querySelector(
-          ".pagination"
-        )!.innerHTML = "";      
+      this.element.querySelector(
+        ".pagination"
+      )!.innerHTML = '';      
       this.element.querySelector("#appserver")!.addEventListener('click', this.clickHandler.bind(this));
     });
 
@@ -88,6 +88,16 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
       this.element.querySelector(
         "ul"
       )!.innerHTML = '';
+    })
+
+    ipcRenderer.on('clearFiles', (event: Event)  => {
+      dataFiles.clear();
+      this.element.querySelector(
+        "ul"
+      )!.innerHTML = '';
+      this.element.querySelector(
+        ".pagination"
+      )!.innerHTML = '';  
     })
   }
 

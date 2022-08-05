@@ -118,6 +118,10 @@ ipcMain.on('filesSelected', (event: IpcMainEvent, files: FileInfo[]) => {
   transfer_files(event, process.env.dest_dataset, files);
 })
 
+ipcMain.on('filesCleared', (event: IpcMainEvent) => {
+  event.reply('clearFiles');
+})
+
 const transfer_files = async (event: IpcMainEvent, persistentId: string, files: FileInfo[]): Promise<void> => {
   try {
     const result = await transfer_direct_from_file(event, persistentId, files);

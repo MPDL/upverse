@@ -90,10 +90,14 @@
 
   <template id="data-files">
     <form class="row">
-      <div class="col-md-8 d-flex justify-content-start align-items-center">
+      <div class="col-md-5 d-flex justify-content-start align-items-center">
         <label class="mb-0 me-2 form-label" for="files">To upload data </label>
         <input type="file" id="files" className='form-control' webkitdirectory multiple disabled />
       </div>
+      <div class="col-md-3 d-flex justify-content-start">
+        <button type="reset" id="clear" class="btn btn-secondary d-block" disabled><i
+            class="bi bi-x-lg"></i> Clear selected</button>
+      </div>      
       <div class="col-md-4 d-flex justify-content-end">
         <button type="submit" id="upload" class="btn btn-secondary d-block ms-auto" disabled><i
             class="bi bi-upload"></i> Upload</button>

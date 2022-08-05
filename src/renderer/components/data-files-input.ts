@@ -6,6 +6,7 @@ import { ipcRenderer } from 'electron';
 
 export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
   filesSelectElement: HTMLInputElement;
+  resetButtonElement: HTMLButtonElement;
   submitButtonElement: HTMLButtonElement;
 
   constructor() {
@@ -13,6 +14,9 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
     this.filesSelectElement = this.element.querySelector(
       '#files'
     ) as HTMLInputElement;
+    this.resetButtonElement = this.element.querySelector(
+      '#clear'
+    ) as HTMLButtonElement;
     this.submitButtonElement = this.element.querySelector(
       '#upload'
     ) as HTMLButtonElement;
@@ -21,6 +25,7 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
 
   configure():void {
     this.element.addEventListener('change', this.changeHandler.bind(this));
+    this.element.addEventListener('reset', this.resetHandler.bind(this));
     this.element.addEventListener('submit', this.submitHandler.bind(this));
  
     ipcRenderer.on('selectFiles', (event: Event, folder: string)  => {
@@ -29,6 +34,7 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
 
     ipcRenderer.on('filesSelected', (event: Event, dummy: string)  => {
       this.submitButtonElement.disabled = false;
+      this.resetButtonElement.disabled = false;
     })
 
     ipcRenderer.on('end', (event: Event, dummy: string)  => {
@@ -64,6 +70,7 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
       console.log(JSON.stringify(file))
     })
     this.submitButtonElement.disabled = true;
+    this.resetButtonElement.disabled = true;
     this.submitButtonElement.innerHTML = 'Uploading...'
 
     ipcRenderer.send('filesSelected', dataFiles.getAll());
@@ -78,7 +85,17 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
         dataFiles.addFile(file);
       });
       this.submitButtonElement.disabled = false;
+      this.resetButtonElement.disabled = false;
     }
   }
 
+  private resetHandler(event: Event) {
+    event.preventDefault();
+    this.filesSelectElement.value = null;
+    dataFiles.clear();
+    this.submitButtonElement.disabled = true;
+    this.resetButtonElement.disabled = true;
+    
+    ipcRenderer.send('filesCleared');
+  }
 }
