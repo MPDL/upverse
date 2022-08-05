@@ -71,16 +71,14 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
 
     ipcRenderer.on("end", (event: Event, result: Record<string, unknown>) => {
       dataFiles.clear();
+      this.element.querySelector("nav")!.style.visibility = "hidden";   
       this.element.querySelector(
         "ul"
       )!.innerHTML = `<div id="upload-done">
         <h5>${result.files}<i> files uploaded to </i>${result.destination}</h5>
         <br>
         <button id="appserver" class="btn btn-secondary" type="submit"><i class="bi bi-card-checklist"></i> Open Edmond on your browser</button>
-        </div>`;
-      this.element.querySelector(
-        ".pagination"
-      )!.innerHTML = '';      
+        </div>`;  
       this.element.querySelector("#appserver")!.addEventListener('click', this.clickHandler.bind(this));
     });
 
@@ -95,9 +93,7 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
       this.element.querySelector(
         "ul"
       )!.innerHTML = '';
-      this.element.querySelector(
-        ".pagination"
-      )!.innerHTML = '';  
+      this.element.querySelector("nav")!.style.visibility = "hidden";
     })
   }
 
