@@ -30,13 +30,15 @@ const calculateChecksum = async (filePath: string): Promise<string> => {
 }
 
 const getUploadUrls = async (doi: string, size: number) => {
-    const params = {
-        persistentId: doi,
-        size: size
-    }
     try {
-        const response = await (await request('get', '/datasets/:persistentId/uploadurls', params, process.env.admin_api_key, null));
+        const params = {
+            persistentId: doi,
+            size: size
+        }
+        console.log("size: " + params.size); // DEBUG
+        const response = await request('get', '/datasets/:persistentId/uploadurls', params, process.env.admin_api_key, null);
         if (response && (response.data as any).data) { // eslint-disable-line
+            console.log("\nUploadUrls: " + JSON.stringify(response.data));  // DEBUG
             const data = (response.data as any); // eslint-disable-line
             return data;
             /*
@@ -55,7 +57,6 @@ const getUploadUrls = async (doi: string, size: number) => {
 
 export const directUpload = async (doi: string, item: FileInfo): Promise<FileInfo> => {
     try {
-
         console.log("\nDirect Upload - Processing file " + item.path)
         const uploadUrlResponse = await getUploadUrls(doi, item.size);
         item.part_size = uploadUrlResponse.data.partSize;
@@ -76,7 +77,7 @@ export const directUpload = async (doi: string, item: FileInfo): Promise<FileInf
         }
         else if (uploadUrlResponse.data.urls) {
             console.log("\nDirect Upload - Multiple URLs found");
-            const checksum = calculateChecksum(item.relativePath.replace(item.name,''));
+            const checksum = calculateChecksum(item.path);
             for (const key in uploadUrlResponse.data.urls) {
                 const partNumber: number = +key;
                 const url = uploadUrlResponse.data.urls[key];
@@ -89,7 +90,7 @@ export const directUpload = async (doi: string, item: FileInfo): Promise<FileInf
                 const file_stream = createReadStream(item.path, { start: start, end: end });
                 console.log("\nStarting Direct Upload - Part: " + partNumber + " from byte " + start + " to byte " + end);
                 const resp = await directUploadPart(url, file_stream, currentPartSize);
-                item.etags[partNumber] = resp.headers.etag;
+                item.etags[partNumber] = resp.headers.etag.replace(/^"+|"+$/g, '');
             }
             await finishPartUpload(uploadUrlResponse.data.complete, item.etags);
             item.etag = await checksum;
@@ -117,16 +118,20 @@ const directUploadPart = async (url: string, fileStream: ReadStream, size: numbe
             // maxContentLength & maxBodyLength have to be set independently ...
             maxContentLength: Infinity,
             maxBodyLength: Infinity,
-            data: fileStream,
+            data: fileStream            
+            /*,
             onUploadProgress: ( progressEvent ) => {
                 var completed = Math.round( (progressEvent.loaded * 100) / progressEvent.total );
                 console.log( completed );
             }
+            */
         }
+        console.log("\nPart " + JSON.stringify(cfg));  // DEBUG
         const resp = await axios(cfg);
-        console.log("\nEnding Direct Upload for one part");
         return resp;
     } catch (error) {
+        console.log("abortPartUpload");
+        await abortPartUpload(url);
         axios_error_handler(error);
         throw error;
     }
@@ -134,7 +139,6 @@ const directUploadPart = async (url: string, fileStream: ReadStream, size: numbe
 }
 
 const finishPartUpload = async (completeUrl: string, etags: string[]) => {
-
     try {
         /*
         const json = {};
@@ -142,7 +146,8 @@ const finishPartUpload = async (completeUrl: string, etags: string[]) => {
             json[part_number] = etags[part_number];
         }
         */
-
+        var jsonEtags = JSON.stringify(Object.assign({}, etags));
+        console.log("\nFinish " + completeUrl + "\n" + jsonEtags);  // DEBUG
         const cfg: AxiosRequestConfig = {
             //Strip /api from base uri, as its already part of completeUrl
             url: process.env.dv_base_uri.substring(0, process.env.dv_base_uri.indexOf('/api')) + completeUrl,
@@ -154,7 +159,39 @@ const finishPartUpload = async (completeUrl: string, etags: string[]) => {
             // maxContentLength & maxBodyLength have to be set independently ...
             maxContentLength: Infinity,
             maxBodyLength: Infinity,
-            data: JSON.stringify(etags)
+            data: jsonEtags
+        }
+
+        return await axios(cfg);
+    }
+    catch (error) {
+        console.error("\nERROR on finishPartUpload\n");
+        axios_error_handler(error);
+        throw error;
+    }
+
+}
+
+const abortPartUpload = async (abortUrl: string) => {
+    try {
+        /*
+        const json = {};
+        for(const part_number in etags) {
+            json[part_number] = etags[part_number];
+        }
+        */
+        console.log("\nAbort " + abortUrl);  // DEBUG
+        const cfg: AxiosRequestConfig = {
+            //Strip /api from base uri, as its already part of completeUrl
+            url: process.env.dv_base_uri.substring(0, process.env.dv_base_uri.indexOf('/api')) + abortUrl,
+            method: 'DELETE',
+            headers: {
+                'X-Dataverse-key': process.env.admin_api_key
+            },
+            // ridiculously enough axios has a max. content length of 10M by default
+            // maxContentLength & maxBodyLength have to be set independently ...
+            maxContentLength: Infinity,
+            maxBodyLength: Infinity
         }
 
         return await axios(cfg);
@@ -168,30 +205,30 @@ const finishPartUpload = async (completeUrl: string, etags: string[]) => {
 
 
 export const addDirectUploadFiles = async (doi: string, items: FileInfo[]): Promise<AxiosResponse> => {
-    console.log("\nAdding " + items.length + " files to dataset " + doi);
-    const form = new FormData();
-    const json = [];
-    for (const item of items) {
-        json.push({
-            description: item.description, directoryLabel: item.relativePath.replace(item.name,''),
-            storageIdentifier: item.storage_id, fileName: item.name, mimeType: item.type, md5Hash: item.etag
-        })
-    }
-    form.append('jsonData', JSON.stringify(json));
-    const heads = form.getHeaders();
-    const cfg: AxiosRequestConfig = {
-        url: process.env.dv_base_uri + '/datasets/:persistentId/addFiles',
-        method: 'POST',
-        params: {
-            persistentId: doi
-        },
-        headers: {
-            ...heads,
-            'X-Dataverse-key': process.env.admin_api_key
-        },
-        data: form
-    };
     try {
+        console.log("\nAdding " + items.length + " files to dataset " + doi);
+        const form = new FormData();
+        const json = [];
+        for (const item of items) {
+            json.push({
+                description: item.description, directoryLabel: item.relativePath.replace(item.name,''),
+                storageIdentifier: item.storage_id, fileName: item.name, mimeType: item.type, md5Hash: item.etag
+            })
+        }
+        form.append('jsonData', JSON.stringify(json));
+        const heads = form.getHeaders();
+        const cfg: AxiosRequestConfig = {
+            url: process.env.dv_base_uri + '/datasets/:persistentId/addFiles',
+            method: 'POST',
+            params: {
+                persistentId: doi
+            },
+            headers: {
+                ...heads,
+                'X-Dataverse-key': process.env.admin_api_key
+            },
+            data: form
+        };
         const resp = await axios(cfg);
         return resp;
     } catch (error) {

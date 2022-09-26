@@ -38,10 +38,17 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
     })
 
     ipcRenderer.on('end', (event: Event, dummy: string)  => {
-      this.submitButtonElement.innerHTML = '<i class="bi bi-upload"></i> Upload'
-      this.filesSelectElement.value = null;
+      this.nextUpload();
     })  
 
+    ipcRenderer.on('abort', (event: Event, dummy: string)  => {
+      this.nextUpload();
+    })      
+  }
+
+  nextUpload():void {
+    this.submitButtonElement.innerHTML = '<i class="bi bi-upload"></i> Upload'
+    this.filesSelectElement.value = null;
   }
 
   renderContent():void {console.log("renderContent")}
@@ -71,7 +78,7 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
     })
     this.submitButtonElement.disabled = true;
     this.resetButtonElement.disabled = true;
-    this.submitButtonElement.innerHTML = 'Uploading...'
+    this.submitButtonElement.innerHTML = 'Uploading ...'
 
     ipcRenderer.send('filesSelected', dataFiles.getAll());
   }

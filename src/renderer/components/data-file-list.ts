@@ -9,11 +9,16 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
   fileListElement: HTMLUListElement;
   selectedFiles: FileInfo[];
 
+  firstPageElement: HTMLButtonElement;
+  previousPageElement: HTMLButtonElement;
+  nextPageElement: HTMLButtonElement;
+  lastPageElement: HTMLButtonElement;
+  /*
   firstPageElement: HTMLLinkElement;
   previousPageElement: HTMLLinkElement;
   nextPageElement: HTMLLinkElement;
   lastPageElement: HTMLLinkElement;
-
+  */
   lastPointer = 0;
 
   constructor() {
@@ -21,6 +26,20 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
     this.fileListElement = this.element.querySelector(
       "#file-list"
     ) as HTMLUListElement;
+    this.firstPageElement = this.element.querySelector(
+      "#firstPage"
+    ) as HTMLButtonElement;
+    this.previousPageElement = this.element.querySelector(
+      "#previousPage"
+    ) as HTMLButtonElement; 
+    this.nextPageElement = this.element.querySelector(
+      "#nextPage"
+    ) as HTMLButtonElement; 
+    this.lastPageElement = this.element.querySelector(
+      "#lastPage"
+    ) as HTMLButtonElement;  
+    
+    /*
     this.firstPageElement = this.element.querySelector(
       "#firstPage"
     ) as HTMLLinkElement;
@@ -32,7 +51,8 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
     ) as HTMLLinkElement; 
     this.lastPageElement = this.element.querySelector(
       "#lastPage"
-    ) as HTMLLinkElement;     
+    ) as HTMLLinkElement;  
+    */   
     this.selectedFiles = [];
 
     this.configure();
@@ -82,6 +102,16 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
       this.element.querySelector("#appserver")!.addEventListener('click', this.clickHandler.bind(this));
     });
 
+    ipcRenderer.on("abort", (event: Event, result: Record<string, unknown>) => {
+      dataFiles.clear();
+      this.element.querySelector("nav")!.style.visibility = "hidden";   
+      this.element.querySelector(
+        "ul"
+      )!.innerHTML = `<div id="upload-failed">
+        <h5>Selected files couldn't be uploaded!</h5>
+       </div>`;  
+    });
+
     ipcRenderer.on('selectFiles', (event: Event, folder: string)  => {
       this.element.querySelector(
         "ul"
@@ -107,7 +137,9 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
   }
 
   renderPaginator(): void {
-    this.element.querySelector("nav")!.style.visibility = "visible";
+    if(this.selectedFiles.length > 10) {
+      this.element.querySelector("nav")!.style.visibility = "visible";
+    }
   }  
 
   private renderItems(itemPointer: number = 0) {

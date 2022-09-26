@@ -129,6 +129,6 @@ const transfer_files = async (event: IpcMainEvent, persistentId: string, files: 
   } catch (error) {
     console.error(error);
     new Notification({ title: 'Upload Failed!', body: error }).show();
-    event.reply('end', ''); 
+    event.reply('abort', ''); 
   }
 }

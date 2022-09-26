@@ -24,7 +24,7 @@ export const transfer_direct_from_file = async (event: IpcMainEvent, persistentI
                 description: item.description
             };
        
-            console.log('attempting to upload ' + item_info.name + 'from ' + item_info.path);
+            console.log('attempting to upload ' + item_info.name + ' from ' + item_info.relativePath);
 
             event.sender.send('actionFor'+item_info.id.toString(),'start');
             //Step 1 for direct upload: Upload files to object storage
