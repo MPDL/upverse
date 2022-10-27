@@ -4,7 +4,7 @@ MPDL Collections
 
 ## Installation
 
-    **npm install**
+    npm install
 
 
 ## Previous
@@ -16,7 +16,7 @@ To prepare, log in to Edmond and:
 
 ## Run upload app
 
-    **npm start**
+    npm start
 
 
 ## Requirement	Description

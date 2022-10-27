@@ -15,20 +15,25 @@
 <body class="layout -default">
   <header class="header">
     <div class="container">
-      <div class="col-md-12 mb-0">
-        <div id="app-author"></div>
-      </div>
       <div class="col-md-12 mb-3">
-        <div class="row">
-          <div class="col-md-8">
-            <div id="app-connection"></div>
+
+          <a href="http://edmond.mpdl.mpg.de">
+            <img id="app-logo" class="img-fluid float-start" alt="edmond-logo" src="assets/images/logos/logo_for_dark.png" />
+          </a>
+
+        <div class="col-md-12 mb-3">
+          <div class="row">
+            <div id="app-author"></div>
           </div>
-          <div class="col-md-4">
-            <div id="app-dataset"></div>
+          <div class="row">
+            <div class="col-md-7">
+              <div id="app-connection"></div>
+            </div>
+            <div class="col-md-5">
+              <div id="app-dataset"></div>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="col-md-12 mb-3">
         <div class="row">
           <div id="app-files"></div>
         </div>
@@ -50,7 +55,7 @@
         research data <span class="text-danger">uploader</span>
       </div>
       <a href="http://mpdl.mpg.de">
-        <img class="img-fluid float-end" alt="mpdl-logo" src="assets/images/logos/mpdl.mpg-logo.svg" />
+        <img id="org-logo" class="img-fluid float-end" alt="mpdl-logo" src="assets/images/logos/mpdl.mpg-logo.svg" />
       </a>
 
     </div>
@@ -64,11 +69,11 @@
 
   <template id="api-connection">
     <form class="row">
-      <div class="col-md-6">
+      <div class="col-md-5">
         <label class="form-label" for="token">API Token</label>
         <input type="text" class="form-control" id="token" placeholder="API Token" />
       </div>
-      <div class="col-md-6">
+      <div class="col-md-7">
         <label class="form-label" for="url">API URL</label>
         <div class="input-group">
           <input type="text" class="form-control" id="url" placeholder="API Url" />
@@ -114,14 +119,9 @@
         <ul class="pagination justify-content-center">
           <li class="page-item"><button class="page-link btn btn-secondary" id="firstPage">&lt;&lt;</button></li>
           <li class="page-item"><button class="page-link btn btn-secondary" id="previousPage">&lt; Previous</button></li>
+          <li class="page-item"><span class="page-link btn btn-secondary" id="currentPage">0/0</span></li>
           <li class="page-item"><button class="page-link btn btn-secondary" id="nextPage">Next &gt;</button></li>
           <li class="page-item"><button class="page-link btn btn-secondary" id="lastPage">&gt;&gt;</button></li>
-          <!--
-          <li class="page-item"><a class="page-link" id="firstPage">&lt;&lt;</a></li>
-          <li class="page-item"><a class="page-link" id="previousPage">&lt; Previous</a></li>
-          <li class="page-item"><a class="page-link" id="nextPage">Next &gt;</a></li>
-          <li class="page-item"><a class="page-link" id="lastPage">&gt;&gt;</a></li>
-          -->
         </ul>
       </nav>
     </div>
@@ -129,7 +129,7 @@
 
   <template id="data-file-item">
     <div>
-      <li>
+      <li id="item">
         <form class="row">
           <div class="col-md-6 file-item">
             <span id="type"></span>:&nbsp;

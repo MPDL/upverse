@@ -35,6 +35,20 @@
     position: relative;
 }
 
+#app-logo {
+    margin-top: 16px;
+    margin-left: -12px;
+}
+
 #author {
     color: var(--yellow-green-3);
 }
+
+.col-md-5, .col-md-7 {
+    padding-right: 0;
+}
+  
+#dest-dataset {
+    padding-left: 12px;
+}
+
