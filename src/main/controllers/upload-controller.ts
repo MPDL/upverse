@@ -104,10 +104,8 @@ export const uploadSinglepartToStore = (event: IpcMainEvent, item: FileInfo): Pr
 
         let streamed = 0, stPercent = 0, prevStPercent = 0, upPercent = 0, prevUpPercent = 0;
         let streamInterval:NodeJS.Timer, requestInterval:NodeJS.Timer = null;
-        //let progress = 0, prevProgress = 0;
 
-        request.on('response', (response) => { 
-            //item.pctUploaded = request.getUploadProgress().total         
+        request.on('response', (response) => {         
             clearInterval(requestInterval);
             resolve(response);
         });
@@ -129,30 +127,7 @@ export const uploadSinglepartToStore = (event: IpcMainEvent, item: FileInfo): Pr
             if (isDev) console.log(`\n${options.method} ${options.url} ${msg}`);
             if (isDev) console.log("\n< < <\n");
         });
-/*
-        fileStream.on('ready', () => {        
-            streamInterval = setInterval(() => {
-                progress = Math.round((item.pctStreamed * 50) / item.size );
-                if (progress !== prevProgress) { 
-                    if (isDev) console.log("Streamed ", progress*2, new Date().toUTCString() )
-                    event.sender.send('actionFor' + item.id.toString(), 'progress', progress);
-                }
-                prevProgress = progress;
-            }, 100 );
-            
-            requestInterval = setInterval(() => {
-                if (request.getUploadProgress().started) {
-                    progress = Math.round(((item.pctUploaded + request.getUploadProgress().current) * 50) / item.size);
-                    // item.pctUploaded = Math.round((request.getUploadProgress().current * 50) / request.getUploadProgress().total);
-                    if (progress > 0 && progress !== prevProgress) {
-                        if (isDev) console.log("Uploaded ", progress*2, new Date().toUTCString())
-                        event.sender.send('actionFor'+item.id.toString(), 'progress', progress);
-                    }
-                    prevProgress = progress;
-                }
-            }, 10 );
-        });
-*/
+
         fileStream.on('ready', () => {        
             streamInterval = setInterval(() => {
                 item.pctStreamed = Math.round((streamed * 50) / item.size );
@@ -178,7 +153,6 @@ export const uploadSinglepartToStore = (event: IpcMainEvent, item: FileInfo): Pr
         fileStream.on("data", (data) => {
             request.write(data);
             streamed += data.length;
-            //item.pctStreamed += data.length;
         });
         fileStream.on('close', () => {
             if (isDev) console.log(`file streaming for ${item.name} closed`);
