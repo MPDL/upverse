@@ -11,8 +11,6 @@ export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
   descriptionElement: HTMLInputElement;
   actionsElement: HTMLDivElement;
 
-  status: String; 
-
   constructor(listId: string, fileInfo: FileInfo) {
     super('data-file-item', listId, false, 'uploadItems');
     this.fileInfo = fileInfo;
@@ -42,22 +40,18 @@ export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
     })
 
     ipcRenderer.on('actionFor' + this.fileInfo.id.toString(), (event: Event, action: string, progress?: number) => {
+      //this.fileInfo.pctStreamed = progress ? progress : 0; 
       if (action === 'start') {
         this.actionsElement!.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
+        this.fileListElement!.style.backgroundRepeat = "no-repeat";
+        this.fileListElement!.style.backgroundImage = `linear-gradient(to right, #0000 30%, #E8F5CF 70%, #F6FFF5)`;
       } else if (action === 'progress') {
-        //this.actionsElement!.innerHTML = `<p>${progress}</p>`
-        setTimeout(()=>{
-          this.fileListElement!.style.backgroundRepeat = "no-repeat";
-          this.fileListElement!.style.backgroundImage = `linear-gradient(to right, #0000 30%, #e8f5cf 70%, #F6FFF5)`;
-          this.fileListElement!.style.backgroundSize = `${progress}%`;}, 
-        progress*(this.fileInfo.size/50000000));
+        this.fileListElement!.style.backgroundSize = `${progress}%`;    
       } else if (action === 'success') {
         this.actionsElement!.innerHTML = '<i class="bi bi-check2-circle"></i>'
         this.fileListElement!.style.backgroundImage = `linear-gradient(to right, #E9F1F3 30%, #F6FFF5 70%)`;
-        this.status = 'success';
       } else if (action === 'fail') {
         this.actionsElement!.innerHTML = '<i class="bi bi-x-circle"></i>'
-        this.status = 'fail';
       }
       this.actionsElement!.scrollIntoView(false);
     })
@@ -70,13 +64,6 @@ export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
     this.element.querySelector('#size')!.textContent = this.fileInfo.size.toString();
     if (this.fileInfo.description) {
       this.element.querySelector('input')!.value = this.fileInfo.description;
-    }
-    if (this.status === 'success') {
-      this.fileListElement!.style.backgroundImage = `linear-gradient(to right, #E9F1F3 30%, #F6FFF5 70%)`;  
-    } else if (this.status === 'fail') {
-      this.actionsElement!.innerHTML = '<i class="bi bi-x-circle"></i>'
-    } else if (!this.status) {
-      this.actionsElement!.innerHTML = '<button id="remove-file" type="submit"><i class="bi bi-trash"></i></button>';
     }
   }
 

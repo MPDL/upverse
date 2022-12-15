@@ -47,7 +47,7 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
   }
 
   nextUpload():void {
-    this.submitButtonElement.innerHTML = '<i class="bi bi-upload"></i> Upload'
+    this.submitButtonElement.innerHTML = ' <i class="bi bi-upload"></i> Upload '
     this.filesSelectElement.value = null;
   }
 
@@ -78,7 +78,7 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
     })
     this.submitButtonElement.disabled = true;
     this.resetButtonElement.disabled = true;
-    this.submitButtonElement.innerHTML = 'Uploading ...'
+    this.submitButtonElement.innerHTML = 'Uploading'
 
     ipcRenderer.send('filesSelected', dataFiles.getAll());
   }

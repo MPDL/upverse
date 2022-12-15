@@ -8,10 +8,11 @@ export class FileInfo {
     public type: string,
     public lastModifiedDate?: Date,
     public description?: string,
-    public storage_url?: string, 
-    public storage_id?: string,
-    public part_size?: number,
+    public storageUrls?: string[],
+    public storageId?: string,
+    public partSize?: number,
     public etag?: string,
-    public etags?: string[],
-    public final_result?: number) {}
+    public partEtags?: string[],
+    public pctStreamed?: number,
+    public pctUploaded?: number) {}
 }

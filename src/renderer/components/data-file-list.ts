@@ -9,38 +9,12 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
   fileListElement: HTMLUListElement;
   selectedFiles: FileInfo[];
 
-  firstPageElement: HTMLButtonElement;
-  previousPageElement: HTMLButtonElement;
-  currentPageElement: HTMLSpanElement;
-  nextPageElement: HTMLButtonElement;
-  lastPageElement: HTMLButtonElement;
-
-  pageSize = 10;
-  numPages = 1;
-  currentPage = 1;
-  lastPage = 1;
-
   constructor() {
     super("data-file-list", "app-file-list", true, "file2upload-list");
     this.fileListElement = this.element.querySelector(
       "#file-list"
     ) as HTMLUListElement;
-    this.firstPageElement = this.element.querySelector(
-      "#firstPage"
-    ) as HTMLButtonElement;
-    this.previousPageElement = this.element.querySelector(
-      "#previousPage"
-    ) as HTMLButtonElement; 
-    this.currentPageElement = this.element.querySelector(
-      "#currentPage"
-    ) as HTMLButtonElement; 
-    this.nextPageElement = this.element.querySelector(
-      "#nextPage"
-    ) as HTMLButtonElement; 
-    this.lastPageElement = this.element.querySelector(
-      "#lastPage"
-    ) as HTMLButtonElement;  
-   
+    
     this.selectedFiles = [];
 
     this.configure();
@@ -51,36 +25,8 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
     ipcRenderer.setMaxListeners(65000);
 
     dataFiles.addListener((files: FileInfo[]) => {
-      this.selectedFiles = files; 
-      this.numPages = Math.ceil(this.selectedFiles.length/this.pageSize);
-      this.currentPage = 1;
-      this.lastPage = this.numPages; 
-      this.renderPage();
-      if (this.numPages > 1) this.renderPaginator();
-    });
-
-    this.firstPageElement.addEventListener("click", () => {
-      this.currentPage = 1;
-      this.renderPage();
-      this.updatePaginator();
-    });
-
-    this.previousPageElement.addEventListener("click", () => {
-      if (this.currentPage > 1) { this.currentPage--; };
-      this.renderPage();
-      this.updatePaginator();
-    });
-
-    this.nextPageElement.addEventListener("click", () => {
-      if (this.currentPage < this.numPages) { this.currentPage++; };
-      this.renderPage();
-      this.updatePaginator();
-    });
-
-    this.lastPageElement.addEventListener("click", () => {
-      this.currentPage = this.numPages;
-      this.renderPage();
-      this.updatePaginator();
+      this.selectedFiles = files;
+      this.renderItems(); 
     });
 
     ipcRenderer.on("removeItem", (event: Event, file: FileInfo) => {
@@ -88,8 +34,7 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
     });
 
     ipcRenderer.on("end", (event: Event, result: Record<string, unknown>) => {
-      dataFiles.clear();
-      this.element.querySelector("nav")!.style.visibility = "hidden";   
+      dataFiles.clear(); 
       this.element.querySelector(
         "ul"
       )!.innerHTML = `<div id="upload-done">
@@ -129,30 +74,19 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
     shell.openExternal(process.env.dv_base_uri.replace('/api',''));
   }
 
-  private updatePaginator() {
-    this.currentPageElement.innerHTML = `${this.currentPage}/${this.numPages}`
-  }
-
   private renderHeader(): void {
     const listId = "research-files-list";
     this.element.querySelector("ul")!.id = listId;
   }
 
-  private renderPaginator(): void {
-      this.updatePaginator()
-      this.element.querySelector("nav")!.style.visibility = "visible";
-  }  
-
-  private renderPage() {
+  private renderItems() {
     const listEl = document.getElementById(
       "research-files-list"
     )! as HTMLUListElement;
     listEl.innerHTML = "";
-    for (const fileInfo of this.selectedFiles.slice(this.currentPage * this.pageSize - this.pageSize, this.currentPage * this.pageSize)) {
+    for (const fileInfo of this.selectedFiles) {
       new FileItem(this.element.querySelector("ul")!.id, fileInfo);
     }
-    this.lastPage = this.currentPage;
-    if (this.numPages > 1) this.updatePaginator();
   }
 
 }

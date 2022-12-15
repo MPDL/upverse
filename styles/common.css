@@ -11,7 +11,7 @@ html {
 body {
   font-family: "Titillium Web", sans-serif;
 
-  color: var(--mpg-dark-blue);
+  background: var(--slate-gray-3);
   -webkit-tap-highlight-color: transparent;
   display: flex;
   flex-direction: column;
@@ -41,7 +41,7 @@ button:disabled {
 
 button[type="submit"] {
   line-height: 1.1;
-  background: var(--mpg-slate-gray-1);
+  background: var(--mpg-slate-gray-0);
   text-transform: uppercase;
 }
 
@@ -49,13 +49,22 @@ button[type="submit"] {
 [type="submit"]:focus,
 [type="submit"]:active,
 button {
-  background: rgba(0, 132, 188, 0.50);
+  background: rgba(var(--mpdl-light-blue), 0.5);
 }
 
 button[type="reset"] {
   font-size: 0.9rem;
   font-weight: 800;
   letter-spacing: 0;
+  background: var(--mpg-sand-orange-1);
+  color: #fff;
+}
+
+[type="reset"]:hover,
+[type="reset"]:focus,
+[type="reset"]:active,
+button {
+  background: var(--mpg-sand-orange-0);
 }
 
 img {
@@ -132,7 +141,7 @@ input[type="file"] {
 input[type="file"]::-webkit-file-upload-button {
   border: 1px solid transparent;
   border-radius: 4px;
-  background: var(--mpg-slate-gray-1);
+  background: var(--mpg-slate-gray-0);
   color: var(--sand-orange-3);
   font-size: 0.9rem;
   font-weight: 800;
@@ -140,7 +149,7 @@ input[type="file"]::-webkit-file-upload-button {
 }
 
 input[type="file"]::-webkit-file-upload-button:hover {
-  background: rgba(0, 132, 188, 0.50);
+  background: rgba(var(--mpdl-light-blue), 0.5);
   color: white;
 }
 

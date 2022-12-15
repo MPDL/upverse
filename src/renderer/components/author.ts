@@ -15,7 +15,7 @@ export class Author extends Cmp<HTMLDivElement, HTMLDivElement> {
   configure():void {
 
     ipcRenderer.on('authenticated', (event: Event, author: string)  => {
-      this.authorElement.innerHTML = `Connected as ${author} <i class="bi bi-person-check text-info"></i>`;
+      this.authorElement.innerHTML = `<em>Connected as </em><strong>${author} </strong><i class="bi bi-person-check text-info"></i>`;
     })
 
     ipcRenderer.on('failed', (event: Event, msg: string)  => {

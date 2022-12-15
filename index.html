@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <meta charset="UTF-8" />
@@ -15,17 +15,23 @@
 <body class="layout -default">
   <header class="header">
     <div class="container">
-      <div class="col-md-12 mb-3">
-
+      <div class="row">
+        <div class="col-md-2">
           <a href="http://edmond.mpdl.mpg.de">
-            <img id="app-logo" class="img-fluid float-start" alt="edmond-logo" src="assets/images/logos/logo_for_dark.png" />
+            <img id="app-logo" class="img-fluid float-start" alt="edmond-logo"
+              src="assets/images/logos/logo_for_dark.png" />
           </a>
+          <div class="text-light">
+            <h5>DataFiles <strong class="text-danger">Uploader</strong></h5>
+          </div>
+        </div>
 
-        <div class="col-md-12 mb-3">
+        <div class="col-md-10">
           <div class="row">
             <div id="app-author"></div>
           </div>
-          <div class="row">
+
+          <div class="row mb-4">
             <div class="col-md-7">
               <div id="app-connection"></div>
             </div>
@@ -33,11 +39,15 @@
               <div id="app-dataset"></div>
             </div>
           </div>
-        </div>
-        <div class="row">
-          <div id="app-files"></div>
+
+          <div class="row mb-2">
+            <div class="col-md-7">
+              <div id="app-files"></div>
+            </div>
+          </div>
         </div>
       </div>
+    </div>
     </div>
   </header>
 
@@ -51,9 +61,6 @@
 
   <footer class="footer">
     <div class="container">
-      <div class="footer-tagline float-start">
-        research data <span class="text-danger">uploader</span>
-      </div>
       <a href="http://mpdl.mpg.de">
         <img id="org-logo" class="img-fluid float-end" alt="mpdl-logo" src="assets/images/logos/mpdl.mpg-logo.svg" />
       </a>
@@ -95,16 +102,16 @@
 
   <template id="data-files">
     <form class="row">
-      <div class="col-md-5 d-flex justify-content-start align-items-center">
-        <label class="mb-0 me-2 form-label" for="files">To upload data </label>
-        <input type="file" id="files" className='form-control' webkitdirectory multiple disabled />
+      <div class="col-md-5 d-flex">
+        <label class="col-md-5 mb-0 me-2 form-label" for="files">To upload data </label>
+        <input type="file" id="files" className='form-control'  webkitdirectory multiple disabled />
       </div>
-      <div class="col-md-3 d-flex justify-content-start">
-        <button type="reset" id="clear" class="btn btn-secondary d-block" disabled><i
-            class="bi bi-x-lg"></i> Clear selected</button>
-      </div>      
-      <div class="col-md-4 d-flex justify-content-end">
-        <button type="submit" id="upload" class="btn btn-secondary d-block ms-auto" disabled><i
+      <div class="col-md-4 d-flex justify-content-start">
+        <button type="reset" id="clear" class="btn btn-secondary d-block" disabled><i class="bi bi-x-lg"></i> Clear
+          selected</button>
+      </div>
+      <div class="col-md-3 d-flex justify-content-end pe-0">
+        <button type="submit" id="upload" class="btn btn-secondary d-block" disabled><i
             class="bi bi-upload"></i> Upload</button>
       </div>
     </form>
@@ -115,15 +122,6 @@
       <section class="file">
         <ul></ul>
       </section>
-      <nav>
-        <ul class="pagination justify-content-center">
-          <li class="page-item"><button class="page-link btn btn-secondary" id="firstPage">&lt;&lt;</button></li>
-          <li class="page-item"><button class="page-link btn btn-secondary" id="previousPage">&lt; Previous</button></li>
-          <li class="page-item"><span class="page-link btn btn-secondary" id="currentPage">0/0</span></li>
-          <li class="page-item"><button class="page-link btn btn-secondary" id="nextPage">Next &gt;</button></li>
-          <li class="page-item"><button class="page-link btn btn-secondary" id="lastPage">&gt;&gt;</button></li>
-        </ul>
-      </nav>
     </div>
   </template>
 
@@ -137,7 +135,7 @@
             size: <span id="size"></span>
           </div>
           <div class="col-md-5">
-              <input type="text" id="description" class="form-control" placeholder="Description">
+            <input type="text" id="description" class="form-control" placeholder="Description">
           </div>
           <div class="col-md-1">
             <div class="float-end" id="actions">
