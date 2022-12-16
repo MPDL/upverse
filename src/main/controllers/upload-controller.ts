@@ -13,8 +13,8 @@ export const calcChecksum = async (item: FileInfo): Promise<string> => {
         const hash = createHash('md5');
         const stream = createReadStream(item.path);
 
-        stream.on('error', function (err) {
-            reject(err);
+        stream.on('error', function (error) {
+            reject(error);
         })
 
         stream.on('data', function (data) {
@@ -31,7 +31,12 @@ export const calcChecksum = async (item: FileInfo): Promise<string> => {
 }
 
 export const getUploadUrls = (doi: String, size: Number): Promise<any> => {
-    return new Promise<any>((resolve: (values: any) => void, reject: (error: string) => void) => {
+    return new Promise<any>(
+        (
+            resolve: (values: any) => void, 
+            reject: (error: Error) => void
+        ) => {
+
         const apiCall = '/datasets/:persistentId/uploadurls?persistentId=' + doi + '&size=' + size;
 
         const options = {
@@ -50,26 +55,25 @@ export const getUploadUrls = (doi: String, size: Number): Promise<any> => {
                     const body = JSON.parse(chunk.toString());
                     resolve(body);
                 });
-            } else if (response.statusCode === 400) {
-                new Notification({ title: 'Connect', body: 'Invalid token!' }).show();
-            } else new Notification({ title: 'Connect', body: 'Invalid URL!' }).show();
+            } else reject(new Error('Request Rejected'));
         });
 
         request.on('finish', () => {
             msg = 'Request is Finished';
-            if (isDev) console.log(`\n${new Date()}${options.method} ${options.url} ${msg}`);
+            if (isDev) console.log(`\n${new Date()}${options.method} ${options.url}\n${msg}`);
         });
         request.on('abort', () => {
             msg = 'Request is Aborted';
-            if (isDev) console.log(`\n${new Date()}${options.method} ${options.url} ${msg}`);
+            if (isDev) console.log(`\n${new Date()}${options.method} ${options.url}\n${msg}`);
         });
         request.on('error', (error) => {
             msg = `ERROR: ${JSON.stringify(error)}`;
-            if (isDev) console.log(`\n${new Date()}${options.method} ${options.url} ${msg}`);
+            if (isDev) console.log(`\n${new Date()}${options.method} ${options.url}\n${msg}`);
+            reject(new Error(msg));
         });
         request.on('close', () => {
             msg = 'Last Transaction is closed';
-            if (isDev) console.log(`\n${new Date()}${options.method} ${options.url} ${msg}`);
+            if (isDev) console.log(`\n${new Date()}${options.method} ${options.url}\n${msg}`);
             if (isDev) console.log("\n< < <\n");
         });
 
@@ -82,7 +86,7 @@ export const uploadSinglepartToStore = (event: IpcMainEvent, item: FileInfo): Pr
     return new Promise<Electron.IncomingMessage>(
         (
             resolve: (values: Electron.IncomingMessage) => void,
-            reject: (error: string) => void
+            reject: (error: Error) => void
         ) => {
 
         const fileStream = createReadStream(item.path, { highWaterMark: 64 * 1024 * 1024 });
@@ -109,15 +113,14 @@ export const uploadSinglepartToStore = (event: IpcMainEvent, item: FileInfo): Pr
 
         request.on('finish', () => {
             msg = 'Request is Finished';
-            if (isDev) console.log(`\n${options.method} ${options.url} ${msg}`);
-        });
+            if (isDev) console.log(`\n${new Date()}${options.method} ${options.url}\n${msg}`);        });
         request.on('abort', () => {
             msg = 'Request is Aborted';
-            if (isDev) console.log(`\n${options.method} ${options.url} ${msg}`);
-        });
+            if (isDev) console.log(`\n${new Date()}${options.method} ${options.url}\n${msg}`);        });
         request.on('error', (error) => {
             msg = `ERROR: ${JSON.stringify(error)}`;
-            if (isDev) console.log(`\n${options.method} ${options.url} ${msg}`);
+            if (isDev) console.log(`\n${new Date()}${options.method} ${options.url}\n${msg}`);
+           reject(new Error(msg));
         });
         request.on('close', () => {
             msg = 'Last Transaction is closed';
@@ -159,6 +162,11 @@ export const uploadSinglepartToStore = (event: IpcMainEvent, item: FileInfo): Pr
             if (isDev) console.log(`file streaming ${item.name} finished`);
             request.end();
         });
+        fileStream.on('error', (error) => {
+            msg = `ERROR on ${item.name}: ${error}`;
+            if (isDev) console.log(`\n${msg}\n`);
+            reject(new Error(`file streaming ${item.name} failed`));
+        });
 
     });
 }
@@ -167,7 +175,7 @@ export const addMultipleFilesToDataset = (doi: string, items: FileInfo[]): Promi
     return new Promise<any>(
         (
             resolve: (values: Electron.IncomingMessage) => void,
-            reject: (error: string) => void
+            reject: (error: Error) => void
         ) => {
         const apiCall = '/datasets/:persistentId/addFiles?persistentId=';
 
@@ -189,19 +197,20 @@ export const addMultipleFilesToDataset = (doi: string, items: FileInfo[]): Promi
         });
         request.on('finish', () => {
             msg = 'Request is Finished';
-            if (isDev) console.log(`\n${options.method} ${options.url} ${msg}`);
+            if (isDev) console.log(`\n${new Date()}${options.method} ${options.url}\n${msg}`);
         });
         request.on('abort', () => {
             msg = 'Request is Aborted';
-            if (isDev) console.log(`\n${options.method} ${options.url} ${msg}`);
+            if (isDev) console.log(`\n${new Date()}${options.method} ${options.url}\n${msg}`);
         });
         request.on('error', (error) => {
             msg = `ERROR: ${JSON.stringify(error)}`;
-            if (isDev) console.log(`\n${options.method} ${options.url} ${msg}`);
+            if (isDev) console.log(`\n${new Date()}${options.method} ${options.url}\n${msg}`);
+            reject(new Error(msg));
         });
         request.on('close', () => {
             msg = 'Last Transaction is closed';
-            if (isDev) console.log(`\n${options.method} ${options.url} ${msg}`);
+            if (isDev) console.log(`\n${new Date()}${options.method} ${options.url}\n${msg}`);
         });
 
         request.setHeader('X-Dataverse-key', process.env.admin_api_key);
@@ -218,7 +227,6 @@ export const addMultipleFilesToDataset = (doi: string, items: FileInfo[]): Promi
         let postData = '------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"jsonData\"\r\n\r\n' + 
             JSON.stringify(json) +
              '\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW--';
-
         request.write(postData);        
         request.end();
 
@@ -229,7 +237,7 @@ export const uploadMultipartToStore = (event: IpcMainEvent, item: FileInfo): Pro
     return new Promise<Electron.IncomingMessage>(
         (
             resolve: (values: Electron.IncomingMessage) => void,
-            reject: (error: string) => void
+            reject: (error: Error) => void
         ) => {
             let streamed = 0, stPercent = 0, prevStPercent = 0, upPercent = 0, prevUpPercent = 0;
             let streamInterval:NodeJS.Timer, requestInterval:NodeJS.Timer = null;
@@ -264,19 +272,20 @@ export const uploadMultipartToStore = (event: IpcMainEvent, item: FileInfo): Pro
 
             request.on('finish', () => {
                 msg = 'Request is Finished';
-                if (isDev) console.log(`\n${options.url} ` + msg);         
+                 if (isDev) console.log(`\n${new Date()}${options.method} ${options.url}\n${msg}`);         
             });
             request.on('abort', () => {
                 msg = 'Request is Aborted';
-                if (isDev) console.log(`\n${options.url} ` + msg);
+                 if (isDev) console.log(`\n${new Date()}${options.method} ${options.url}\n${msg}`);
             });
             request.on('error', (error) => {
                 msg = `ERROR: ${error}`;
-                if (isDev) console.log(`\n${options.url} ` + msg);
+                 if (isDev) console.log(`\n${new Date()}${options.method} ${options.url}\n${msg}`);
+                 reject(new Error(msg));
             });
             request.on('close', () => {
                 msg = 'Last Transaction is closed';
-                if (isDev) console.log(`\n${options.url} ` + msg);
+                 if (isDev) console.log(`\n${new Date()}${options.method} ${options.url}\n${msg}`);
             });
 
             fileStream.on('ready', () => {        
@@ -313,6 +322,11 @@ export const uploadMultipartToStore = (event: IpcMainEvent, item: FileInfo): Pro
                 if (isDev) console.log(`file streaming ${item.name} finished`);
                 request.end();
             });
+            fileStream.on('error', (error) => {
+                msg = `ERROR on ${item.name}: ${error}`;
+                if (isDev) console.log(`\n${msg}\n`);
+                reject(new Error(`file streaming ${item.name} failed`));
+            });
 
     });
 }
@@ -321,7 +335,7 @@ export const completeMultipartUpload = async (item: FileInfo, completeUrl: strin
     return new Promise<Electron.IncomingMessage>(
         (
             resolve: (values: Electron.IncomingMessage) => void,
-            reject: (error: string) => void
+            reject: (error: Error) => void
         ) => {
         const options = {
             method: "PUT",
@@ -338,19 +352,20 @@ export const completeMultipartUpload = async (item: FileInfo, completeUrl: strin
         });
         request.on('finish', () => {
             msg = 'Request is Finished';
-            if (isDev) console.log(`\n${options.url} ` + msg);
+             if (isDev) console.log(`\n${new Date()}${options.method} ${options.url}\n${msg}`);
         });
         request.on('abort', () => {
             msg = 'Request is Aborted';
-            if (isDev) console.log(`\n${options.url} ` + msg);
+             if (isDev) console.log(`\n${new Date()}${options.method} ${options.url}\n${msg}`);
         });
         request.on('error', (error) => {
             msg = `ERROR: ${JSON.stringify(error)}`;
-            if (isDev) console.log(`\n${options.url} ` + msg);
+             if (isDev) console.log(`\n${new Date()}${options.method} ${options.url}\n${msg}`);
+            reject(new Error(msg));
         });
         request.on('close', () => {
             msg = 'Last Transaction is closed';
-            if (isDev) console.log(`\n${options.url} ` + msg);
+             if (isDev) console.log(`\n${new Date()}${options.method} ${options.url}\n${msg}`);
         });
 
         request.setHeader('X-Dataverse-key', process.env.admin_api_key);

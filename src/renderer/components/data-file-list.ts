@@ -38,7 +38,8 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
       this.element.querySelector(
         "ul"
       )!.innerHTML = `<div id="upload-done">
-        <h5>${result.files}<i> files uploaded to </i>${result.destination}</h5>
+        <h5>${result.numFiles2Upload}<i> files to upload, </i>${(result.numFiles2Upload as number) - (result.numFilesUploaded as number)} fails</h5>
+        <h5>${result.numFilesUploaded}<i> files uploaded to </i>${result.destination}</h5>
         <br>
         <button id="appserver" class="btn btn-secondary" type="submit"><i class="bi bi-card-checklist"></i> Open Edmond on your browser</button>
         </div>`;  

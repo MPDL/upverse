@@ -13,7 +13,7 @@ const isDev = (process.env.isDev === 'true');
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
-    title: "Data Uploader",
+    title: "Research Data Files Uploader",
     width: 1400,
     height: 900,
     webPreferences: {
