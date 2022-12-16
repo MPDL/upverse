@@ -1,12 +1,9 @@
-import { ReadStream, createReadStream, statSync } from 'fs';
+import { createReadStream } from 'fs';
 
 import { FileInfo } from '../../models/file-info';
-import FormData from 'form-data';
-import { axios_error_handler } from '../base/service/error.handler';
 import { createHash } from 'crypto';
-import { request as _request } from '../base/service/http.service';
 
-import { IpcMainEvent, Notification, net, IncomingMessage } from "electron";
+import { IpcMainEvent, Notification, net } from "electron";
 
 const isDev = true; //true; //process.env.isDev as string;
 let event: IpcMainEvent = null;
