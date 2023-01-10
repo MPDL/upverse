@@ -4,8 +4,8 @@ import { BrowserWindow, IpcMainEvent, Menu, Notification, app, ipcMain } from "e
 
 import { FileInfo } from "../models/file-info";
 import { Settings } from "./settings";
-import { connectToRepository } from "./services/user-service";
-import { transfer_direct_from_file } from './services/upload-service';
+import { connectToRepository } from "./controllers/user-controller";
+import { transfer_direct_from_file } from './controllers/upload-controller';
 
 // Set env
 process.env.isDev = 'false';

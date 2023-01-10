@@ -13,6 +13,6 @@ export class FileInfo {
     public partSize?: number,
     public etag?: string,
     public partEtags?: string[],
-    public pctStreamed?: number,
-    public pctUploaded?: number) {}
+    public streamed?: number,
+    public uploaded?: number) {}
 }
