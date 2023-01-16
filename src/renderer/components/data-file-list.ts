@@ -41,7 +41,9 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
         <h5>${result.numFiles2Upload}<i> files to upload, </i>${(result.numFiles2Upload as number) - (result.numFilesUploaded as number)} fails</h5>
         <h5>${result.numFilesUploaded}<i> files uploaded to </i>${result.destination}</h5>
         <br>
-        <button id="appserver" class="btn btn-secondary" type="submit"><i class="bi bi-card-checklist"></i> Open Edmond on your browser</button>
+        <a href="http://edmond.mpdl.mpg.de" target="_blank"><i class="bi bi-card-checklist"></i> Open Edmond</a>
+        <br>
+        <button id="appserver" class="btn btn-secondary" type="submit"><i class="bi bi-card-checklist"></i> Open Edmond</button>
         </div>`;  
       this.element.querySelector("#appserver")!.addEventListener('click', this.clickHandler.bind(this));
     });

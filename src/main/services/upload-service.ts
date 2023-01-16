@@ -103,11 +103,12 @@ export const uploadSinglepartToStore = (event: IpcMainEvent, item: FileInfo): Pr
 
         request.setHeader('x-amz-tagging', 'dv-state=temp');
 
-        let streamed = 0, pctStreamed = 0, pctUploaded = 0, prevPctStreamed = 0, prevPctUploaded = 0;
+        let streamed = 0, uploaded = 0, pctStreamed = 0, pctUploaded = 0, prevPctStreamed = 0, prevPctUploaded = 0;
         let streamInterval:NodeJS.Timer, requestInterval:NodeJS.Timer = null;
 
         request.on('response', (response) => {         
             clearInterval(requestInterval);
+            item.uploaded = uploaded;
             resolve(response);
         });
 
@@ -133,23 +134,22 @@ export const uploadSinglepartToStore = (event: IpcMainEvent, item: FileInfo): Pr
                 pctStreamed = Math.round((streamed * 50) / item.size );
                 if (pctStreamed !== prevPctStreamed) { 
                     if (isDev) console.log("Streamed ", pctStreamed * 2, new Date().toUTCString() )
-                    event.sender.send('actionFor' + item.id.toString(), 'progress', pctStreamed);
+                    event.sender.send('actionFor' + item.id.toString(), 'progress', pctStreamed + pctUploaded);
                 }
                 prevPctStreamed = pctStreamed; 
-                item.streamed = streamed;
-            }, 100 );
+            }, 10 );
             
             requestInterval = setInterval(() => {
                 if (request.getUploadProgress().started) {
-                    item.uploaded = request.getUploadProgress().current;
-                    pctUploaded = Math.round((item.uploaded * 50) / item.size);
-                    if (item.uploaded > 0 && pctUploaded !== prevPctUploaded) {
+                    uploaded = request.getUploadProgress().current;
+                    pctUploaded = Math.round((uploaded * 50) / item.size);
+                    if (pctUploaded > 0 && pctUploaded !== prevPctUploaded) {
                         if (isDev) console.log("Uploaded ", pctUploaded * 2, new Date().toUTCString())
                         event.sender.send('actionFor'+item.id.toString(), 'progress', pctStreamed + pctUploaded);
                     }
                     prevPctUploaded = pctUploaded;
                 }
-            }, 10 );
+            }, 100 );
         });
 
         fileStream.on("data", (data) => {
@@ -159,6 +159,7 @@ export const uploadSinglepartToStore = (event: IpcMainEvent, item: FileInfo): Pr
         fileStream.on('close', () => {
             if (isDev) console.log(`file streaming for ${item.name} closed`);
             clearInterval(streamInterval);
+            item.streamed = streamed;
         });
         fileStream.on("end", () => {
             if (isDev) console.log(`file streaming ${item.name} finished`);
@@ -241,10 +242,6 @@ export const uploadMultipartToStore = (event: IpcMainEvent, item: FileInfo): Pro
             resolve: (values: Electron.IncomingMessage) => void,
             reject: (error: Error) => void
         ) => {
-            let streamed = item.streamed, uploaded = item.uploaded;
-            let pctStreamed = item.streamed * 50 / item.size, pctUploaded = item.uploaded * 50 / item.size, prevPctStreamed = 0, prevPctUploaded = 0;
-            let streamInterval:NodeJS.Timer, requestInterval:NodeJS.Timer = null;
-        
             const partNumber: number = item.storageUrls.length;
             const url = item.storageUrls[partNumber - 1];
             const start = (partNumber - 1) * item.partSize;
@@ -253,6 +250,10 @@ export const uploadMultipartToStore = (event: IpcMainEvent, item: FileInfo): Pro
                 end = item.size - 1;
             }
             const currentPartSize = end - start + 1;
+
+            let streamed = item.streamed, uploaded = start;
+            let pctStreamed = Math.round((item.streamed * 50) / item.size ), pctUploaded = Math.round((item.uploaded  * 50) / item.size), prevPctStreamed = pctStreamed, prevPctUploaded = pctUploaded;
+            let streamInterval:NodeJS.Timer, requestInterval:NodeJS.Timer = null;
         
             const fileStream = createReadStream(item.path, { start: start, end: end,highWaterMark: 64 * 1024 * 1024 });
 
@@ -295,24 +296,24 @@ export const uploadMultipartToStore = (event: IpcMainEvent, item: FileInfo): Pro
             fileStream.on('ready', () => {        
                 streamInterval = setInterval(() => {
                     pctStreamed = Math.round((streamed * 50) / item.size );
-                    if (pctStreamed !== prevPctStreamed) { 
+                    if (pctStreamed > prevPctStreamed) { 
                         if (isDev) console.log("Streamed ", pctStreamed * 2, new Date().toUTCString() )
                         event.sender.send('actionFor' + item.id.toString(), 'progress', pctStreamed + pctUploaded);
                     }
                     prevPctStreamed = pctStreamed;
-                }, 100 );
+                }, 10 );
                 
                 requestInterval = setInterval(() => {
                     if (request.getUploadProgress().started) {
                         uploaded = request.getUploadProgress().current + item.uploaded;
                         pctUploaded = Math.round((uploaded  * 50) / item.size);
-                        if (pctUploaded > 0 && pctUploaded !== prevPctUploaded) {
+                        if (pctUploaded > prevPctUploaded) {
                             if (isDev) console.log("Uploaded ", pctUploaded * 2, new Date().toUTCString())
                             event.sender.send('actionFor'+item.id.toString(), 'progress', pctStreamed + pctUploaded);
                         }
                         prevPctUploaded = pctUploaded;
                     }
-                }, 10 );
+                }, 100 );
             });
 
             fileStream.on('data', (data) => {

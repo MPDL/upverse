@@ -49,9 +49,12 @@ export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
         this.fileListElement!.style.backgroundSize = `${progress}%`;    
       } else if (action === 'success') {
         this.actionsElement!.innerHTML = '<i class="bi bi-check2-circle"></i>'
+        this.fileListElement!.style.backgroundSize = '100%'; 
         this.fileListElement!.style.backgroundImage = `linear-gradient(to right, #E9F1F3 30%, #F6FFF5 70%)`;
       } else if (action === 'fail') {
         this.actionsElement!.innerHTML = '<i class="bi bi-x-circle"></i>'
+        this.fileListElement!.style.backgroundSize = '100%'; 
+        this.fileListElement!.style.backgroundImage = `linear-gradient(to right, #E9F1F3 30%, #0000 70%)`;
       }
       this.actionsElement!.scrollIntoView(false);
     })
