@@ -73,8 +73,8 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
     })
   }
 
-  private clickHandler(event: Event) {
-    shell.openExternal(process.env.dv_base_uri.replace('/api',''));
+  private async clickHandler(event: Event) {
+    await shell.openExternal(process.env.dv_base_uri.replace('/api','')).then(() => {console.log("Done")}).catch((error) => {console.log(error.toString())});
   }
 
   private renderHeader(): void {
