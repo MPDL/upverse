@@ -56,12 +56,23 @@ export const getApiUser = async (callback: (last: string, first: string) => void
 export const getUserDatasets = async (author: string, callback: (datasetList: DatasetInfo[]) => void): Promise<void> => {
     try {
         let msg = "";
-        const apiCall = '/search?q=' + author + '&per_page=100';
+
+        const params = new URLSearchParams([
+            ['key', `${process.env.admin_api_key}`],
+            ['role_ids', '1'],
+            ['role_ids', '7'],
+            ['dvobject_types', 'Dataset'],
+            ['published_states', 'Unpublished'],
+            ['published_states', 'Draft'],
+            ['published_states', 'In+Review']
+        ]).toString();
+        //const apiCall = '/search?q=' + author + '&per_page=100';     
+        const apiCall = `/mydata/retrieve`;
         let datasetList:DatasetInfo[];
 
         const request = net.request({
             method: 'GET',
-            url: process.env.dv_base_uri + apiCall
+            url: process.env.dv_base_uri + apiCall + '?' + params
         });
 
         request.on('response', (response) => {
