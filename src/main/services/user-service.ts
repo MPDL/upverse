@@ -60,8 +60,12 @@ export const getUserDatasets = async (author: string, callback: (datasetList: Da
         const params = new URLSearchParams([
             ['key', `${process.env.admin_api_key}`],
             ['role_ids', '1'],
+            ['role_ids', '3'],
+            ['role_ids', '5'],
+            ['role_ids', '6'],
             ['role_ids', '7'],
             ['dvobject_types', 'Dataset'],
+            ['published_states', 'Published'],
             ['published_states', 'Unpublished'],
             ['published_states', 'Draft'],
             ['published_states', 'In+Review']

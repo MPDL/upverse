@@ -103,8 +103,9 @@
   <template id="data-files">
     <form class="row">
       <div class="col-md-5 d-flex">
-        <label class="col-md-5 mb-0 me-2 form-label" for="files">To upload data </label>
-        <input type="file" id="files" className='form-control'  webkitdirectory multiple disabled />
+        <!--button class="btn btn-secondary d-block" for="files">Choose folder</button-->
+        <input type="file" id="files" webkitdirectory multiple disabled hidden/>
+        <label class="btn btn-secondary d-block" for="files" id="files-label" disabled></label>
       </div>
       <div class="col-md-4 d-flex justify-content-start">
         <button type="reset" id="clear" class="btn btn-secondary d-block" disabled><i class="bi bi-x-lg"></i> Clear

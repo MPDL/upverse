@@ -22,7 +22,7 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
   }
 
   configure(): void {
-    ipcRenderer.setMaxListeners(65000);
+    ipcRenderer.setMaxListeners(0);
 
     dataFiles.addListener((files: FileInfo[]) => {
       this.selectedFiles = files;
