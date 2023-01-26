@@ -21,6 +21,7 @@ function createWindow() {
       nodeIntegration: true,
       preload: path.join(__dirname, "../renderer/preload.js"),
     },
+    resizable: false
   });
 
   mainWindow.loadURL(`file://${__dirname}/../../index.html`);
@@ -105,17 +106,22 @@ ipcMain.on('doConnection', (event: IpcMainEvent, givenSettings: string[]) => {
 
 ipcMain.on('datasetSelected', (event: IpcMainEvent, persistentId: string) => {
   process.env.dest_dataset = persistentId;
-  event.reply('selectFiles', '~/Downloads/');
+  event.reply('selectFiles', '~');
 })
 
-ipcMain.on('removeItem', (event: IpcMainEvent, file: FileInfo)  => {
-  event.reply('removeItem', file);
+ipcMain.on('loadingSelected', (event: IpcMainEvent) => {
+  console.log('loadingSelected' + '->' + 'selectedLoading');
+  event.reply('selectedLoading');
 })
 
 ipcMain.on('filesSelected', (event: IpcMainEvent, files: FileInfo[]) => {
   event.reply('selectedFiles', files);
 
   transfer_files(event, process.env.dest_dataset, files);
+})
+
+ipcMain.on('removeItem', (event: IpcMainEvent, file: FileInfo)  => {
+  event.reply('removeItem', file);
 })
 
 ipcMain.on('filesCleared', (event: IpcMainEvent) => {

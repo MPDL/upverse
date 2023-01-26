@@ -49,7 +49,7 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
 
     ipcRenderer.on("abort", (event: Event, result: Record<string, unknown>) => {
       dataFiles.clear();
-      this.element.querySelector("nav")!.style.visibility = "hidden";   
+      //this.element.querySelector("nav")!.style.visibility = "hidden";   
       this.element.querySelector(
         "ul"
       )!.innerHTML = `<div id="upload-failed">
@@ -58,17 +58,27 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
     });
 
     ipcRenderer.on('selectFiles', (event: Event, folder: string)  => {
+      console.log('selectFiles');
       this.element.querySelector(
         "ul"
       )!.innerHTML = '';
     })
 
+    ipcRenderer.on('selectedLoading', (event: Event)  => { 
+      console.log('selectedLoading');
+      /* TO DO
+      this.element.querySelector(
+        "ul"
+      )!.innerHTML = '<img id="loading" class=" alt="loading" src="assets/images/ajax-loading.gif" />';
+      */
+    })
+
     ipcRenderer.on('clearFiles', (event: Event)  => {
+      console.log('clearFiles');
       dataFiles.clear();
       this.element.querySelector(
         "ul"
       )!.innerHTML = '';
-      this.element.querySelector("nav")!.style.visibility = "hidden";
     })
   }
 
@@ -77,11 +87,13 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
   }
 
   private renderHeader(): void {
+    console.log('renderHeader');
     const listId = "research-files-list";
     this.element.querySelector("ul")!.id = listId;
   }
 
   private renderItems() {
+    console.log('renderItems');
     const listEl = document.getElementById(
       "research-files-list"
     )! as HTMLUListElement;

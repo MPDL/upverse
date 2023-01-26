@@ -1,10 +1,5 @@
-::-webkit-scrollbar {
-  display: none;
-}
-
 html {
   overflow: hidden;
-  overflow-y: scroll;
   touch-action: manipulation;
 }
 
@@ -12,13 +7,15 @@ body {
   font-family: "Titillium Web", sans-serif;
 
   background: var(--slate-gray-3);
-  -webkit-tap-highlight-color: transparent;
   display: flex;
   flex-direction: column;
   height: 100vh;
   min-height: 100%;
   min-width: 320px;
+
 }
+
+
 
 .btn, button {
   color: var(--sand-orange-3);
@@ -135,6 +132,29 @@ img {
 
 #files ~ #files-label::after {
   content: "Choose Folders";
+}
+
+#files ~ #files-label:disabled {
+  opacity: .5;
+  pointer-events: none;
+}
+
+#files ~ #files-label {
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  background: var(--mpg-slate-gray-0);
+}
+
+#files ~ #files-label:hover,
+#files ~ #files-label:focus,
+#files ~ #files-label:active {
+  background: rgba(var(--mpdl-light-blue), 0.5);
+}
+
+.label-disabled {
+  opacity: .5;
+  pointer-events: none;
 }
 
 input[type="file"] {

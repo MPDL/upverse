@@ -1,3 +1,7 @@
+.header::-webkit-scrollbar {
+    display: none;
+}
+
 .header {
     background: var(--mpg-dark-blue);
     padding: 0.5rem 0;
@@ -9,7 +13,6 @@
     top: 0;
     width: 100%;
     height: 4rem;
-    right: calc(50% - 1.5rem);
 }
 
 @media (min-width: 768px) {
