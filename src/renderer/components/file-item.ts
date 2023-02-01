@@ -40,7 +40,6 @@ export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
     })
 
     ipcRenderer.on('actionFor' + this.fileInfo.id.toString(), (event: Event, action: string, progress?: number) => {
-      //this.fileInfo.pctStreamed = progress ? progress : 0; 
       if (action === 'start') {
         this.actionsElement!.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
         this.fileListElement!.style.backgroundRepeat = "no-repeat";
@@ -96,9 +95,6 @@ export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
 
   private submitHandler(event: Event) {
     event.preventDefault();
-    console.log(
-      "ipcRenderer.send('removeItem', this.fileInfo)"
-    );
     ipcRenderer.send('removeItem', this.fileInfo);
   }
 }

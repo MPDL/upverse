@@ -88,8 +88,8 @@ export const getUserDatasets = async (author: string, callback: (datasetList: Da
                 });
                 response.on('end', () => {
                     const responseData = JSON.parse(data.toString());
-                    responseData.data.items.forEach((item: {name:string, global_id:string}) => {
-                        const datasetInfo = new DatasetInfo(item.name, item.global_id);
+                    responseData.data.items.forEach((item: {name:string, global_id:string, fileCount:number}) => {
+                        const datasetInfo = new DatasetInfo(item.name, item.global_id, item.fileCount);
                         if (!datasetList.find(ds => JSON.stringify(ds) === JSON.stringify(datasetInfo))) {
                             datasetList.push(Object.assign({}, datasetInfo)); 
                         }                                         

@@ -17,7 +17,7 @@ export class DataFiles {
       return this.instance;
     }
   
-    addListener(listenerFn: Function) {
+    updateListener(listenerFn: Function) {
       this.listener = listenerFn;
     }
   
@@ -32,14 +32,13 @@ export class DataFiles {
         new Date(selectedFile.lastModified)
       );
       this.dataFiles.push(newFile);
-      this.listener(this.dataFiles.slice());
+      this.listener(this.dataFiles[this.dataFiles.length-1]);
     }
 
     removeDataFile(file: FileInfo) {
       const position = this.dataFiles.findIndex(element => element.id === file.id);
       this.dataFiles.splice(position, 1);
       console.log("DataFile removed!");
-      this.listener(this.dataFiles.slice());      
     }
 
     updateDataFile(file: FileInfo) {

@@ -3,8 +3,11 @@ import * as Validation from '../util/validation.js';
 import Cmp from './base-component.js';
 import { ipcRenderer } from 'electron';
 
+import { DatasetInfo } from "../../models/dataset-info";
+
 export class UserDataset extends Cmp<HTMLDivElement, HTMLDivElement> {
   datasetSelectElement: HTMLSelectElement;
+  userDatasets: DatasetInfo[];
 
   constructor() {
     super('user-dataset', 'app-dataset', true, 'dest-dataset');
@@ -17,11 +20,12 @@ export class UserDataset extends Cmp<HTMLDivElement, HTMLDivElement> {
   configure():void {
     this.element.addEventListener('change', this.changeHandler.bind(this));
 
-    ipcRenderer.on('selectDataset', (event: Event, datasets: {name: string, global_id: string}[])  => {
+    ipcRenderer.on('selectDataset', (event: Event, datasets: DatasetInfo[])  => {
+      this.userDatasets = datasets;
       this.datasetSelectElement.disabled = false;
       this.datasetSelectElement.options.length = 1;
       datasets.forEach(dataset => {
-        this.datasetSelectElement.options[this.datasetSelectElement.options.length] = new Option(dataset.name, dataset.global_id);
+        this.datasetSelectElement.options[this.datasetSelectElement.options.length] = new Option(dataset.name, (this.datasetSelectElement.options.length - 1).toString());
       })
     })
 
@@ -29,7 +33,7 @@ export class UserDataset extends Cmp<HTMLDivElement, HTMLDivElement> {
 
   renderContent():void {console.log("renderContent")}
 
-  private gatherUserInput(): [string] | void {
+  private gatherUserInput(): [DatasetInfo] | void {
     const enteredDataset = this.datasetSelectElement.options[this.datasetSelectElement.selectedIndex].value;
     const datasetValidatable: Validation.Validatable = {
       value: enteredDataset,
@@ -42,7 +46,7 @@ export class UserDataset extends Cmp<HTMLDivElement, HTMLDivElement> {
       alert('Invalid input, please try again!');
       return;
     } else {
-      return [enteredDataset];
+      return [this.userDatasets[Number([enteredDataset])]];
     }
   }
 

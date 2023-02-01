@@ -10,6 +10,8 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
   resetButtonElement: HTMLButtonElement;
   submitButtonElement: HTMLButtonElement;
 
+  maxFiles: number;
+
   constructor() {
     super('data-files', 'app-files', true, 'files2upload');
     this.filesSelectElement = this.element.querySelector(
@@ -32,18 +34,19 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
     this.element.addEventListener('reset', this.resetHandler.bind(this));
     this.element.addEventListener('submit', this.submitHandler.bind(this));
  
-    ipcRenderer.on('selectFiles', (event: Event, folder: string)  => {
+    ipcRenderer.on('selectFiles', (event: Event, folder: string, filesCount: number)  => {
       this.filesSelectElement.disabled = false;
       this.filesLabelElement.classList.remove("label-disabled");
+      this.maxFiles = 2000 - filesCount;
     })
 
     ipcRenderer.on('filesSelected', (event: Event, dummy: string)  => {
-      console.log('filesSelected');
       this.submitButtonElement.disabled = false;
       this.resetButtonElement.disabled = false;
     })
 
-    ipcRenderer.on('end', (event: Event, dummy: string)  => {
+    ipcRenderer.on('end', (event: Event, result: Record<string, unknown>)  => {
+      this.maxFiles = this.maxFiles - Number(result.numFilesUploaded);
       this.nextUpload();
     })  
 
@@ -60,23 +63,22 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
   renderContent():void {console.log("renderContent")}
 
   private gatherUserInput(): FileList {
-    const maxFiles = 980;
     const enteredFiles = this.filesSelectElement.files;
     const filesValidatable: Validation.Validatable = {
       value: enteredFiles.length,
       required: true,
       min: 1,
-      max: maxFiles
+      max: this.maxFiles
     };
 
     if (
       !Validation.validate(filesValidatable)
     ) {
-      alert(`Upload limited to ${maxFiles} files, \nfor a larger amount please use a zip format!`);
+      alert(`Upload limited to ${this.maxFiles} files, \nfor a larger amount please use a zip format!`);
       return;
     } else {
-      ipcRenderer.send('loadingSelected');
-      console.log('loadingSelected');
+      const element = document.getElementById("upload-done");
+      if (element) element.remove();
       return enteredFiles;
     }
   }

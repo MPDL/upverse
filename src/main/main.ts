@@ -2,6 +2,7 @@ import * as path from "path";
 
 import { BrowserWindow, IpcMainEvent, Menu, Notification, app, ipcMain } from "electron";
 
+import { DatasetInfo } from "../models/dataset-info";
 import { FileInfo } from "../models/file-info";
 import { Settings } from "./settings";
 import { connectToRepository } from "./controllers/user-controller";
@@ -104,14 +105,12 @@ ipcMain.on('doConnection', (event: IpcMainEvent, givenSettings: string[]) => {
   }
 })
 
-ipcMain.on('datasetSelected', (event: IpcMainEvent, persistentId: string) => {
-  process.env.dest_dataset = persistentId;
-  event.reply('selectFiles', '~');
-})
-
-ipcMain.on('loadingSelected', (event: IpcMainEvent) => {
-  console.log('loadingSelected' + '->' + 'selectedLoading');
-  event.reply('selectedLoading');
+ipcMain.on('datasetSelected', (event: IpcMainEvent, dataset: [DatasetInfo]) => {
+  if (process.env.dest_dataset !== dataset[0].global_id) {
+    process.env.dest_dataset = dataset[0].global_id;
+    process.env.files_loaded = dataset[0].fileCount.toString();
+  }
+  event.reply('selectFiles', '~', Number(process.env.files_loaded));
 })
 
 ipcMain.on('filesSelected', (event: IpcMainEvent, files: FileInfo[]) => {
@@ -130,8 +129,9 @@ ipcMain.on('filesCleared', (event: IpcMainEvent) => {
 
 const transfer_files = async (event: IpcMainEvent, persistentId: string, files: FileInfo[]): Promise<void> => {
   try {
-    const result = await transfer_direct_from_file(event, persistentId, files);
-    event.reply('end', result);   
+    const result:Record<string, unknown> = await transfer_direct_from_file(event, persistentId, files);
+    process.env.files_loaded = (Number(process.env.files_loaded) + Number(result.numFilesUploaded)).toString();
+    event.reply('end', result);
   } catch (error) {
     console.error(error);
     new Notification({ title: 'Upload Failed!', body: error }).show();

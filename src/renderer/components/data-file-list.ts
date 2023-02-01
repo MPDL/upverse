@@ -24,16 +24,20 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
   configure(): void {
     ipcRenderer.setMaxListeners(0);
 
-    dataFiles.addListener((files: FileInfo[]) => {
-      this.selectedFiles = files;
-      this.renderItems(); 
+    dataFiles.updateListener((file: FileInfo) => {
+      this.selectedFiles.push(file);
+      this.renderItem(this.selectedFiles[this.selectedFiles.length - 1]); 
     });
 
     ipcRenderer.on("removeItem", (event: Event, file: FileInfo) => {
       dataFiles.removeDataFile(file);
+      this.selectedFiles.splice(file.id, 1);
+      const element = document.getElementById(file.id.toString());
+      element.remove();
     });
 
     ipcRenderer.on("end", (event: Event, result: Record<string, unknown>) => {
+      this.selectedFiles = [];
       dataFiles.clear(); 
       this.element.querySelector(
         "ul"
@@ -44,12 +48,12 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
         <a href="http://edmond.mpdl.mpg.de" target="_blank"><button class="btn btn-secondary"><i class="bi bi-card-checklist"></i> Open Edmond</button></a>
         </div>`;  
       //  <button id="appserver" class="btn btn-secondary" type="submit"><i class="bi bi-card-checklist"></i> Open Edmond</button>
-      this.element.querySelector("#appserver")!.addEventListener('click', this.clickHandler.bind(this));
+      // this.element.querySelector("#appserver")!.addEventListener('click', this.clickHandler.bind(this));
     });
 
     ipcRenderer.on("abort", (event: Event, result: Record<string, unknown>) => {
+      this.selectedFiles = [];
       dataFiles.clear();
-      //this.element.querySelector("nav")!.style.visibility = "hidden";   
       this.element.querySelector(
         "ul"
       )!.innerHTML = `<div id="upload-failed">
@@ -64,17 +68,9 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
       )!.innerHTML = '';
     })
 
-    ipcRenderer.on('selectedLoading', (event: Event)  => { 
-      console.log('selectedLoading');
-      /* TO DO
-      this.element.querySelector(
-        "ul"
-      )!.innerHTML = '<img id="loading" class=" alt="loading" src="assets/images/ajax-loading.gif" />';
-      */
-    })
-
     ipcRenderer.on('clearFiles', (event: Event)  => {
       console.log('clearFiles');
+      this.selectedFiles = [];
       dataFiles.clear();
       this.element.querySelector(
         "ul"
@@ -87,20 +83,12 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
   }
 
   private renderHeader(): void {
-    console.log('renderHeader');
     const listId = "research-files-list";
     this.element.querySelector("ul")!.id = listId;
   }
 
-  private renderItems() {
-    console.log('renderItems');
-    const listEl = document.getElementById(
-      "research-files-list"
-    )! as HTMLUListElement;
-    listEl.innerHTML = "";
-    for (const fileInfo of this.selectedFiles) {
-      new FileItem(this.element.querySelector("ul")!.id, fileInfo);
-    }
+  private renderItem(fileInfo: FileInfo) {
+    new FileItem(this.element.querySelector("ul")!.id, fileInfo);
   }
 
 }

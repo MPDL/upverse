@@ -3,7 +3,7 @@ import { calcChecksum, getUploadUrls, uploadSinglepartToStore, uploadMultipartTo
 import { FileInfo } from '../../models/file-info';
 import { IpcMainEvent, Notification } from "electron";
 
-const isDev = true; //true; //process.env.isDev as string;
+const isDev = (process.env.isDev === 'true');
 
 export const transfer_direct_from_file = async (event: IpcMainEvent, persistentId: string, items: FileInfo[]): Promise<Record<string, unknown>> => {
     try {

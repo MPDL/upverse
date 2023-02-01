@@ -6,7 +6,7 @@ import { createHash } from 'crypto';
 import { IpcMainEvent, Notification, net } from "electron";
 import { IncomingMessage } from 'http';
 
-const isDev = true; //true; //process.env.isDev as string;
+const isDev = (process.env.isDev === 'true');
 let event: IpcMainEvent = null;
 
 export const calcChecksum = async (item: FileInfo): Promise<string> => {
