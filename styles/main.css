@@ -11,6 +11,18 @@
   transition: filter 0.2s;
 }
 
+.main::-webkit-scrollbar {
+  width: 0.8em;
+}
+
+.main::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+ 
+.main::-webkit-scrollbar-thumb {
+  background-color: var(--mpg-slate-gray-2);
+}
+
 .file ul {
   list-style: none;
   padding: 1rem 0;

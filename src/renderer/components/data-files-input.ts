@@ -10,7 +10,8 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
   resetButtonElement: HTMLButtonElement;
   submitButtonElement: HTMLButtonElement;
 
-  maxFiles: number;
+  MAXFILES: number;
+  remainingFiles: number;
 
   constructor() {
     super('data-files', 'app-files', true, 'files2upload');
@@ -30,6 +31,8 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
   }
 
   configure():void {
+    this.MAXFILES = 2000;
+
     this.element.addEventListener('change', this.changeHandler.bind(this));
     this.element.addEventListener('reset', this.resetHandler.bind(this));
     this.element.addEventListener('submit', this.submitHandler.bind(this));
@@ -37,7 +40,7 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
     ipcRenderer.on('selectFiles', (event: Event, folder: string, filesCount: number)  => {
       this.filesSelectElement.disabled = false;
       this.filesLabelElement.classList.remove("label-disabled");
-      this.maxFiles = 2000 - filesCount;
+      this.remainingFiles = this.MAXFILES - filesCount;
     })
 
     ipcRenderer.on('filesSelected', (event: Event, dummy: string)  => {
@@ -46,7 +49,7 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
     })
 
     ipcRenderer.on('end', (event: Event, result: Record<string, unknown>)  => {
-      this.maxFiles = this.maxFiles - Number(result.numFilesUploaded);
+      this.remainingFiles = this.remainingFiles - Number(result.numFilesUploaded);
       this.nextUpload();
     })  
 
@@ -68,13 +71,13 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
       value: enteredFiles.length,
       required: true,
       min: 1,
-      max: this.maxFiles
+      max: this.remainingFiles
     };
 
     if (
       !Validation.validate(filesValidatable)
     ) {
-      alert(`Upload limited to ${this.maxFiles} files, \nfor a larger amount please use a zip format!`);
+      alert(`Dataset files limited to ${this.MAXFILES}, \n${this.MAXFILES - this.remainingFiles} uploaded, \n${this.remainingFiles} more files available, \nfor a larger amount of files, please use a zip file!`);
       return;
     } else {
       const element = document.getElementById("upload-done");

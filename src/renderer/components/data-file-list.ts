@@ -12,13 +12,13 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
   constructor() {
     super("data-file-list", "app-file-list", true, "file2upload-list");
     this.fileListElement = this.element.querySelector(
-      "#file-list"
+      "#research-files-list"
     ) as HTMLUListElement;
     
     this.selectedFiles = [];
 
     this.configure();
-    this.renderHeader();
+    // this.renderHeader();
   }
 
   configure(): void {
@@ -63,32 +63,33 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
 
     ipcRenderer.on('selectFiles', (event: Event, folder: string)  => {
       console.log('selectFiles');
-      this.element.querySelector(
-        "ul"
-      )!.innerHTML = '';
+      this.clearItemList();
     })
 
     ipcRenderer.on('clearFiles', (event: Event)  => {
       console.log('clearFiles');
       this.selectedFiles = [];
       dataFiles.clear();
-      this.element.querySelector(
-        "ul"
-      )!.innerHTML = '';
+      this.clearItemList();
     })
   }
 
+  /*
   private async clickHandler(event: Event) {
     await shell.openExternal(process.env.dv_base_uri.replace('/api','')).then(() => {console.log("Done")}).catch((error) => {console.log(error.toString())});
   }
-
+  */
+  /*
   private renderHeader(): void {
-    const listId = "research-files-list";
-    this.element.querySelector("ul")!.id = listId;
+    console.log('renderHeader'); //DEBUG
   }
-
+  */
   private renderItem(fileInfo: FileInfo) {
     new FileItem(this.element.querySelector("ul")!.id, fileInfo);
+  }
+
+  private clearItemList() {
+    this.fileListElement.innerHTML = '';
   }
 
 }
