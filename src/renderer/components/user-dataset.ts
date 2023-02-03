@@ -24,8 +24,12 @@ export class UserDataset extends Cmp<HTMLDivElement, HTMLDivElement> {
       this.userDatasets = datasets;
       this.datasetSelectElement.disabled = false;
       this.datasetSelectElement.options.length = 1;
+      let prevDS = "";
       datasets.forEach(dataset => {
-        this.datasetSelectElement.options[this.datasetSelectElement.options.length] = new Option(dataset.name, (this.datasetSelectElement.options.length - 1).toString());
+        if (dataset.global_id !== prevDS) {
+          this.datasetSelectElement.options[this.datasetSelectElement.options.length] = new Option(dataset.name, (this.datasetSelectElement.options.length - 1).toString());
+          prevDS = dataset.global_id;
+        }
       })
     })
 

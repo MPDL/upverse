@@ -90,7 +90,7 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
     event.preventDefault();
     this.submitButtonElement.disabled = true;
     this.resetButtonElement.disabled = true;
-    this.submitButtonElement.innerHTML = 'Uploading';
+    this.submitButtonElement.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Uploading...';
 
     ipcRenderer.send('filesSelected', dataFiles.getAll());
   }
