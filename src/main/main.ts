@@ -8,6 +8,7 @@ import { Settings } from "./settings";
 import { connectToRepository } from "./controllers/user-controller";
 import { transfer_direct_from_file } from './controllers/upload-controller';
 
+if (require('electron-squirrel-startup')) app.quit();
 // Set env
 process.env.isDev = 'false';
 const isDev = (process.env.isDev === 'true');
