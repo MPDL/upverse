@@ -19,4 +19,17 @@ module.exports = {
       config: {},
     },*/
   ],
+  publishers: [
+    {
+      name: '@electron-forge/publisher-github',
+      config: {
+        repository: {
+          owner: 'vilarodr',
+          name: 'MPDL/upverse',
+        },
+        prerelease: false,
+        draft: true,
+      },
+    },
+  ],
 };

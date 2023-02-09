@@ -14,7 +14,8 @@
     "package-win": "electron-packager . --overwrite --platform=win32 --arch=x64 --icon=assets/favicons/favicon.ico --prune=false --out=release-builds --version-string.CompanyName=MPDL --version-string.FileDescription=Uploader --version-string.ProductName=\"Upverse\"",
     "package-linux": "electron-packager . --overwrite --platform=linux --arch=x64 --icon=assets/favicons/favicon --prune=false --out=release-builds",
     "package": "electron-forge package",
-    "make": "electron-forge make"
+    "make": "electron-forge make",
+    "publish": "electron-forge publish"
   },
   "repository": "https://github.com/MPDL/upverse",
   "keywords": [
@@ -31,6 +32,7 @@
     "@electron-forge/maker-rpm": "^6.0.5",
     "@electron-forge/maker-squirrel": "^6.0.5",
     "@electron-forge/maker-zip": "^6.0.5",
+    "@electron-forge/publisher-github": "^6.0.5",
     "@types/bootstrap": "^5.1.11",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
