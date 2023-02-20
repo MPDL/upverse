@@ -1,8 +1,8 @@
-name: GitHub Action To Build and Package for Ubuntu
+name: GitHub Action To Package for Ubuntu
 run-name: ${{ github.actor }} is running out GitHub Actions 🚀
 on: [push]
 jobs:
-  Explore-GitHub-Actions:
+  Package-App:
     runs-on: ubuntu-latest
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
@@ -10,17 +10,19 @@ jobs:
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
       - name: Check out repository code
         uses: actions/checkout@v3
-      - name: Enable npm
+      - name: Install npm
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: 'latest'
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}
+      - name: Clear
+        run: if [ -d dist ]; then rm -Rf dist; fi
       - name: Install dependencies
-        run: echo "npm install ignored"
+        run: npm install
       - name: Package
         run: npm run package
       - name: List files in the repository
