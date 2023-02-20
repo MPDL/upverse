@@ -1,5 +1,5 @@
 name: Build and Package Action
-run-name: ${{ github.actor }} is running out ${{ github.action }} 🚀
+run-name: ${{ github.actor }} is running out ${{ name }} 🚀
 on:
   push:
     branches: [ main ]
@@ -36,3 +36,5 @@ jobs:
         run: |
           ls ${{ github.workspace }}      
       - run: echo "🍏 This job's status is ${{ job.status }}."
+      - name: Publish
+        run: npm run publish
