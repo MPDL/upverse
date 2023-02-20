@@ -20,7 +20,7 @@ jobs:
         run: |
           ls ${{ github.workspace }}
       - name: Install dependencies
-        run: npm install
+        run: echo "npm install ignored"
       - name: Package
         run: npm run package
       - name: List files in the repository
