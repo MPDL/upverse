@@ -36,36 +36,36 @@ function createWindow() {
 
 function createMenu() {
   const template: Electron.MenuItemConstructorOptions[] = [
-      {
-        label: app.getName(),
-        submenu: [
-          {
-            label: 'Save',
-            click() {
-              if (isDev) console.log("save");
-              Settings.save();
-            }
-          },
-          { type: 'separator' },
-          { role: 'quit' }
-        ]
+    {
+      label: app.getName(),
+      submenu: [
+        {
+          label: 'Save',
+          click() {
+            if (isDev) console.log("save");
+            Settings.save();
+          }
+        },
+        { type: 'separator' },
+        { role: 'quit' }
+      ]
+    },
+    {
+      label: 'Developer',
+      submenu: [{
+        role: 'reload'
       },
       {
-        label: 'Developer',
-        submenu: [{
-          role: 'reload'
-        },
-        {
-          role: 'forceReload'
-        },
-        {
-          type: 'separator'
-        },
-        {
-          role: 'toggleDevTools'
-        },
-        ]
-      }
+        role: 'forceReload'
+      },
+      {
+        type: 'separator'
+      },
+      {
+        role: 'toggleDevTools'
+      },
+      ]
+    }
   ];
 
   const menu = Menu.buildFromTemplate(template);
@@ -94,15 +94,15 @@ ipcMain.on('doConnection', (event: IpcMainEvent, givenSettings: string[]) => {
     process.env.admin_api_key = givenSettings[0];
     process.env.dv_base_uri = givenSettings[1];
     connectToRepository((user, datasetList) => {
-      if( Settings.settingsData.getStatus() == 200 ) {
-        event.reply('authenticated', [user.getAuthor()]); 
-        event.reply('selectDataset', datasetList); 
+      if (Settings.settingsData.getStatus() == 200) {
+        event.reply('authenticated', [user.getAuthor()]);
+        event.reply('selectDataset', datasetList);
       }
     });
   } catch (error) {
     console.log('connectionFailed');
-    new Notification({ title: 'Connect', body: 'Connection failed'});
-    event.reply('failed', ['Connection failed']); 
+    new Notification({ title: 'Connect', body: 'Connection failed' });
+    event.reply('failed', ['Connection failed']);
   }
 })
 
@@ -120,7 +120,7 @@ ipcMain.on('filesSelected', (event: IpcMainEvent, files: FileInfo[]) => {
   transfer_files(event, process.env.dest_dataset, files);
 })
 
-ipcMain.on('removeItem', (event: IpcMainEvent, file: FileInfo)  => {
+ipcMain.on('removeItem', (event: IpcMainEvent, file: FileInfo) => {
   event.reply('removeItem', file);
 })
 
@@ -130,12 +130,12 @@ ipcMain.on('filesCleared', (event: IpcMainEvent) => {
 
 const transfer_files = async (event: IpcMainEvent, persistentId: string, files: FileInfo[]): Promise<void> => {
   try {
-    const result:Record<string, unknown> = await transfer_direct_from_file(event, persistentId, files);
+    const result: Record<string, unknown> = await transfer_direct_from_file(event, persistentId, files);
     process.env.files_loaded = (Number(process.env.files_loaded) + Number(result.numFilesUploaded)).toString();
     event.reply('end', result);
   } catch (error) {
     console.error(error);
     new Notification({ title: 'Upload Failed!', body: error }).show();
-    event.reply('abort', ''); 
+    event.reply('abort', '');
   }
 }
