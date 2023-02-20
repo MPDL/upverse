@@ -18,13 +18,13 @@ export class ApiConnection extends Cmp<HTMLDivElement, HTMLFormElement> {
     this.configure();
   }
 
-  configure():void {
+  configure(): void {
     this.element.addEventListener('submit', this.submitHandler.bind(this));
     this.tokenInputElement.value = process.env.admin_api_key;
     this.urlInputElement.value = process.env.dv_base_uri;
   }
 
-  renderContent():void {console.log("renderContent")}
+  renderContent(): void { console.log("renderContent") }
 
   private gatherUserInput(): [string, string] | void {
     const enteredToken = this.tokenInputElement.value;
