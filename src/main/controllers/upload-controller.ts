@@ -1,4 +1,4 @@
-import { calcChecksum, getUploadUrls, uploadSinglepartToStore, uploadMultipartToStore, completeMultipartUpload, addMultipleFilesToDataset  } from '../services/upload-service';
+import { calcChecksum, getUploadUrls, uploadSinglepartToStore, uploadMultipartToStore, completeMultipartUpload, addMultipleFilesToDataset } from '../services/upload-service';
 
 import { FileInfo } from '../../models/file-info';
 import { IpcMainEvent, Notification } from "electron";
@@ -26,7 +26,7 @@ export const transfer_direct_from_file = async (event: IpcMainEvent, persistentI
                 description: item.description,
                 streamed: 0,
                 uploaded: 0
-            };          
+            };
             if (isDev) console.log('Attempting to upload ' + itemInfo.name + ' as ' + itemInfo.type + ' from ' + itemInfo.relativePath + ' at ' + Date());
             event.sender.send('actionFor' + itemInfo.id.toString(), 'start', 0);
 
@@ -34,12 +34,12 @@ export const transfer_direct_from_file = async (event: IpcMainEvent, persistentI
             let uploadUrlsResponseBody: any = null;
             try {
                 uploadUrlsResponseBody = await getUploadUrls(persistentId, itemInfo.size);
-            } catch (err) { 
-                new Notification({ title: itemInfo.name, body: err});
+            } catch (err) {
+                new Notification({ title: itemInfo.name, body: err });
                 event.sender.send('actionFor' + itemInfo.id.toString(), 'fail', 0);
                 itemsFailed++;
                 continue;
-            } 
+            }
 
             itemInfo.storageId = uploadUrlsResponseBody.data.storageIdentifier;
             itemInfo.partSize = uploadUrlsResponseBody.data.partSize
@@ -52,8 +52,8 @@ export const transfer_direct_from_file = async (event: IpcMainEvent, persistentI
 
                 try {
                     uploadToStoreResponse = await uploadSinglepartToStore(event, itemInfo)
-                } catch(err) {
-                    new Notification({ title: itemInfo.name, body: err});
+                } catch (err) {
+                    new Notification({ title: itemInfo.name, body: err });
                     event.sender.send('actionFor' + itemInfo.id.toString(), 'fail', 0);
                     itemsFailed++;
                     continue;
