@@ -1,5 +1,5 @@
 name: Build and Package Action
-run-name: ${{ github.actor }} is running out ${{ name }} 🚀
+run-name: ${{ github.actor }} is running out Build and Package Action 🚀
 on:
   push:
     branches: [ main ]
