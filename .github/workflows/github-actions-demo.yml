@@ -18,19 +18,19 @@ jobs:
         with:
           node-version: 'latest'
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
-        run: |
-          ls ${{ github.workspace }}
-      - name: Clear
-        run: if [ -d dist ]; then rm -Rf dist; fi
+      - run: echo "🖥️ The workflow is now ready to build and packge your code on the runner."
       - name: Install dependencies
         run: npm install
       - name: Build
         run: npm run build
       - name: Package
         run: npm run package
-      - name: List files in the repository
+      - name: Windows specific setup
+        if: matrix.os == 'windows-latest'
         run: |
-          ls ${{ github.workspace }}        
+          DIR $GITHUB_WORKSPACE
+      - name: Linux specific setup
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          ls ${{ github.workspace }}      
       - run: echo "🍏 This job's status is ${{ job.status }}."
