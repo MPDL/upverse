@@ -1,6 +1,8 @@
 name: Build and Package Action
-run-name: ${{ github.actor }} is running out GitHub Actions 🚀
-on: [push]
+run-name: ${{ github.actor }} is running out Build and Package Action 🚀
+on:
+  push:
+    branches: [ main ]
 jobs:
   Package-App:
     runs-on: ${{ matrix.os }}
