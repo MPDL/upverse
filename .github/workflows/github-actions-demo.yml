@@ -1,9 +1,12 @@
-name: GitHub Action To Package for Ubuntu
+name: Build and Package Action
 run-name: ${{ github.actor }} is running out GitHub Actions 🚀
 on: [push]
 jobs:
   Package-App:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
