@@ -4,7 +4,10 @@ module.exports = {
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
-      config: {},
+      config: {
+        "author": "MPDL Collections",
+        "description": "Direct file upload to research data repository"
+      },
     },
     {
       name: '@electron-forge/maker-zip',
@@ -12,7 +15,10 @@ module.exports = {
     },
     {
       name: '@electron-forge/maker-deb',
-      config: {},
+      config: {
+        "author": "MPDL Collections",
+        "description": "Direct file upload to research data repository"
+      },
     },/*
     {
       name: '@electron-forge/maker-rpm',
