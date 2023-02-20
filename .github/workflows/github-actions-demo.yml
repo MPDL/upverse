@@ -23,6 +23,8 @@ jobs:
         run: if [ -d dist ]; then rm -Rf dist; fi
       - name: Install dependencies
         run: npm install
+      - name: Build
+        run: npm run build
       - name: Package
         run: npm run package
       - name: List files in the repository
