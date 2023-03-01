@@ -19,11 +19,13 @@ module.exports = {
         "author": "MPDL Collections",
         "description": "Direct file upload to research data repository"
       },
-    },/*
+    },
+    /*
     {
       name: '@electron-forge/maker-rpm',
       config: {},
-    },*/
+    },
+    */
   ],
   publishers: [
     {
@@ -33,7 +35,7 @@ module.exports = {
           owner: 'vilarodr',
           name: 'MPDL/upverse',
         },
-        prerelease: false,
+        prerelease: true,
         draft: true,
       },
     },
