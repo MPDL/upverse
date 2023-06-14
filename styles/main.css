@@ -1,0 +1,85 @@
+.main {
+  flex: 1 0 auto;
+  display: flex;
+  height: calc(100% - 13rem);
+  flex-direction: column;
+  
+  overflow-x: hidden;
+
+  width: 100%;
+  padding: 1vh 1vw;
+  transition: filter 0.2s;
+}
+
+.main::-webkit-scrollbar {
+  width: 0.8em;
+}
+
+.main::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+ 
+.main::-webkit-scrollbar-thumb {
+  background-color: var(--mpg-slate-gray-2);
+}
+
+.file ul {
+  list-style: none;
+  padding: 1rem 0;
+  padding-bottom: -2rem;
+}
+
+.file header {
+  visibility: hidden;
+}
+
+.file li {
+  background: var(--sand-orange-3);
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.20);
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  line-height: 1rem;
+}
+
+#remove-file {
+  background: transparent;
+  color: var(--mpg-dark-blue);
+  text-align: center;
+  font-size: 1rem;
+}
+
+#remove-file:hover {
+  font-size: 1.05rem;
+  border-radius: 1rem;
+  border-color: transparent;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.40);
+}
+
+nav {
+  visibility: hidden;
+}
+
+.page-link {
+  background: transparent;
+  color: var(--mpg-dark-blue);
+  border-radius: 1rem;
+  border-color: transparent;
+  text-align: center;
+  width: 7rem;
+  transition: none;
+}
+
+.page-item:last-child .page-link,
+.page-item:first-child .page-link {
+  border-radius: 1rem;
+}
+
+.page-link:hover {
+  background: rgba(255, 255, 255, 0.40);
+  font-weight: bold;
+  border-color: transparent;
+  color: var(--mpg-black-blue);
+}

@@ -1,0 +1,63 @@
+.header::-webkit-scrollbar {
+    display: none;
+}
+
+.header {
+    background: var(--mpg-dark-blue);
+    padding: 2vh 1vw;
+}
+
+.header::before {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 4rem;
+}
+
+@media (min-width: 992px) {
+    .header::before {
+        height: 5rem;
+    }
+}
+
+@media (min-width: 1200px) {
+    .header::before {
+        height: 6rem;
+        transform: none;
+    }
+}
+
+@media (max-width: 1200px) {
+    #selection, #transaction {
+        width: 40%;
+    }
+    #data-files .row {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 576px) {
+    #selection, #transaction {
+        margin: 2vh 0 2vh;
+        width: 100%;
+    }
+}
+
+#app-logo {
+    margin: 0;
+    padding: 0;
+}
+
+#author {
+    color: var(--yellow-green-3);
+}
+
+#app-title {
+    margin: 0;
+    padding: 0 0 0 32px;
+}
+
+
+
+  

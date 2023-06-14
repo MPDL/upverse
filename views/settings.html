@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
+  <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
+  <link rel="stylesheet" href="../styles/styles.css" />
+  <script src="../dist/settings-renderer/renderer.js"></script>
+</head>
+
+<body class="header">
+  <div class="container">
+    <div id="app-connection"></div>
+  </div>
+
+  <template id="api-connection">
+    <form>
+      <div class="row mt-5 d-flex justify-content-center">
+        <div class="col-sm-8">
+          <label class="form-label" for="token">API Token</label>
+          <input type="text" class="form-control" id="token" placeholder="Your on 𝗠𝘆 𝗗𝗮𝘁𝗮 generated API Token"
+            minlength="36" maxlength="36" />
+        </div>
+        <div class="col-sm-1"></div>
+      </div>
+      <div class="row mt-3 d-flex justify-content-center">
+        <div class="col-sm-8">
+          <label class="form-label" for="url">API URL</label>
+          <div class="input-group">
+            <input type="url" class="form-control" id="url" placeholder="𝗵𝘁𝘁𝗽𝘀:// Your Repository Server /𝗮𝗽𝗶"
+              minlength="20" />
+            <button type="submit" id="test" class="btn btn-secondary d-block"><i class="bi bi-link"></i>
+              Test</button>
+          </div>
+        </div>
+        <div id="test_result" class="col-sm-1 d-flex align-items-end"></div>
+      </div>
+      <div class="row mt-5 d-flex justify-content-center">
+        <div class="col-sm-8 d-flex justify-content-end">
+          <button type="submit" id="save" class="btn btn-secondary d-block"><i class="bi bi-save"></i> Save</button>
+        </div>
+        <div id="save_result" class="col-sm-1 d-flex items"></div>
+      </div>
+    </form>
+  </template>
+
+  <template id="user-author">
+    <div class="d-flex justify-content-end">
+      <span id="author"><i class="bi bi-person text-secondary"></i></span>
+    </div>
+  </template>
+
+  <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

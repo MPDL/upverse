@@ -1,0 +1,13 @@
+.container,
+.container-fluid,
+.container-lg,
+.container-md,
+.container-sm,
+.container-xl,
+.container-xxl {
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+    margin-right: auto;
+    margin-left: auto;
+}

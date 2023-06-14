@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
+  <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
+  <link rel="stylesheet" href="../styles/styles.css" />
+  <script src="../dist/index-renderer/renderer.js"></script>
+</head>
+
+<body class="layout -default">
+  <header class="header">
+    <div class="container-fluid">
+      <div class="row me-1">
+        <div class="col-lg-4">
+          <div class="container d-flex flex-start flex-wrap">
+            <div class="row col-md-12">
+              <a href="http://edmond.mpdl.mpg.de" target="_blank">
+                <img id="app-logo" class="float-start mx-auto d-block" alt="edmond logo"
+                  src="../assets/images/logos/logo_for_dark.png" />
+              </a>
+            </div>
+
+            <div class="row col-md-12">
+              <div id="app-title" class="text-light d-none d-lg-block">
+                <h6>Research<span class="text-secondary"> Data</span> <strong class="text-danger">Uploader</strong></h6>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-8 mb-4">
+          <div class="row">
+            <div id="app-author"></div>
+          </div>
+  
+          <div class="row d-flex justify-content-between">
+            <div class="col-md-5">
+              <div id="app-dataset"></div>
+            </div>
+
+            <div class="col-md-6 mt-4">
+              <div id="app-files"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <div class="col-md-12 mb-3">
+        <div id="app-file-list"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container-fluid">
+      <div class="me-1">
+        <a href="http://mpdl.mpg.de" target="_blank">
+          <img id="org-logo" class="img-fluid float-end" alt="mpdl-logo" src="../assets/images/logos/mpdl.mpg-logo.svg" />
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <template id="user-author">
+    <div class="d-flex justify-content-end">
+      <span id="author"><i class="bi bi-person text-secondary"></i></span>
+    </div>
+  </template>
+
+  <template id="user-dataset">
+    <div class="col-md-12">
+      <label class="form-label" for="dataset"></label>
+      <div class="input-group">
+        <select id="dataset" class="form-control" disabled>
+          <option value="" selected="">&#8212;  𝘚𝘦𝘭𝘦𝘤𝘵  𝘺𝘰𝘶𝘳  𝘥𝘦𝘴𝘵𝘪𝘯𝘢𝘵𝘪𝘰𝘯  𝘿𝙖𝙩𝙖𝙨𝙚𝙩  &#8212;</option>
+        </select>
+        <button type="submit" id="refresh" class="btn btn-secondary d-block"><i class="bi bi-arrow-clockwise"></i></button>
+      </div>
+    </div>
+  </template>
+
+  <template id="data-files">
+    <form class="row d-flex justify-content-between">
+      <div id="selection" class="col-sm-7 d-flex justify-content-evenly">
+        <button type="submit" id="files" class="btn btn-secondary d-block"><i class="bi bi-files d-none d-xxl-inline"></i> Files</button>
+        <button type="submit" id="folder" class="btn btn-secondary d-block"><i class="bi bi-folder2-open d-none d-xxl-inline"></i> Folders</button>
+        <button type="reset" id="clear" class="btn btn-secondary d-block" disabled><i class="bi bi-trash2 d-none d-xxl-inline"></i> Clear</button>
+      </div>
+
+      <div id="transaction" class="col-sm-5 d-flex justify-content-evenly">
+        <button type="submit" id="upload" class="btn btn-secondary d-block" disabled><i class="bi bi-upload d-none d-xxl-inline"></i> Upload</button>
+        <button type="reset" id="cancel" class="btn btn-secondary d-block" disabled><i class="bi bi-sign-turn-left d-none d-xxl-inline"></i> Cancel</button>
+      </div>      
+    </form>
+  </template>
+
+  <template id="data-file-list">
+    <div class="col-md-12">
+      <section class="file">
+        <ul id="research-files-list"></ul>
+      </section>
+    </div>
+  </template>
+
+  <template id="data-file-item">
+    <div>
+      <li id="item">
+        <form class="row">
+          <div class="col-md-6 file-item">
+            <strong id="filename" class="text-break"></strong><br />
+            <span id="type"></span>, <span id="size"></span> Bytes<br/>
+            <span id="path"></span><br />
+          </div>
+
+          <div class="col-md-5">
+            <input type="text" id="description" class="form-control" placeholder="Add file description...">
+            <input type="text" id="relativePath" class="form-control mt-1" placeholder="File Path on Dataset directory structure">
+            <!--span id="relativePath"></span-->
+          </div>
+
+          <div class="col-md-1">
+            <div class="float-end" id="actions">
+              <button id="remove" type="button" class="btn btn-secondary d-block"><i class="bi bi-trash"></i></button>
+            </div>
+          </div>
+        </form>
+      </li>
+    </div>
+  </template>
+
+  <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
