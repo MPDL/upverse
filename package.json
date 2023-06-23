@@ -11,9 +11,9 @@
     "lint": "eslint -c .eslintrc --ext .ts ./src",
     "start": "electron-forge start",
     "start-dev": "npm run build && electron .",
-    "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/favicons/edmond_favicon_red.icns --prune=true --out=release-builds",
-    "package-win": "electron-packager . --overwrite --platform=win32 --arch=x64 --icon=assets/favicons/edmond_favicon_red.ico --prune=false --out=release-builds --version-string.CompanyName=MPDL --version-string.FileDescription=Uploader --version-string.ProductName=\"Upverse\"",
-    "package-linux": "electron-packager . --overwrite --platform=linux --arch=x64 --icon=assets/favicons/edmond_favicon_red.png --prune=false --out=release-builds",
+    "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/favicons/favicon.icns --prune=true --out=release-builds",
+    "package-win": "electron-packager . --overwrite --platform=win32 --arch=x64 --icon=assets/favicons/favicon.ico --prune=false --out=release-builds --version-string.CompanyName=MPDL --version-string.FileDescription=Uploader --version-string.ProductName=\"Upverse\"",
+    "package-linux": "electron-packager . --overwrite --platform=linux --arch=x64 --icon=assets/favicons/favicon.png --prune=false --out=release-builds",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish --auth-token=${GITHUB_TOKEN}"

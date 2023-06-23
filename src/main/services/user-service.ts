@@ -9,7 +9,7 @@ export const getMyUser = () => {
             reject: (error: Error) => void
         ) => {
             let msg = "";
-            const apiCall = '/users/:me';
+            const apiCall = '/api/users/:me';
 
             const request = net.request({
                 method: 'GET',
@@ -66,7 +66,7 @@ export const getMyDatasetsPage = (selectedPageNumber: number) => {
                 ['selected_page', selectedPageNumber.toString()]
             ]).toString();
             //const apiCall = '/search?q=' + author + '&per_page=100';     
-            const apiCall = `/mydata/retrieve`;
+            const apiCall = `/api/mydata/retrieve`;
 
             const request = net.request({
                 method: 'GET',

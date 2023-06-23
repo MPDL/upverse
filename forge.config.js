@@ -1,6 +1,6 @@
 module.exports = {
   packagerConfig: {
-    "icon": "assets/favicons/edmond_favicon_red"
+    "icon": "assets/favicons/favicon"
   },
   rebuildConfig: {},
   makers: [
@@ -9,14 +9,14 @@ module.exports = {
       config: {
         "author": "MPDL Collections",
         "description": "Direct file upload to research data repository",
-        "icon": "assets/favicons/edmond_favicon_red.ico"
+        "icon": "assets/favicons/favicon.ico"
       },
     },
     {
       name: '@electron-forge/maker-zip',
       platforms: ['darwin'],
       config: {
-        "icon": "assets/favicons/edmond_favicon_red.icns"  
+        "icon": "assets/favicons/favicon.icns"  
       },
     },
     {
@@ -24,7 +24,7 @@ module.exports = {
       config: {
         "author": "MPDL Collections",
         "description": "Direct file upload to research data repository",
-        "icon": "assets/favicons/edmond_favicon_red.png"
+        "icon": "assets/favicons/favicon.png"
       },
     },
     /*
@@ -36,7 +36,7 @@ module.exports = {
     {
       name: '@electron-forge/maker-dmg',
       config: {
-        "icon": "assets/favicons/edmond_favicon_red.icns"  
+        "icon": "assets/favicons/favicon.icns"  
       }
     },
   ],

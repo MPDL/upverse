@@ -1,4 +1,4 @@
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, shell } from 'electron';
 
 import Cmp from './base-component.js';
 import { FileInfo } from "../../model/file-info.js";
@@ -7,6 +7,7 @@ import { dataFiles } from '../data-files';
 
 export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
   fileListElement: HTMLUListElement;
+  openDatasetElement: HTMLLinkElement;
   selectedFiles: FileInfo[];
 
   constructor() {
@@ -40,17 +41,23 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
       }
     });
 
-    ipcRenderer.on("UPLOAD_DONE", (event: Event, result: Record<string, unknown>) => {
+    ipcRenderer.on("UPLOAD_DONE", (event: Event, result: Record<string, unknown>, repository: string) => {
       this.selectedFiles = [];
       dataFiles.clear(); 
+      
       this.element.querySelector(
         "ul"
       )!.innerHTML = `<div id="upload-done">
         <h5>${result.numFiles2Upload}<i> files to upload, </i>${(result.numFiles2Upload as number) - (result.numFilesUploaded as number)} fails</h5>
         <h5>${result.numFilesUploaded}<i> files uploaded to </i>${result.destination}</h5>
         <br>
-        <a href="http://edmond.mpdl.mpg.de" target="_blank"><button class="btn btn-secondary"><i class="bi bi-card-checklist"></i> Open Edmond</button></a>
-        </div>`;  
+        <a id="open-dataset" href="${repository}/dataset.xhtml?persistentId=${result.destination}&version=DRAFT" target="_blank"><button class="btn btn-secondary"><i class="bi bi-card-checklist"></i> Open Dataset</button></a>
+        </div>`; 
+      this.openDatasetElement = document.getElementById(
+        'open-dataset'
+      ) as HTMLLinkElement;
+      this.openDatasetElement.addEventListener('click', this.openDatasetHandler.bind(this)); 
+
       (document.getElementById("cancel") as HTMLButtonElement).disabled = true;
       (document.getElementById("files") as HTMLButtonElement).disabled = false;
       (document.getElementById("folder") as HTMLButtonElement).disabled = false;
@@ -79,6 +86,12 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
 
   private clearItemList() {
     this.fileListElement.innerHTML = '';
+  }
+
+  private openDatasetHandler(event: Event) {
+    event.preventDefault();
+
+    shell.openExternal(this.openDatasetElement.href); 
   }
 
 }

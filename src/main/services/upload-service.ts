@@ -37,7 +37,7 @@ export const getUploadUrls = (doi: String, size: Number) => {
                 ['persistentId', `${doi}`],
                 ['size', `${size}`]
             ]).toString();
-            const apiCall = '/datasets/:persistentId/uploadurls';
+            const apiCall = '/api/datasets/:persistentId/uploadurls';
 
             const options = {
                 method: "GET",
@@ -141,7 +141,7 @@ export const addMultipleFilesToDataset = (doi: string, items: FileInfo[]) => {
             const params = new URLSearchParams([
                 ['persistentId', `${doi}`]
             ]).toString();
-            const apiCall = '/datasets/:persistentId/addFiles';
+            const apiCall = '/api/datasets/:persistentId/addFiles';
 
             const options = {
                 method: 'POST',
@@ -262,7 +262,7 @@ export const completeMultipartUpload = (item: FileInfo, completeUrl: string) => 
         ) => {
             const options = {
                 method: "PUT",
-                url: process.env.dv_base_uri.substring(0, process.env.dv_base_uri.indexOf('/api')) + completeUrl
+                url: process.env.dv_base_uri + completeUrl
             };
             const request = net.request(options);
 
@@ -290,7 +290,7 @@ export const abortMultipartUpload = (item: FileInfo, abortUrl: string) => {
         ) => {
             const options = {
                 method: "DELETE",
-                url: process.env.dv_base_uri.substring(0, process.env.dv_base_uri.indexOf('/api')) + abortUrl
+                url: process.env.dv_base_uri + abortUrl
             };
             const request = net.request(options);
 

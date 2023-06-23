@@ -33,6 +33,7 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
     this.cancelButtonElement = this.element.querySelector(
       '#cancel'
     ) as HTMLButtonElement;
+
     this.configure();
   }
 

@@ -12,12 +12,12 @@ import { UserInfo } from "../model/user-info";
 
 if (require('electron-squirrel-startup')) app.quit();
 // Set env
-const isDev = false;
+const isDev = true;
 
 let mainWindow: BrowserWindow;
 let settingsWindow: BrowserWindow;
 
-function createWindow() {
+function createMainWindow() {
   mainWindow = new BrowserWindow({
     title: "Research Data Uploader",
     width: 1600,
@@ -30,7 +30,7 @@ function createWindow() {
     // resizable: false,
     center: true,
     maximizable: true,
-    icon: path.join(__dirname, "../../../assets/favicons/edmond_favicon_red.png")
+    icon: path.join(__dirname, "../../../assets/favicons/favicon.png")
   });
 
   const indexPath = path.join('file://', __dirname, '../../views/index.html')
@@ -46,6 +46,33 @@ function createWindow() {
   })
 }
 
+function createSettingsWindow() {
+  settingsWindow = new BrowserWindow({
+    width: 800,
+    height: 360,
+    // resizable: false,
+    title: "Settings",
+    webPreferences: {
+      // webSecurity: true,      
+      nodeIntegration: true,
+      preload: path.join(__dirname, "../settings-renderer/preload.js")
+    },
+    center: true
+    /*, frame: false*/
+  })
+  settingsWindow.setMenu(null);
+  console.log("dirname: " + __dirname);
+  const settingsPath = path.join('file://', __dirname, '../../views/settings.html')
+  settingsWindow.loadURL(settingsPath);
+
+  settingsWindow.show();
+
+  // Open the DevTools.
+  if (isDev) {
+    settingsWindow.webContents.openDevTools();
+  }
+}
+
 function createMenu() {
   const template: Electron.MenuItemConstructorOptions[] = [
     {
@@ -54,29 +81,7 @@ function createMenu() {
         {
           label: 'Settings',
           click() {
-            if (isDev) console.log("on settings menu");
-            const settingsPath = path.join('file://', __dirname, '../../views/settings.html')
-            settingsWindow = new BrowserWindow({
-              width: 800,
-              height: 360,
-              // resizable: false,
-              title: "Settings",
-              webPreferences: {
-                // webSecurity: true,      
-                nodeIntegration: true,
-                preload: path.join(__dirname, "../settings-renderer/preload.js")
-              },
-              center: true
-              /*, frame: false*/
-            })
-            settingsWindow.setMenu(null);
-            settingsWindow.loadURL(settingsPath);
-            settingsWindow.show();
-
-            // Open the DevTools.
-            if (isDev) {
-              settingsWindow.webContents.openDevTools();
-            }
+            createSettingsWindow();
           }
         },
 
@@ -101,23 +106,34 @@ function createMenu() {
 }
 
 app.on("ready", () => {
-  createWindow();
-  createMenu();
-
   const userData = app.getPath("userData");
   netLog.startLogging(path.join(userData, "net-log"));
 
+  createMainWindow();
+  createMenu();
+
+  try {
+    new Settings(); 
+    if (Settings.loadSettings()) {
+      new Notification({ title: 'Upverse', body: 'Settings successfully read' }).show();
+    } else {
+      new Notification({ title: 'Upverse', body: 'Please, set your Settings'}).show();
+      createSettingsWindow();
+    } 
+  } catch (err) {
+    if (isDev) console.error(err);
+    new Notification({ title: 'Upverse !!!', body: err.message }).show();
+  }
+
   app.on("activate", function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
   });
 
   mainWindow.webContents.on('did-finish-load', async () => {
     try {
-      new Settings();
       if (Settings.loadSettings()) {
-        new Notification({ title: 'Upverse', body: 'Settings successfully read' }).show();
         await doConnection().then( async (user: UserInfo) => {
-          mainWindow.webContents.send('CONN_SUCCESS', [user.getAuthor()]);
+          mainWindow.webContents.send('CONN_SUCCESS', user.getAuthor(), process.env.dv_base_uri);
           await getDatasets().then((datasetList: DatasetInfo[]) => {
             mainWindow.webContents.send('DO_DS_SELECT', datasetList);
           }).catch(error => {
@@ -127,7 +143,7 @@ app.on("ready", () => {
           mainWindow.webContents.send('CONN_FAILED', error.message);
           throw error;
         });
-      } else throw new Error('Please, set your Settings');
+      }
     } catch (err) {
       if (isDev) console.error(err);
       new Notification({ title: 'Upverse', body: err.message }).show();
@@ -151,7 +167,7 @@ ipcMain.on('DO_TEST_CONN', async (event: IpcMainEvent, givenSettings: string[]) 
 
       await doConnection().then( async (user: UserInfo) => {
         event.reply('TEST_CONN_SUCCESS');
-        mainWindow.webContents.send('CONN_SUCCESS', [user.getAuthor()]);
+        mainWindow.webContents.send('CONN_SUCCESS', user.getAuthor(), process.env.dv_base_uri);
         await getDatasets().then((datasetList: DatasetInfo[]) => {
           mainWindow.webContents.send('DO_DS_SELECT', datasetList);
         }).catch(error => {
@@ -269,7 +285,7 @@ ipcMain.on('DO_UPLOAD', async (event: IpcMainEvent, fileInfoList: FileInfo[]) =>
   } else {
     try {
       await transferFiles(event, process.env.dest_dataset, fileInfoList).then((result: Record<string, unknown>) => {
-        event.reply('UPLOAD_DONE', result);
+        event.reply('UPLOAD_DONE', result, process.env.dv_base_uri);
       }).catch(error => {
         event.reply('UPLOAD_FAILED', error.message);
         throw error;
