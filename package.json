@@ -6,18 +6,32 @@
   "license": "MIT",
   "main": "dist/main/main.js",
   "scripts": {
-    "build": "rm -rf dist && tsc",
+    "postinstall": "electron-builder install-app-deps",
+    "build": "tsc",
+    "start": "rm -rf ./dist && npm run build && electron ./dist/main/main.js",
+    "deploy": "rm -rf ./dist && rm -rf ./out && npm run build && electron-builder -m",
     "watch": "tsc -w",
     "lint": "eslint -c .eslintrc --ext .ts ./src",
-    "start": "electron-forge start",
-    "start-dev": "npm run build && electron .",
-    "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/favicons/favicon.icns --prune=true --out=release-builds",
-    "package-win": "electron-packager . --overwrite --platform=win32 --arch=x64 --icon=assets/favicons/favicon.ico --prune=false --out=release-builds --version-string.CompanyName=MPDL --version-string.FileDescription=Uploader --version-string.ProductName=\"Upverse\"",
-    "package-linux": "electron-packager . --overwrite --platform=linux --arch=x64 --icon=assets/favicons/favicon.png --prune=false --out=release-builds",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
+
     "publish": "electron-forge publish --auth-token=${GITHUB_TOKEN}"
   },
+
+
+  "build" : {
+    "appId" : "de.mpg.mpdl.edmond.upverse",
+    "icon":"assets/favicons/favicon",
+    "directories": {
+      "output": "out"
+    },
+    "mac" : {
+      "hardenedRuntime": true
+    },
+    "win" : {
+    },
+    "linux" : {
+    }
+  },
+
   "repository": "https://github.com/MPDL/upverse",
   "keywords": [
     "edmond",
@@ -28,6 +42,7 @@
     "upload"
   ],
   "devDependencies": {
+    "electron-builder": "latest",
     "@electron-forge/cli": "^6.0.5",
     "@electron-forge/maker-deb": "^6.0.5",
     "@electron-forge/maker-dmg": "^6.0.5",
