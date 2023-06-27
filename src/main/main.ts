@@ -12,7 +12,7 @@ import { UserInfo } from "../model/user-info";
 
 if (require('electron-squirrel-startup')) app.quit();
 // Set env
-const isDev = true;
+const isDev = false;
 
 let mainWindow: BrowserWindow;
 let settingsWindow: BrowserWindow;
