@@ -12,7 +12,7 @@
     "postinstall": "electron-builder install-app-deps",
     "build": "tsc",
     "start": "rm -rf ./dist && npm run build && electron ./dist/main/main.js",
-    "deploy": "rm -rf ./dist && rm -rf ./out && npm run build && electron-builder --publish=never",
+    "deploy": "rm -rf ./dist && rm -rf ./out && npm run build && electron-builder --publish=never -l",
     "watch": "tsc -w",
     "lint": "eslint -c .eslintrc --ext .ts ./src"
   },
@@ -43,6 +43,7 @@
       }
     },
     "linux" : {
+      "icon":"assets/favicons/favicon.png",
       "target": ["deb","tar.gz"]
     }
   },
