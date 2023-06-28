@@ -1,7 +1,10 @@
 {
   "name": "upverse",
   "version": "1.0.0",
-  "author": "MPDL Collections",
+  "author": {
+    "name": "Max Planck Digital Library",
+    "email": "edmond@mpdl.mpg.de"
+  },
   "description": "Direct file upload to research data repository",
   "license": "MIT",
   "main": "dist/main/main.js",
@@ -17,6 +20,7 @@
 
   "build" : {
     "appId" : "de.mpg.mpdl.edmond.upverse",
+    "artifactName" : "${name}-${version}-${os}-${arch}.${ext}",
     "icon":"assets/favicons/favicon",
     "directories": {
       "output": "out"
@@ -26,11 +30,20 @@
       "!.idea"
     ],
     "mac" : {
+      "target" : {
+        "target" : "zip",
+        "arch" : ["x64", "arm64"]
+      },
       "hardenedRuntime": true
     },
     "win" : {
+      "target" : {
+        "target" : "nsis",
+        "arch" : ["x64", "arm64"]
+      }
     },
     "linux" : {
+      "target": ["deb","tar.gz"]
     }
   },
 

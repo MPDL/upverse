@@ -1,5 +1,12 @@
 name: Build
-on: [workflow_dispatch]
+on:
+  workflow_dispatch :
+    inputs:
+      release:
+        description: Whether to create a github release
+        type: boolean
+        required: false
+        default: false
 
 jobs:
   build_on_linux:
@@ -20,13 +27,10 @@ jobs:
     - name: Store artifact for .snap
       uses: actions/upload-artifact@v3
       with:
-        name: upverse_1.0.0_amd64.snap
-        path: out/upverse_1.0.0_amd64.snap
-#    - name: Store artifact for .rpm
-#      uses: actions/upload-artifact@v3
-#      with:
-#        name: upverse_1.0.0-1.x86_64.rpm
-#        path: out/make/rpm/x64/upverse-1.0.0-1.x86_64.rpm
+        name: upverse-linux-packages
+        path: |
+          out/upverse*.deb
+          out/upverse*.tar.gz
 
   build_on_mac_with_codesign_notarization:
     runs-on: macos-latest
@@ -56,6 +60,11 @@ jobs:
     - uses: actions/setup-node@master
       with:
         node-version: 18
+
+    - name: get-package-version
+      id: package-version
+      uses: martinbeentjes/npm-get-version-action@v1.3.1
+
     - name: install dependencies
       run: npm install
     - name: Package # Codesigning should run automatically here by electron_builder
@@ -86,22 +95,31 @@ jobs:
         # characteristics. Visit the Notarization docs for more information and strategies on how to optimize it if
         # you're curious
         
-        echo "Notarize app"
-        xcrun notarytool submit "out/upverse-1.0.0-mac.zip" --keychain-profile "notarytool-profile" --wait
+        echo "Notarize app x64"
+        xcrun notarytool submit "out/upverse-${{ steps.package-version.outputs.current-version }}-mac-x64.zip" --keychain-profile "notarytool-profile" --wait
         
         # Finally, we need to "attach the staple" to our executable, which will allow our app to be
         # validated by macOS even when an internet connection is not available.
         echo "Attach staple"
         xcrun stapler staple "out/mac/upverse.app"
         
+        echo "Notarize app arm64"
+        xcrun notarytool submit "out/upverse-${{ steps.package-version.outputs.current-version }}-arm64-mac.zip" --keychain-profile "notarytool-profile" --wait
+        
+        # Finally, we need to "attach the staple" to our executable, which will allow our app to be
+        # validated by macOS even when an internet connection is not available.
+        echo "Attach staple"
+        xcrun stapler staple "out/mac-arm64/upverse.app"
+        
         #Rezip the notarized app
-        ditto -c -k --keepParent "out/mac/upverse.app" "upverse-1.0.0-mac-signed.zip"
+        ditto -c -k --keepParent "out/mac/upverse.app" "upverse-${{ steps.package-version.outputs.current-version }}0-mac-x64-signed.zip"
+        ditto -c -k --keepParent "out/mac-arm64/upverse.app" "upverse-${{ steps.package-version.outputs.current-version }}-mac-arm64-signed.zip"
 
     - name: Store artifact for mac as .zip
       uses: actions/upload-artifact@v3
       with:
-        name: upverse-1.0.0-mac-signed.zip
-        path: upverse-1.0.0-mac-signed.zip
+        name: upverse-mac-packages
+        path: upverse*.zip
       
   build_on_win:
     runs-on: windows-latest
@@ -117,5 +135,41 @@ jobs:
     - name: Store artifact for .exe
       uses: actions/upload-artifact@v3
       with:
-        name: upverse-1.0.0-win-setup.exe
+        name: upverse-win-packages
         path: out\upverse*.exe
+
+
+  release:
+    runs-on: ubuntu-latest
+    needs: [ build_on_linux, build_on_mac_with_codesign_notarization, build_on_win ]
+    if: ${{ github.event.inputs.release }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: get-package-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@v1.3.1
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: path/to/artifacts
+
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          name: Release ${{ steps.package-version.outputs.current-version }}
+          draft: true
+          prerelease: true
+          files: |
+            upverse-mac-packages/upverse-${{ steps.package-version.outputs.current-version }}-mac-x64-signed.zip
+            upverse-mac-packages/upverse-${{ steps.package-version.outputs.current-version }}-mac-arm64-signed.zip
+            upverse-linux-packages/upverse-${{ steps.package-version.outputs.current-version }}-linux-x64.tar.gz
+            upverse-linux-packages/upverse-${{ steps.package-version.outputs.current-version }}-linux-amd64.deb
+            upverse-win-packages/upverse-${{ steps.package-version.outputs.current-version }}-win-x64.deb
+            
+
+     
