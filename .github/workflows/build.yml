@@ -1,5 +1,5 @@
 name: Build
-on: [push, workflow_dispatch]
+on: [workflow_dispatch]
 
 jobs:
   build_on_linux:
@@ -16,42 +16,92 @@ jobs:
     - name: install dependencies
       run: npm install
     - name: build
-      run: npm run build      
-    - name: make
-      run: npm run make
-    - name: Location
-      run: ls -R out/make
-    - name: Store artifact for .deb
+      run: npm run deploy
+    - name: Store artifact for .snap
       uses: actions/upload-artifact@v3
       with:
-        name: upverse_1.0.0_amd64.deb
-        path: out/make/deb/x64/upverse_1.0.0_amd64.deb
+        name: upverse_1.0.0_amd64.snap
+        path: out/upverse_1.0.0_amd64.snap
 #    - name: Store artifact for .rpm
 #      uses: actions/upload-artifact@v3
 #      with:
 #        name: upverse_1.0.0-1.x86_64.rpm
 #        path: out/make/rpm/x64/upverse-1.0.0-1.x86_64.rpm
 
-  build_on_mac:
+  build_on_mac_with_codesign_notarization:
     runs-on: macos-latest
     steps:
+    - name: "Prepare Codesigning"
+      # Extract the secrets we defined earlier as environment variables
+      env:
+        MACOS_CERTIFICATE: ${{ secrets.PROD_MACOS_DEVELOPER_ID_CERTIFICATE }}
+        MACOS_CERTIFICATE_PWD: ${{ secrets.PROD_MACOS_DEVELOPER_ID_CERTIFICATE_PWD }}
+        MACOS_CERTIFICATE_NAME: ${{ secrets.PROD_MACOS_DEVELOPER_ID_CERTIFICATE_NAME }}
+        MACOS_CI_KEYCHAIN_PWD: ${{ secrets.PROD_MACOS_CI_KEYCHAIN_PWD }}
+      run: |
+        # Turn our base64-encoded certificate back to a regular .p12 file
+        echo $MACOS_CERTIFICATE | base64 --decode > certificate.p12
+
+        # We need to create a new keychain, otherwise using the certificate will prompt
+        # with a UI dialog asking for the certificate password, which we can't
+        # use in a headless CI environment
+
+        security create-keychain -p "$MACOS_CI_KEYCHAIN_PWD" build.keychain 
+        security default-keychain -s build.keychain
+        security unlock-keychain -p "$MACOS_CI_KEYCHAIN_PWD" build.keychain
+        security import certificate.p12 -k build.keychain -P "$MACOS_CERTIFICATE_PWD" -T /usr/bin/codesign
+        security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$MACOS_CI_KEYCHAIN_PWD" build.keychain
+
     - uses: actions/checkout@v3
     - uses: actions/setup-node@master
       with:
         node-version: 18
     - name: install dependencies
       run: npm install
-    - name: build
-      run: npm run build      
-    - name: make
-      run: npm run make
-    - name: Location
-      run: ls -R out/make
-    - name: Store artifact for darwin as .zip
+    - name: Package # Codesigning should run automatically here by electron_builder
+      run: npm run deploy
+
+
+    - name: "Notarize app bundle"
+      # Extract the secrets we defined earlier as environment variables
+      env:
+        PROD_MACOS_NOTARIZATION_APPLE_ID: ${{ secrets.PROD_MACOS_NOTARIZATION_APPLE_ID }}
+        PROD_MACOS_NOTARIZATION_TEAM_ID: ${{ secrets.PROD_MACOS_NOTARIZATION_TEAM_ID }}
+        PROD_MACOS_NOTARIZATION_PWD: ${{ secrets.PROD_MACOS_NOTARIZATION_PWD }}
+      run: |
+        # Store the notarization credentials so that we can prevent a UI password dialog
+        # from blocking the CI
+        
+        echo "Create keychain profile"
+        xcrun notarytool store-credentials "notarytool-profile" --apple-id "$PROD_MACOS_NOTARIZATION_APPLE_ID" --team-id "$PROD_MACOS_NOTARIZATION_TEAM_ID" --password "$PROD_MACOS_NOTARIZATION_PWD"
+        
+        # We can't notarize an app bundle directly, but we need to compress it as an archive.
+        # Therefore, we create a zip file containing our app bundle, so that we can send it to the
+        # notarization service     
+        #echo "Creating temp notarization archive"
+        #ditto -c -k --keepParent "target/mac/Espanso.app" "notarization.zip"
+        
+        # Here we send the notarization request to the Apple's Notarization service, waiting for the result.
+        # This typically takes a few seconds inside a CI environment, but it might take more depending on the App
+        # characteristics. Visit the Notarization docs for more information and strategies on how to optimize it if
+        # you're curious
+        
+        echo "Notarize app"
+        xcrun notarytool submit "out/upverse-1.0.0-mac.zip" --keychain-profile "notarytool-profile" --wait
+        
+        # Finally, we need to "attach the staple" to our executable, which will allow our app to be
+        # validated by macOS even when an internet connection is not available.
+        echo "Attach staple"
+        xcrun stapler staple "out/mac/upverse.app"
+        
+        #Rezip the notarized app
+        ditto -c -k --keepParent "out/mac/upverse.app" "upverse-1.0.0-mac-signed.zip"
+
+    - name: Store artifact for mac as .zip
       uses: actions/upload-artifact@v3
       with:
-        name: upverse-darwin-x64-1.0.0.zip
-        path: out/make/zip/darwin/x64/upverse-darwin-x64-1.0.0.zip    
+        name: upverse-1.0.0-mac-signed.zip
+        path: upverse-1.0.0-mac-signed.zip
       
   build_on_win:
     runs-on: windows-latest
@@ -62,14 +112,10 @@ jobs:
         node-version: 18
     - name: install dependencies
       run: npm install
-    - name: build
-      run: npm run build      
-    - name: make
-      run: npm run make
-    - name: Location
-      run: dir out\make\squirrel.windows\x64
+    - name: package
+      run: npm run deploy
     - name: Store artifact for .exe
       uses: actions/upload-artifact@v3
       with:
         name: upverse-1.0.0.Setup.exe
-        path: out\make\squirrel.windows\x64\upverse-1.0.0*Setup.exe
+        path: out\upverse-1.0.0*Setup.exe
