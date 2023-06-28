@@ -9,11 +9,9 @@
     "postinstall": "electron-builder install-app-deps",
     "build": "tsc",
     "start": "rm -rf ./dist && npm run build && electron ./dist/main/main.js",
-    "deploy": "rm -rf ./dist && rm -rf ./out && npm run build && electron-builder",
+    "deploy": "rm -rf ./dist && rm -rf ./out && npm run build && electron-builder --publish=never",
     "watch": "tsc -w",
-    "lint": "eslint -c .eslintrc --ext .ts ./src",
-
-    "publish": "electron-forge publish --auth-token=${GITHUB_TOKEN}"
+    "lint": "eslint -c .eslintrc --ext .ts ./src"
   },
 
 
