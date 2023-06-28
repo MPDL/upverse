@@ -13,18 +13,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+
     - uses: actions/setup-node@master
       with:
         node-version: 18
+
     - name: install rpm tool
       run:
         sudo apt-get update;
         sudo apt install rpm
+
     - name: install dependencies
       run: npm install
-    - name: build
+
+    - name: package
       run: npm run deploy
-    - name: Store artifact for .snap
+
+    - name: store artifacts
       uses: actions/upload-artifact@v3
       with:
         name: upverse-linux-packages
@@ -57,6 +62,7 @@ jobs:
         security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$MACOS_CI_KEYCHAIN_PWD" build.keychain
 
     - uses: actions/checkout@v3
+
     - uses: actions/setup-node@master
       with:
         node-version: 18
@@ -67,7 +73,8 @@ jobs:
 
     - name: install dependencies
       run: npm install
-    - name: Package # Codesigning should run automatically here by electron_builder
+
+    - name: package # Codesigning should run automatically here by electron_builder
       run: npm run deploy
 
 
@@ -104,7 +111,7 @@ jobs:
         xcrun stapler staple "out/mac/upverse.app"
         
         echo "Notarize app arm64"
-        xcrun notarytool submit "out/upverse-${{ steps.package-version.outputs.version }}-arm64-mac.zip" --keychain-profile "notarytool-profile" --wait
+        xcrun notarytool submit "out/upverse-${{ steps.package-version.outputs.version }}-mac-arm64.zip" --keychain-profile "notarytool-profile" --wait
         
         # Finally, we need to "attach the staple" to our executable, which will allow our app to be
         # validated by macOS even when an internet connection is not available.
@@ -115,7 +122,7 @@ jobs:
         ditto -c -k --keepParent "out/mac/upverse.app" "upverse-${{ steps.package-version.outputs.version }}0-mac-x64-signed.zip"
         ditto -c -k --keepParent "out/mac-arm64/upverse.app" "upverse-${{ steps.package-version.outputs.version }}-mac-arm64-signed.zip"
 
-    - name: Store artifact for mac as .zip
+    - name: store artifacts
       uses: actions/upload-artifact@v3
       with:
         name: upverse-mac-packages
@@ -125,14 +132,18 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
+
     - uses: actions/setup-node@master
       with:
         node-version: 18
+
     - name: install dependencies
       run: npm install
+
     - name: package
       run: npm run deploy
-    - name: Store artifact for .exe
+
+    - name: store artifacts
       uses: actions/upload-artifact@v3
       with:
         name: upverse-win-packages
@@ -144,20 +155,20 @@ jobs:
     needs: [ build_on_linux, build_on_mac_with_codesign_notarization, build_on_win ]
     if: ${{ github.event.inputs.release }}
     steps:
-      - name: Checkout
+      - name: checkout
         uses: actions/checkout@v3
 
       - name: get-package-version
         id: package-version
         uses: beaconbrigade/package-json-version@v0.3
 
-      - name: Download artifacts
+      - name: download artifacts
         uses: actions/download-artifact@v3
         with:
           path: path/to/artifacts
 
 
-      - name: Release
+      - name: release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
