@@ -117,5 +117,5 @@ jobs:
     - name: Store artifact for .exe
       uses: actions/upload-artifact@v3
       with:
-        name: upverse-1.0.0.Setup.exe
-        path: out\upverse-1.0.0*Setup.exe
+        name: upverse-1.0.0-win-setup.exe
+        path: out\upverse*.exe
