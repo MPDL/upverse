@@ -3,7 +3,7 @@ on:
   workflow_dispatch :
     inputs:
       release:
-        description: Whether to create a github release
+        description: Create a github release
         type: boolean
         required: false
         default: false
@@ -63,7 +63,7 @@ jobs:
 
     - name: get-package-version
       id: package-version
-      uses: martinbeentjes/npm-get-version-action@v1.3.1
+      uses: beaconbrigade/package-json-version@v0.3
 
     - name: install dependencies
       run: npm install
@@ -96,7 +96,7 @@ jobs:
         # you're curious
         
         echo "Notarize app x64"
-        xcrun notarytool submit "out/upverse-${{ steps.package-version.outputs.current-version }}-mac-x64.zip" --keychain-profile "notarytool-profile" --wait
+        xcrun notarytool submit "out/upverse-${{ steps.package-version.outputs.version }}-mac-x64.zip" --keychain-profile "notarytool-profile" --wait
         
         # Finally, we need to "attach the staple" to our executable, which will allow our app to be
         # validated by macOS even when an internet connection is not available.
@@ -104,7 +104,7 @@ jobs:
         xcrun stapler staple "out/mac/upverse.app"
         
         echo "Notarize app arm64"
-        xcrun notarytool submit "out/upverse-${{ steps.package-version.outputs.current-version }}-arm64-mac.zip" --keychain-profile "notarytool-profile" --wait
+        xcrun notarytool submit "out/upverse-${{ steps.package-version.outputs.version }}-arm64-mac.zip" --keychain-profile "notarytool-profile" --wait
         
         # Finally, we need to "attach the staple" to our executable, which will allow our app to be
         # validated by macOS even when an internet connection is not available.
@@ -112,8 +112,8 @@ jobs:
         xcrun stapler staple "out/mac-arm64/upverse.app"
         
         #Rezip the notarized app
-        ditto -c -k --keepParent "out/mac/upverse.app" "upverse-${{ steps.package-version.outputs.current-version }}0-mac-x64-signed.zip"
-        ditto -c -k --keepParent "out/mac-arm64/upverse.app" "upverse-${{ steps.package-version.outputs.current-version }}-mac-arm64-signed.zip"
+        ditto -c -k --keepParent "out/mac/upverse.app" "upverse-${{ steps.package-version.outputs.version }}0-mac-x64-signed.zip"
+        ditto -c -k --keepParent "out/mac-arm64/upverse.app" "upverse-${{ steps.package-version.outputs.version }}-mac-arm64-signed.zip"
 
     - name: Store artifact for mac as .zip
       uses: actions/upload-artifact@v3
@@ -149,7 +149,7 @@ jobs:
 
       - name: get-package-version
         id: package-version
-        uses: martinbeentjes/npm-get-version-action@v1.3.1
+        uses: beaconbrigade/package-json-version@v0.3
 
       - name: Download artifacts
         uses: actions/download-artifact@v3
@@ -161,15 +161,15 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          name: Release ${{ steps.package-version.outputs.current-version }}
+          name: Release ${{ steps.package-version.outputs.version }}
           draft: true
           prerelease: true
           files: |
-            upverse-mac-packages/upverse-${{ steps.package-version.outputs.current-version }}-mac-x64-signed.zip
-            upverse-mac-packages/upverse-${{ steps.package-version.outputs.current-version }}-mac-arm64-signed.zip
-            upverse-linux-packages/upverse-${{ steps.package-version.outputs.current-version }}-linux-x64.tar.gz
-            upverse-linux-packages/upverse-${{ steps.package-version.outputs.current-version }}-linux-amd64.deb
-            upverse-win-packages/upverse-${{ steps.package-version.outputs.current-version }}-win-x64.deb
+            upverse-mac-packages/upverse-${{ steps.package-version.outputs.version }}-mac-x64-signed.zip
+            upverse-mac-packages/upverse-${{ steps.package-version.outputs.version }}-mac-arm64-signed.zip
+            upverse-linux-packages/upverse-${{ steps.package-version.outputs.version }}-linux-x64.tar.gz
+            upverse-linux-packages/upverse-${{ steps.package-version.outputs.version }}-linux-amd64.deb
+            upverse-win-packages/upverse-${{ steps.package-version.outputs.version }}-win-x64.deb
             
 
      
