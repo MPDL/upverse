@@ -1,4 +1,4 @@
-name: Build
+name: build package release
 on:
   workflow_dispatch :
     inputs:
@@ -164,9 +164,6 @@ jobs:
 
       - name: download artifacts
         uses: actions/download-artifact@v3
-        with:
-          path: path/to/artifacts
-
 
       - name: release
         uses: softprops/action-gh-release@v1
