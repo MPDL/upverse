@@ -168,7 +168,7 @@ jobs:
       - name: release
         uses: softprops/action-gh-release@v1
         with:
-          name: Release ${{ steps.package-version.outputs.version }}
+          name: v${{ steps.package-version.outputs.version }}
           draft: true
           prerelease: true
           files: |

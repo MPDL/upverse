@@ -43,7 +43,7 @@
       }
     },
     "linux" : {
-      "icon":"assets/favicons/favicon.png",
+      "icon":"assets/favicons/512x512.png",
       "target": ["deb","tar.gz"]
     }
   },
