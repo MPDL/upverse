@@ -150,6 +150,7 @@ jobs:
         path: |
           out\upverse*.zip
           out\upverse*.msi
+          out\upverse*.exe
 
 
   release:

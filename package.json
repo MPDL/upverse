@@ -37,7 +37,7 @@
     "win" : {
       "target" : [
         {
-        "target" : "msi",
+        "target" : "nsis",
         "arch" : ["x64"]
         },
         {
