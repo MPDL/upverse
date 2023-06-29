@@ -147,7 +147,9 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: upverse-win-packages
-        path: out\upverse*.exe
+        path: |
+          out\upverse*.zip
+          out\upverse*.msi
 
 
   release:
@@ -176,7 +178,8 @@ jobs:
             upverse-mac-packages/upverse-${{ steps.package-version.outputs.version }}-mac-arm64-signed.zip
             upverse-linux-packages/upverse-${{ steps.package-version.outputs.version }}-linux-x64.tar.gz
             upverse-linux-packages/upverse-${{ steps.package-version.outputs.version }}-linux-amd64.deb
-            upverse-win-packages/upverse-${{ steps.package-version.outputs.version }}-win-x64.exe
+            upverse-win-packages/upverse-${{ steps.package-version.outputs.version }}-win-x64.zip
+            upverse-win-packages/upverse-${{ steps.package-version.outputs.version }}-win-x64.msi
             
 
      

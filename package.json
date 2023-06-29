@@ -12,7 +12,7 @@
     "postinstall": "electron-builder install-app-deps",
     "build": "tsc",
     "start": "rm -rf ./dist && npm run build && electron ./dist/main/main.js",
-    "deploy": "rm -rf ./dist && rm -rf ./out && npm run build && electron-builder --publish=never",
+    "deploy": "rm -rf ./dist && rm -rf ./out && npm run build && electron-builder --publish=never -w",
     "watch": "tsc -w",
     "lint": "eslint -c .eslintrc --ext .ts ./src"
   },
@@ -37,10 +37,16 @@
       "hardenedRuntime": true
     },
     "win" : {
-      "target" : {
-        "target" : "nsis",
+      "target" : [
+        {
+        "target" : "msi",
         "arch" : ["x64"]
-      }
+        },
+        {
+          "target" : "zip",
+          "arch" : ["x64"]
+        }
+      ]
     },
     "linux" : {
       "icon":"assets/favicons/favicon.icns",
