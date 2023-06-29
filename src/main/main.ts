@@ -10,7 +10,6 @@ import { connectToRepository, getUserDatasets } from "./controllers/user-control
 import * as upload_controller from './controllers/upload-controller';
 import { UserInfo } from "../model/user-info";
 
-if (require('electron-squirrel-startup')) app.quit();
 // Set env
 const isDev = false;
 
