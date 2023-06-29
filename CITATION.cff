@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+title: Upverse
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: José Daniel
+    family-names: Vila Rodríguez
+    email: vilarodriguez@mpdl.mpg.de
+    affiliation: Max Planck Digital Library
+    orcid: 'https://orcid.org/0000-0001-5217-1715'
+  - given-names: Markus
+    family-names: Haarländer
+    email: haarländer@mpdl.mpg.de
+    affiliation: Max Plank Digital Library
+identifiers:
+  - type: doi
+    value: 10.17617/1.upv23
+    description: >-
+      Direct upload from data files to Edmond Research
+      Repository
+keywords:
+  - edmond
+  - research
+  - data
+  - repository
+  - dataverse
+  - upload
+repository-code: 'https://github.com/MPDL/upverse/releases'
+license: MIT

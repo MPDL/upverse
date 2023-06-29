@@ -16,8 +16,6 @@
     "watch": "tsc -w",
     "lint": "eslint -c .eslintrc --ext .ts ./src"
   },
-
-
   "build" : {
     "appId" : "de.mpg.mpdl.edmond.upverse",
     "artifactName" : "${name}-${version}-${os}-${arch}.${ext}",
@@ -54,7 +52,6 @@
       "category": "Utility"
     }
   },
-
   "repository": "https://github.com/MPDL/upverse",
   "keywords": [
     "edmond",
