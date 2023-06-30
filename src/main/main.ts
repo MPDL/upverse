@@ -60,7 +60,7 @@ function createSettingsWindow() {
     /*, frame: false*/
   })
   settingsWindow.setMenu(null);
-  console.log("dirname: " + __dirname);
+  if (isDev) console.log("dirname: " + __dirname);
   const settingsPath = path.join('file://', __dirname, '../../views/settings.html')
   settingsWindow.loadURL(settingsPath);
 
@@ -226,7 +226,7 @@ ipcMain.on('DO_FILE_EXCLUDE', (event: IpcMainEvent, file: FileInfo) => {
 })
 
 ipcMain.on('DO_CLEAR_SELECTED', (event: IpcMainEvent) => {
-  event.reply('DO_LIST_CLEAR');
+  event.reply('DO_LIST_CLEAR', '');
 })
 
 ipcMain.on('DO_FILE_SELECT', (event: IpcMainEvent) => {
@@ -252,25 +252,29 @@ ipcMain.on('DO_FOLDER_SELECT', (event: IpcMainEvent) => {
     dialog.showOpenDialog(mainWindow, {
       properties: ['openDirectory'], buttonLabel: "Select"
     }).then(async result => {
-      let fileList: string[] = [];
-      for (const filePath of result.filePaths) {
-        for (const files of getFileList(filePath)) {
-          fileList = fileList.concat(files);
+      if (result.filePaths.length ) {
+        let fileList: string[] = [];
+        for (const filePath of result.filePaths) {
+          for (const files of getFileList(filePath)) {
+            fileList = fileList.concat(files);
+          }
         }
-      }
-      let fileInfoList: FileInfo[] = [];
-      const currentBasePath = path.basename(result.filePaths[0]);
+        let fileInfoList: FileInfo[] = [];
+        const currentBasePath = path.basename(result.filePaths[0]);
 
-      for (const file of fileList) {
-        let uploadPath = path.dirname(path.relative(result.filePaths[0], file));
-        uploadPath = path.join(currentBasePath, uploadPath);
-        fileInfoList.push(getFileInfo(file, fileInfoList.length, uploadPath));
+        for (const file of fileList) {
+          let uploadPath = path.dirname(path.relative(result.filePaths[0], file));
+          uploadPath = path.join(currentBasePath, uploadPath);
+          fileInfoList.push(getFileInfo(file, fileInfoList.length, uploadPath));
+        }
+        if (fileInfoList.length) { 
+          event.reply('FOLDER_SELECT_DONE', fileInfoList);
+        } else new Notification({ title: 'File Explorer', body: "Please, select a non empty folder" }).show();
       }
-      if (fileInfoList.length) event.reply('FOLDER_SELECT_DONE', fileInfoList);
     });
   } catch (error) {
     if (isDev) console.error(error);
-    new Notification({ title: 'File Explorer', body: 'Open file explorer failed' });
+    new Notification({ title: 'File Explorer', body: error.message }).show();
     event.reply('FOLDER_SELECT_FAILED', '');
   }
 
@@ -299,7 +303,7 @@ ipcMain.on('DO_UPLOAD', async (event: IpcMainEvent, fileInfoList: FileInfo[]) =>
 ipcMain.on('DO_ABORT', (event: IpcMainEvent) => {
   try {
     upload_controller.setAbort.subscribe();
-    event.reply('UPLOAD_ABORT', '');
+    event.reply('DO_LIST_CLEAR', '');
   } catch (error) {
     if (isDev) console.error(error);
     new Notification({ title: 'Upload', body: 'Upload aborted' });

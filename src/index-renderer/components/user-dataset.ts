@@ -48,8 +48,6 @@ export class UserDataset extends Cmp<HTMLDivElement, HTMLDivElement> {
     })
   }
 
-  renderContent(): void { console.log("renderContent") }
-
   private gatherUserInput(): [DatasetInfo] | void {
     const enteredDataset = this.datasetSelectElement.options[this.datasetSelectElement.selectedIndex].value;
     const datasetValidatable: Validation.Validatable = {
@@ -67,7 +65,7 @@ export class UserDataset extends Cmp<HTMLDivElement, HTMLDivElement> {
     } else {
       this.lastSelected = enteredDataset;
       const itemsSelected = document.getElementById("research-files-list") as HTMLUListElement;
-      if(itemsSelected.hasChildNodes) {
+      if(itemsSelected.hasChildNodes()) {
         (document.getElementById("upload") as HTMLButtonElement).disabled = false;
       }
       return [this.userDatasets[Number([enteredDataset])]];

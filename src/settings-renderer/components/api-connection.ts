@@ -58,8 +58,6 @@ export class ApiConnection extends Cmp<HTMLDivElement, HTMLFormElement> {
     });
   }
 
-  renderContent(): void { console.log("renderContent") }
-
   private gatherUserInput(): [string, string] | void {
     const enteredToken = this.tokenInputElement.value;
     const enteredUrl = this.urlInputElement.value;

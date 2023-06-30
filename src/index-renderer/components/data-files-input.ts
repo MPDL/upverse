@@ -63,7 +63,7 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
       if (doneElement) {
         doneElement.innerHTML = '';
       }
-      if (enteredFiles) {
+      if (enteredFiles.length) {
         const files = Array.from(enteredFiles);
         enteredFiles.forEach((file) => {
           dataFiles.addFile(file);
@@ -71,8 +71,8 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
         const dsSelected = document.getElementById("dataset") as HTMLInputElement;
         if (dsSelected.value.length > 0 && dsSelected.value[0].length > 0) {
           this.submitButtonElement.disabled = false;
+          this.resetButtonElement.disabled = false;
         }
-        this.resetButtonElement.disabled = false;
       }
     })
 
@@ -92,7 +92,7 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
       if (doneElement) {
         doneElement.innerHTML = '';
       }
-      if (enteredFiles) {
+      if (enteredFiles.length) {
         const files = Array.from(enteredFiles);
         enteredFiles.forEach((file) => {
           dataFiles.addFile(file);
@@ -100,8 +100,8 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
         const dsSelected = document.getElementById("dataset") as HTMLInputElement;
         if (dsSelected.value.length > 0 && dsSelected.value[0].length > 0) {
           this.submitButtonElement.disabled = false;
+          this.resetButtonElement.disabled = false;
         }
-        this.resetButtonElement.disabled = false;
       }
     })
 
@@ -120,8 +120,6 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
     dataFiles.clear();
     this.submitButtonElement.innerHTML = ' <i class="bi bi-upload d-none d-xxl-inline"></i> Upload ';
   }
-
-  renderContent():void {console.log("renderContent")}
 
   private gatherUserInput(): FileInfo[] {
     const enteredFiles = dataFiles.getAll();
@@ -144,12 +142,14 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
 
   private submitHandler(event: Event) {
     event.preventDefault();
-    this.filesButtonElement.disabled = true;
-    this.folderButtonElement.disabled = true;
-    this.resetButtonElement.disabled = true;
-    this.submitButtonElement.disabled = true;
-    this.cancelButtonElement.disabled = false; 
-    ipcRenderer.send('DO_UPLOAD', dataFiles.getAll());
+    if (dataFiles.length()) {
+      this.filesButtonElement.disabled = true;
+      this.folderButtonElement.disabled = true;
+      this.resetButtonElement.disabled = true;
+      this.submitButtonElement.disabled = true;
+      this.cancelButtonElement.disabled = false; 
+      ipcRenderer.send('DO_UPLOAD', dataFiles.getAll());
+    } 
   }
 
   private filesHandler(event: Event) {
@@ -165,7 +165,7 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
   private changeHandler(event: Event) {
     event.preventDefault();
     const enteredFiles = this.gatherUserInput(); 
-    if (enteredFiles) {
+    if (enteredFiles.length) {
       for (const file of enteredFiles) {
         dataFiles.addFile(file);
       };
@@ -190,6 +190,8 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
     this.resetButtonElement.disabled = true;
     this.submitButtonElement.disabled = true;
     this.cancelButtonElement.disabled = true;
+    this.filesButtonElement.disabled = false;
+    this.folderButtonElement.disabled = false;
     ipcRenderer.send('DO_ABORT');
   }
 
