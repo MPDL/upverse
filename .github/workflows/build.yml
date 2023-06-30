@@ -172,7 +172,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           name: v${{ steps.package-version.outputs.version }}
-          draft: true
+          tag_name: v${{ steps.package-version.outputs.version }}
+          draft: false
           prerelease: true
           files: |
             upverse-mac-packages/upverse-${{ steps.package-version.outputs.version }}-mac-x64-signed.zip
