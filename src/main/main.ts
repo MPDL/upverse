@@ -10,9 +10,6 @@ import { connectToRepository, getUserDatasets } from "./controllers/user-control
 import * as upload_controller from './controllers/upload-controller';
 import { UserInfo } from "../model/user-info";
 
-// Set env
-const isDev = false;
-
 let mainWindow: BrowserWindow;
 let settingsWindow: BrowserWindow;
 
@@ -36,9 +33,7 @@ function createMainWindow() {
   mainWindow.loadURL(indexPath);
 
   // Open the DevTools.
-  if (isDev) {
-    mainWindow.webContents.openDevTools();
-  }
+  // mainWindow.webContents.openDevTools();
 
   mainWindow.on('close', function () {
     app.quit();
@@ -60,16 +55,13 @@ function createSettingsWindow() {
     /*, frame: false*/
   })
   settingsWindow.setMenu(null);
-  if (isDev) console.log("dirname: " + __dirname);
   const settingsPath = path.join('file://', __dirname, '../../views/settings.html')
   settingsWindow.loadURL(settingsPath);
 
   settingsWindow.show();
 
   // Open the DevTools.
-  if (isDev) {
-    settingsWindow.webContents.openDevTools();
-  }
+  //settingsWindow.webContents.openDevTools();
 }
 
 function createMenu() {
@@ -120,7 +112,6 @@ app.on("ready", () => {
       createSettingsWindow();
     } 
   } catch (err) {
-    if (isDev) console.error(err);
     new Notification({ title: 'Upverse !!!', body: err.message }).show();
   }
 
@@ -144,7 +135,6 @@ app.on("ready", () => {
         });
       }
     } catch (err) {
-      if (isDev) console.error(err);
       new Notification({ title: 'Upverse', body: err.message }).show();
     }
   });
@@ -178,7 +168,6 @@ ipcMain.on('DO_TEST_CONN', async (event: IpcMainEvent, givenSettings: string[]) 
       });
     } else throw new Error('Please, check Settings');
   } catch (error) {
-    if (isDev) console.error(error);
     new Notification({ title: 'Settings', body: error.message }).show();
   }
 })
@@ -198,7 +187,6 @@ ipcMain.on('DO_SAVE_SETTINGS', (event: IpcMainEvent, givenSettings: string[]) =>
       }
     } else throw new Error('Please, enter values');
   } catch (error) {
-    if (isDev) console.error(error);
     new Notification({ title: 'Settings', body: error.message }).show();
   }
 })
@@ -216,7 +204,6 @@ ipcMain.on('DO_DS_LIST_REFRESH', async (event: IpcMainEvent) => {
       mainWindow.webContents.send('DO_DS_SELECT', datasetList);
     });
   } catch (error) {
-    if (isDev) console.error(error);
     new Notification({ title: 'Upverse', body: error.message }).show();
   }
 })
@@ -241,7 +228,6 @@ ipcMain.on('DO_FILE_SELECT', (event: IpcMainEvent) => {
       if (fileInfoList.length) event.reply('FILE_SELECT_DONE', fileInfoList);
     });
   } catch (error) {
-    if (isDev) console.error(error);
     new Notification({ title: 'File Explorer', body: 'Open file explorer failed' });
     event.reply('FILE_SELECT_FAILED', '');
   }
@@ -273,7 +259,6 @@ ipcMain.on('DO_FOLDER_SELECT', (event: IpcMainEvent) => {
       }
     });
   } catch (error) {
-    if (isDev) console.error(error);
     new Notification({ title: 'File Explorer', body: error.message }).show();
     event.reply('FOLDER_SELECT_FAILED', '');
   }
@@ -294,7 +279,6 @@ ipcMain.on('DO_UPLOAD', async (event: IpcMainEvent, fileInfoList: FileInfo[]) =>
         throw error;
       })
     } catch (error) {
-      if (isDev) console.error(error);
       new Notification({ title: 'Upload Failed!', body: error.message }).show();
     }
   }
@@ -305,7 +289,6 @@ ipcMain.on('DO_ABORT', (event: IpcMainEvent) => {
     upload_controller.setAbort.subscribe();
     event.reply('DO_LIST_CLEAR', '');
   } catch (error) {
-    if (isDev) console.error(error);
     new Notification({ title: 'Upload', body: 'Upload aborted' });
     event.reply('UPLOAD_FAILED', '');
   }
@@ -325,7 +308,6 @@ const transferFiles = (event: IpcMainEvent, persistentId: string, files: FileInf
           reject(error);
         })
       } catch (err) {
-        if (isDev) console.error(err);
         reject(err);
       }
     }
@@ -345,7 +327,6 @@ const doConnection = () => {
           reject(error);
         });
       } catch (err) {
-        if (isDev) console.error(err);
         reject(err);
       }
     }
@@ -365,7 +346,6 @@ const getDatasets = () => {
           reject(error);
         });
       } catch (err) {
-        if (isDev) console.error(err);
         reject(err);
       }
     }

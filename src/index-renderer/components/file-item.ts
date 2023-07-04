@@ -83,15 +83,15 @@ export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
     }
   }
 
-  private gatherUserInput(): [ string, string ]  {
+  private gatherUserInput(): [ string, string ] | void {
     const description = this.descriptionElement.value;
     const relativePath = this.relativePathElement.value;
 
+    if (relativePath.length != 0) {
     const relativePathValidatable: Validation.Validatable = {
       value: relativePath,
-      required: true,
-      minLength: 1,
-      regexp: /^[A-Za-z0-9-_\.\\\/\s]+$/g
+      required: false,
+      regexp: /^[\/]{0,1}(?:[.\/](?![.\/])|[^<>:"!|?*.\/\\ \n])+$/g
     };
 
     if (
@@ -100,10 +100,10 @@ export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
       alert("Invalid input. \nDirectory Name cannot contain invalid characters. \nValid characters are a-Z, 0-9, '_', '-', '.', '\', '/' and ' ' (white space).");
       this.relativePathElement.value = this.fileInfo.relativePath;
       return;
-    } else {
-      return [description, relativePath];
-    }
+    } 
+  }
     
+    return [description, relativePath];
   }
 
   private removeHandler(event: Event) {

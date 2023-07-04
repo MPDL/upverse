@@ -30,7 +30,7 @@ export const getMyUser = () => {
             });
 
             request.on('error', (error) => {
-                throw error;
+                reject(new Error('Invalid URL!'));
             });
 
             try {
