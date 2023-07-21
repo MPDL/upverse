@@ -83,3 +83,11 @@ nav {
   border-color: transparent;
   color: var(--mpg-black-blue);
 }
+
+#backdrop {
+  visibility: hidden;
+}
+
+.modal-backdrop.fade {
+  opacity: 0.5;
+}

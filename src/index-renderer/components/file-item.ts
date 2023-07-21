@@ -2,7 +2,7 @@ import * as Validation from '../../utils/validation.js';
 
 import Cmp from './base-component';
 import { FileInfo } from '../../model/file-info.js';
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, dialog } from 'electron';
 
 export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
 {
@@ -12,6 +12,9 @@ export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
   relativePathElement: HTMLInputElement;
   actionsElement: HTMLDivElement;
   removeButtonElement: HTMLButtonElement;
+  modalElement: HTMLElement;
+  modalButtonElement: HTMLButtonElement;
+  backdropElement: HTMLElement;
 
   constructor(listId: string, fileInfo: FileInfo) {
     super('data-file-item', listId, false, 'uploadItems');
@@ -37,13 +40,32 @@ export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
       "#item"
     ) as HTMLUListElement;
 
-    this.configure();+
+    this.modalElement = document.getElementById('alertModal') as HTMLElement;
+    this.modalButtonElement = document.getElementById(
+      'modalClose'
+    ) as HTMLButtonElement;
+  
+    this.backdropElement = document.getElementById('backdrop') as HTMLElement;
+
+    /*
+    window.onclick = function(event) {
+      if (event.target == this.alertModal) {
+        this.closeModal();
+      }
+    }
+    */
+
+    this.configure(); 
     this.renderContent();
   }
 
   configure(): void {
     this.element.addEventListener('change', this.changeHandler.bind(this));
     this.removeButtonElement.addEventListener('click', this.removeHandler.bind(this));
+    this.modalButtonElement.addEventListener('click', this.closeModal.bind(this));
+
+    this.backdropElement.style.display = "none"
+    this.backdropElement.style.visibility = "hidden"
 
     ipcRenderer.on('SELECTED_FILE_LIST', (event: Event, dummy: string) => {
       this.actionsElement!.innerHTML = '<i class="bi bi-hourglass"></i>'
@@ -55,14 +77,14 @@ export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
         this.fileListElement!.style.backgroundRepeat = "no-repeat";
         this.fileListElement!.style.backgroundImage = `linear-gradient(to right, #0000 30%, #E8F5CF 70%, #F6FFF5)`;
       } else if (action === 'progress') {
-        this.fileListElement!.style.backgroundSize = `${progress}%`;    
+        this.fileListElement!.style.backgroundSize = `${progress}%`;
       } else if (action === 'success') {
         this.actionsElement!.innerHTML = '<i class="bi bi-check2-circle"></i>'
-        this.fileListElement!.style.backgroundSize = '100%'; 
+        this.fileListElement!.style.backgroundSize = '100%';
         this.fileListElement!.style.backgroundImage = `linear-gradient(to right, #E9F1F3 30%, #F6FFF5 70%)`;
       } else if (action === 'fail') {
         this.actionsElement!.innerHTML = '<i class="bi bi-x-circle"></i>'
-        this.fileListElement!.style.backgroundSize = '100%'; 
+        this.fileListElement!.style.backgroundSize = '100%';
         this.fileListElement!.style.backgroundImage = `linear-gradient(to right, #E9F1F3 30%, #0000 70%)`;
       }
       this.actionsElement!.scrollIntoView(false);
@@ -72,7 +94,7 @@ export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
   renderContent(): void {
     this.element.id = this.fileInfo.id.toString();
     this.element.querySelector('#filename')!.textContent = this.fileInfo.name;
-    this.element.querySelector('#path')!.textContent = this.fileInfo.path; 
+    this.element.querySelector('#path')!.textContent = this.fileInfo.path;
     this.element.querySelector('#type')!.textContent = this.fileInfo.type ? this.fileInfo.type : 'unknown type';
     this.element.querySelector('#size')!.textContent = this.fileInfo.size.toString();
     if (this.fileInfo.relativePath) {
@@ -83,26 +105,26 @@ export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
     }
   }
 
-  private gatherUserInput(): [ string, string ] | void {
+  private gatherUserInput(): [string, string] | void {
     const description = this.descriptionElement.value;
     const relativePath = this.relativePathElement.value;
 
     if (relativePath.length != 0) {
-    const relativePathValidatable: Validation.Validatable = {
-      value: relativePath,
-      required: false,
-      regexp: /^[\/]{0,1}(?:[.\/](?![.\/])|[^<>:"!|?*.\/\\ \n])+$/g
-    };
+      const relativePathValidatable: Validation.Validatable = {
+        value: relativePath,
+        required: false,
+        regexp: /^[a-zA-Z0-9\_\-\.\\\/\s]*$/g
+      };
 
-    if (
-      !Validation.validate(relativePathValidatable)
-    ) {
-      alert("Invalid input. \nDirectory Name cannot contain invalid characters. \nValid characters are a-Z, 0-9, '_', '-', '.', '\', '/' and ' ' (white space).");
-      this.relativePathElement.value = this.fileInfo.relativePath;
-      return;
-    } 
-  }
-    
+      if (
+        !Validation.validate(relativePathValidatable)
+      ) { 
+        this.relativePathElement.value = this.fileInfo.relativePath;
+        this.openModal();
+        return;
+      }
+    }
+
     return [description, relativePath];
   }
 
@@ -119,5 +141,19 @@ export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
     }
   }
 
+  private openModal() {
+    this.backdropElement.style.display = "block"
+    this.backdropElement.style.visibility = "visible"
+    this.modalElement.style.display = "block"
+    this.modalElement.classList.add("show");
+  }
+
+  private closeModal() {
+    console.log("closeModal");
+    this.backdropElement.style.display = "none"
+    this.backdropElement.style.visibility = "hidden"
+    this.modalElement.style.display = "none"
+    this.modalElement.classList.remove("show");
+  }
 
 }
