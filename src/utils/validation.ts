@@ -7,6 +7,7 @@ export interface Validatable {
   min?: number;
   max?: number;
   regexp?: RegExp;
+  alert?: string;
 }
 
 export function validate(validatableInput: Validatable) {

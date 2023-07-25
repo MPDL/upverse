@@ -65,19 +65,22 @@ export class ApiConnection extends Cmp<HTMLDivElement, HTMLFormElement> {
     const tokenValidatable: Validation.Validatable = {
       value: enteredToken,
       required: true,
-      regexp: /^[a-zA-Z0-9]{8}\-[a-zA-Z0-9]{4}\-[a-zA-Z0-9]{4}\-[a-zA-Z0-9]{4}\-[a-zA-Z0-9]{12}$/
+      regexp: /^[a-zA-Z0-9]{8}\-[a-zA-Z0-9]{4}\-[a-zA-Z0-9]{4}\-[a-zA-Z0-9]{4}\-[a-zA-Z0-9]{12}$/,
+      alert: 'Invalid token, please try again!'
     };
     
     const urlValidatable: Validation.Validatable = {
       value: enteredUrl,
       required: true,
+      regexp: /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/,
+      alert: 'Invalid URL, please try again!'
     };
 
-    if (
-      !Validation.validate(tokenValidatable) ||
-      !Validation.validate(urlValidatable)
-    ) {
-      alert('Invalid settings, please try again!');
+    if (!Validation.validate(tokenValidatable)) {
+      alert(tokenValidatable.alert);
+      return;
+    } else if (!Validation.validate(urlValidatable)) {
+      alert(urlValidatable.alert);
       return;
     } else {
       return [enteredToken, enteredUrl];

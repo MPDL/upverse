@@ -47,14 +47,6 @@ export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
   
     this.backdropElement = document.getElementById('backdrop') as HTMLElement;
 
-    /*
-    window.onclick = function(event) {
-      if (event.target == this.alertModal) {
-        this.closeModal();
-      }
-    }
-    */
-
     this.configure(); 
     this.renderContent();
   }
@@ -113,14 +105,15 @@ export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
       const relativePathValidatable: Validation.Validatable = {
         value: relativePath,
         required: false,
-        regexp: /^[a-zA-Z0-9\_\-\.\\\/\s]*$/g
+        regexp: /^[a-zA-Z0-9\_\-\.\\\/\s]*$/g,
+        alert: "File path cannot contain invalid characters. <br>Valid characters are a-Z, 0-9, '_', '-', '.', '\\', '/' and ' ' (white space)."
       };
 
       if (
         !Validation.validate(relativePathValidatable)
       ) { 
         this.relativePathElement.value = this.fileInfo.relativePath;
-        this.openModal();
+        this.openModal(relativePathValidatable.alert);
         return;
       }
     }
@@ -141,11 +134,12 @@ export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
     }
   }
 
-  private openModal() {
+  private openModal(message:string) {
     this.backdropElement.style.display = "block"
     this.backdropElement.style.visibility = "visible"
     this.modalElement.style.display = "block"
     this.modalElement.classList.add("show");
+    this.modalElement.children[0].children[0].children[1].innerHTML = message;
   }
 
   private closeModal() {

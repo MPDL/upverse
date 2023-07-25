@@ -71,8 +71,8 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
         const dsSelected = document.getElementById("dataset") as HTMLInputElement;
         if (dsSelected.value.length > 0 && dsSelected.value[0].length > 0) {
           this.submitButtonElement.disabled = false;
-          this.resetButtonElement.disabled = false;
         }
+        this.resetButtonElement.disabled = false;
       }
     })
 
@@ -83,7 +83,6 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
       } else {
         this.folderButtonElement.disabled = true;
       }
-      //dataFiles.clear();
       this.remainingFiles = this.MAXFILES - filesCount;
     })
 
@@ -100,8 +99,8 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
         const dsSelected = document.getElementById("dataset") as HTMLInputElement;
         if (dsSelected.value.length > 0 && dsSelected.value[0].length > 0) {
           this.submitButtonElement.disabled = false;
-          this.resetButtonElement.disabled = false;
         }
+        this.resetButtonElement.disabled = false;
       }
     })
 
