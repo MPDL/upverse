@@ -28,4 +28,4 @@ To prepare, log in to Edmond and:
 
 ## Executables for Ubuntu, OSX & Windows
 
-You can download installable packages for different OS from this Repository on ACTIONS.
+You can download installable packages for different OS from this repository under Releases.
