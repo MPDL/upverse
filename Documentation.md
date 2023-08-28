@@ -1,1 +1,5 @@
-Test
+# Installation
+The latest version of Upverse can be found in the [Github repository](https://github.com/MPDL/upverse). The download file can be found by clicking on the latest release in the "Releases" tab on the right. The file contains different versions for different operating systems. Selecting the appropriate system will start the download in your browser.
+# Setting the API and repository link
+Once you have finished downloading and opened Upverse, you will need to enter the API ("Application Programming Interface") token for the user. The API for your account can be found on Edmond. After logging into your Edmond account, open the Account tab in the top right corner. There you will find "API Token" where the token is created. ![](https://pad.gwdg.de/uploads/ae4e78fe-5794-4009-83f9-5b8299c07f82.png)
+The generated link can now be copied to Upverse. More information about the API can be found in the [Dataverse documentation](https://guides.dataverse.org/en/5.13/api/).
