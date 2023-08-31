@@ -143,7 +143,6 @@ export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
   }
 
   private closeModal() {
-    console.log("closeModal");
     this.backdropElement.style.display = "none"
     this.backdropElement.style.visibility = "hidden"
     this.modalElement.style.display = "none"

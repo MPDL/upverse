@@ -8,6 +8,11 @@ import { dataFiles } from '../data-files';
 export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
   fileListElement: HTMLUListElement;
   openDatasetElement: HTMLLinkElement;
+
+  modalElement: HTMLElement;
+  modalButtonElement: HTMLButtonElement;
+  backdropElement: HTMLElement;
+
   selectedFiles: FileInfo[];
 
   constructor() {
@@ -15,6 +20,13 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
     this.fileListElement = this.element.querySelector(
       "#research-files-list"
     ) as HTMLUListElement;
+
+    this.modalElement = document.getElementById('alertModal') as HTMLElement;
+    this.modalButtonElement = document.getElementById(
+      'modalClose'
+    ) as HTMLButtonElement;
+  
+    this.backdropElement = document.getElementById('backdrop') as HTMLElement;
     
     this.selectedFiles = [];
 
@@ -22,6 +34,11 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
   }
 
   configure(): void {
+    this.modalButtonElement.addEventListener('click', this.closeModal.bind(this));
+
+    this.backdropElement.style.display = "none"
+    this.backdropElement.style.visibility = "hidden"
+
     ipcRenderer.setMaxListeners(0);
 
     dataFiles.updateListener((file: FileInfo) => {
@@ -81,7 +98,12 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
   }
   
   private renderItem(fileInfo: FileInfo) {
-    new FileItem(this.element.querySelector("ul")!.id, fileInfo);
+    let regexp = /!(\:\*\?\\"\\<\>\|\;\#)/g ;
+    if (regexp.test(fileInfo.path)) {
+      new FileItem(this.element.querySelector("ul")!.id, fileInfo);
+    } else {
+      this.openModal(`File Name (${fileInfo.name}) cannot contain any of the following characters: / : * ? \" < > | ; #`);
+    }
   }
 
   private clearItemList() {
@@ -92,6 +114,21 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
     event.preventDefault();
 
     shell.openExternal(this.openDatasetElement.href); 
+  }
+
+  private openModal(message:string) {
+    this.backdropElement.style.display = "block"
+    this.backdropElement.style.visibility = "visible"
+    this.modalElement.style.display = "block"
+    this.modalElement.classList.add("show");
+    this.modalElement.children[0].children[0].children[1].innerHTML = message;
+  }
+
+  private closeModal() {
+    this.backdropElement.style.display = "none"
+    this.backdropElement.style.visibility = "hidden"
+    this.modalElement.style.display = "none"
+    this.modalElement.classList.remove("show");
   }
 
 }
