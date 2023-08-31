@@ -29,6 +29,8 @@ You can also delete all files by selecting **Clear**. Once you have decided whic
 
 and save the Dataset. The Dataset can then be accessed by clicking on the reload icon in the UpVerse window. 
 
-The files can now be uploaded to the repository (**Upload** icon). If, during the upload process, you change your mind about the files you want to upload, you can press the **Cancel** button at any time to prevent the files from being uploaded. All files are then immediately deleted and you are able to select and edit new files. 
+The files can now be uploaded to the repository (**Upload** icon). If, during the upload process, you change your mind about the files you want to upload, you can press the **Cancel** button at any time to prevent the files from being uploaded. All files are then immediately deleted and you are able to select and edit new files.
+
+If files are uploaded multiple times, they are not replaced. Instead, the suffix is used to count up. It starts with "-1". Special characters in the file name such as !?%&'§$() lead to errors.
 
 The files can then be found in your dataset in Edmond on your web browser.
