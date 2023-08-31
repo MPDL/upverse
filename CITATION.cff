@@ -13,7 +13,12 @@ authors:
   - given-names: Markus
     family-names: Haarländer
     email: haarländer@mpdl.mpg.de
-    affiliation: Max Plank Digital Library
+    affiliation: Max Plank Digital Library 
+  - given-names: Sy Dat
+    family-names: Ho
+    email: ho@mpdl.mpg.de
+    affiliation: Max Plank Digital Library 
+    orcid: 'https://orcid.org/0000-0002-6218-4146'
 identifiers:
   - type: doi
     value: 10.17617/1.upv23
