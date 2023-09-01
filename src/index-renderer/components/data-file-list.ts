@@ -98,11 +98,11 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
   }
   
   private renderItem(fileInfo: FileInfo) {
-    let regexp = /!(\:\*\?\\"\\<\>\|\;\#)/g ;
-    if (regexp.test(fileInfo.path)) {
+    let regexp = /[:;#<>"\*\?\/\|]/ ;
+    if (!regexp.test(fileInfo.name)) {
       new FileItem(this.element.querySelector("ul")!.id, fileInfo);
     } else {
-      this.openModal(`File Name (${fileInfo.name}) cannot contain any of the following characters: / : * ? \" < > | ; #`);
+      this.openModal(`<strong>${fileInfo.name}</strong> excluded from your selection! <hr>File Name cannot contain any of the following characters: <br/><strong> /  :  *  ?  \"  <  >  |  ; #</strong>`);
     }
   }
 
