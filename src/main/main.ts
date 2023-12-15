@@ -2,6 +2,7 @@ import * as path from "path";
 import * as fs from 'fs';
 import * as mime from 'mime-types';
 import { netLog, Menu, Notification, dialog, BrowserWindow, IpcMainEvent, ipcMain, app } from "electron";
+import log from 'electron-log/main';
 
 import { DatasetInfo } from "../model/dataset-info";
 import { FileInfo } from "../model/file-info";
@@ -127,10 +128,12 @@ app.on("ready", () => {
           await getDatasets().then((datasetList: DatasetInfo[]) => {
             mainWindow.webContents.send('DO_DS_SELECT', datasetList);
           }).catch(error => {
+            log.error(error);
             throw error;
           });
         }).catch(error => {
           mainWindow.webContents.send('CONN_FAILED', error.message);
+          log.error(error);
           throw error;
         });
       }
@@ -160,10 +163,12 @@ ipcMain.on('DO_TEST_CONN', async (event: IpcMainEvent, givenSettings: string[]) 
         await getDatasets().then((datasetList: DatasetInfo[]) => {
           mainWindow.webContents.send('DO_DS_SELECT', datasetList);
         }).catch(error => {
+          log.error(error);
           throw error;
         });
       }).catch(error => {
         event.reply('TEST_CONN_FAILED');
+        log.error(error);
         throw error;
       });
     } else throw new Error('Please, check Settings');
@@ -276,6 +281,7 @@ ipcMain.on('DO_UPLOAD', async (event: IpcMainEvent, fileInfoList: FileInfo[]) =>
         event.reply('UPLOAD_DONE', result, process.env.dv_base_uri);
       }).catch(error => {
         event.reply('UPLOAD_FAILED', error.message);
+        log.error(error);
         throw error;
       })
     } catch (error) {

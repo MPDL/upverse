@@ -36,14 +36,21 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
   configure(): void {
     this.modalButtonElement.addEventListener('click', this.closeModal.bind(this));
 
-    this.backdropElement.style.display = "none"
-    this.backdropElement.style.visibility = "hidden"
+    this.backdropElement.style.display = "none";
+    this.backdropElement.style.visibility = "hidden";
+
+    const regexp = /[:;#<>"\*\?\/\|]/ ;
 
     ipcRenderer.setMaxListeners(0);
 
     dataFiles.updateListener((file: FileInfo) => {
-      this.selectedFiles.push(file);
-      this.renderItem(this.selectedFiles[this.selectedFiles.length - 1]); 
+      if (!regexp.test(file.name)) {
+        this.selectedFiles.push(file);
+        this.renderItem(this.selectedFiles[this.selectedFiles.length - 1]); 
+      } else {
+        dataFiles.removeDataFile(file);
+        this.openModal(`<strong>${file.name}</strong> excluded from your selection! <hr>File Name cannot contain any of the following characters: <br/><strong> /  :  *  ?  \"  <  >  |  ; #</strong>`);    
+      }
     });
 
     ipcRenderer.on("DO_FILE_CLEAR", (event: Event, file: FileInfo) => {
@@ -98,12 +105,7 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
   }
   
   private renderItem(fileInfo: FileInfo) {
-    let regexp = /[:;#<>"\*\?\/\|]/ ;
-    if (!regexp.test(fileInfo.name)) {
       new FileItem(this.element.querySelector("ul")!.id, fileInfo);
-    } else {
-      this.openModal(`<strong>${fileInfo.name}</strong> excluded from your selection! <hr>File Name cannot contain any of the following characters: <br/><strong> /  :  *  ?  \"  <  >  |  ; #</strong>`);
-    }
   }
 
   private clearItemList() {
