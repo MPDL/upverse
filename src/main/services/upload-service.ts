@@ -80,7 +80,9 @@ export const uploadSinglepartToStore = (event: IpcMainEvent, item: FileInfo) => 
             request.setHeader('x-amz-tagging', 'dv-state=temp');
 
             let streamed = 0, uploaded = 0, pctStreamed = 0, pctUploaded = 0, prevPctStreamed = 0, prevPctUploaded = 0;
-            let streamInterval: NodeJS.Timer, requestInterval: NodeJS.Timer = null;
+
+            let streamInterval: ReturnType<typeof setTimeout> = null; 
+            let requestInterval: ReturnType<typeof setTimeout> = null;
 
             request.on('response', (response) => {
                 clearInterval(requestInterval);
@@ -194,7 +196,9 @@ export const uploadMultipartToStore = (event: IpcMainEvent, item: FileInfo) => {
 
             let streamed = item.streamed, uploaded = start;
             let pctStreamed = Math.round((item.streamed * 50) / item.size), pctUploaded = Math.round((item.uploaded * 50) / item.size), prevPctStreamed = pctStreamed, prevPctUploaded = pctUploaded;
-            let streamInterval: NodeJS.Timer, requestInterval: NodeJS.Timer = null;
+ 
+            let streamInterval: ReturnType<typeof setTimeout> = null; 
+            let requestInterval: ReturnType<typeof setTimeout> = null;
 
             const fileStream = createReadStream(item.path, { start: start, end: end, highWaterMark: 64 * 1024 * 1024 });
 
