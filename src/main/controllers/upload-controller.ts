@@ -124,7 +124,8 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                     if (uploaded.length % 1000 == 0 || i + 1 == (numberOfItems - itemsFailed)) {
                         try {
                             const addMultipleFilesResponse = await addMultipleFilesToDataset(persistentId, uploaded);
-                    } catch (err) {
+                            if (addMultipleFilesResponse._eventsCount) throw new Error("Error adding files to dataset");
+                        } catch (err) {
                             throw new Error("Error adding files to dataset");
                         }
                         for (const item of uploaded) {
@@ -136,6 +137,7 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                 }
 
                 resolve({
+                    // TO-DO: extract relevant info from addMultipleFilesResponse
                     numFiles2Upload: items.length,
                     destination: persistentId,
                     numFilesUploaded: files.length
