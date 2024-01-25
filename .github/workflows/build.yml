@@ -69,7 +69,7 @@ jobs:
 
     - name: get-package-version
       id: package-version
-      uses: beaconbrigade/package-json-version@v0.3
+      uses: beaconbrigade/package-json-version@v0.3.1
 
     - name: install dependencies
       run: npm install
@@ -163,13 +163,13 @@ jobs:
 
       - name: get-package-version
         id: package-version
-        uses: beaconbrigade/package-json-version@v0.3
+        uses: beaconbrigade/package-json-version@v0.3.1
 
       - name: download artifacts
         uses: actions/download-artifact@v4
 
       - name: release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v0.1.15
         with:
           name: v${{ steps.package-version.outputs.version }}
           tag_name: v${{ steps.package-version.outputs.version }}
