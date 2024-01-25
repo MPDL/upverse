@@ -12,11 +12,11 @@ jobs:
   build_on_linux:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - uses: actions/setup-node@master
       with:
-        node-version: 18
+        node-version: 20
 
     - name: install rpm tool
       run:
@@ -30,7 +30,7 @@ jobs:
       run: npm run deploy
 
     - name: store artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: upverse-linux-packages
         path: |
@@ -61,11 +61,11 @@ jobs:
         security import certificate.p12 -k build.keychain -P "$MACOS_CERTIFICATE_PWD" -T /usr/bin/codesign
         security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$MACOS_CI_KEYCHAIN_PWD" build.keychain
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - uses: actions/setup-node@master
       with:
-        node-version: 18
+        node-version: 20
 
     - name: get-package-version
       id: package-version
@@ -123,7 +123,7 @@ jobs:
         ditto -c -k --keepParent "out/mac-arm64/upverse.app" "upverse-${{ steps.package-version.outputs.version }}-mac-arm64-signed.zip"
 
     - name: store artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: upverse-mac-packages
         path: upverse*.zip
@@ -131,11 +131,11 @@ jobs:
   build_on_win:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - uses: actions/setup-node@master
       with:
-        node-version: 18
+        node-version: 20
 
     - name: install dependencies
       run: npm install
@@ -144,7 +144,7 @@ jobs:
       run: npm run deploy
 
     - name: store artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: upverse-win-packages
         path: |
@@ -159,14 +159,14 @@ jobs:
     if: ${{ github.event.inputs.release == 'true' }}
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: get-package-version
         id: package-version
         uses: beaconbrigade/package-json-version@v0.3
 
       - name: download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
 
       - name: release
         uses: softprops/action-gh-release@v1
