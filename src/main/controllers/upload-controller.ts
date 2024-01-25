@@ -23,6 +23,7 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                 const numberOfItems = items.length;
                 let itemsFailed = 0;
                 let i = 0;
+                let events = "";
 
                 for (const item of items) {
                     const itemInfo: FileInfo = {
@@ -43,8 +44,12 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                     let uploadUrlsResponseBody: any = null;
                     try {
                         uploadUrlsResponseBody = await getUploadUrls(persistentId, itemInfo.size);
+                        if (JSON.parse(JSON.stringify(uploadUrlsResponseBody)).status != "OK") {
+                            throw new Error(JSON.parse(JSON.stringify(uploadUrlsResponseBody)).status);
+                        }
                     } catch (err) {
-                        new Notification({ title: itemInfo.name, body: err });
+                        const title = `Error uploading file ${itemInfo.name} to store.`
+                        new Notification({ title: title, body: err }).show();
                         event.sender.send('actionFor' + itemInfo.id.toString(), 'fail', 0);
                         itemsFailed++;
                         continue;
@@ -66,14 +71,20 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                                     numFilesUploaded: 0
                                 };
                             } catch (err) {
-                                throw new Error("Error aborting singlepart uploading to store");
+                                const title = 'Error aborting singlepart upload to store.';
+                                throw new Error(title + '\n' + err);
                             }
                         } else {
                             itemInfo.storageUrls.push(uploadUrlsResponseBody.data.url);
                             try {
-                                uploadToStoreResponse = await uploadSinglepartToStore(event, itemInfo)
+                                console.log("itemInfo: " + JSON.stringify(itemInfo)); // Debug
+                                uploadToStoreResponse = await uploadSinglepartToStore(event, itemInfo);
+                                if (JSON.parse(JSON.stringify(uploadToStoreResponse))._responseHead.statusCode != 200) {
+                                    throw new Error('HTTP ' + JSON.parse(JSON.stringify(uploadToStoreResponse))._responseHead.statusMessage);
+                                }
                             } catch (err) {
-                                new Notification({ title: itemInfo.name, body: err });
+                                const title = `Error uploading file ${itemInfo.name} to store.`
+                                new Notification({ title: title, body: err }).show();
                                 event.sender.send('actionFor' + itemInfo.id.toString(), 'fail', 0);
                                 itemsFailed++;
                                 continue;
@@ -88,8 +99,13 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                             itemInfo.storageUrls.push(uploadUrlsResponseBody.data.urls[key]);
                             try {
                                 uploadToStoreResponse = await uploadMultipartToStore(event, itemInfo);
+                                if (JSON.parse(JSON.stringify(uploadToStoreResponse))._responseHead.statusCode != 200) {
+                                    throw new Error('HTTP ' + JSON.parse(JSON.stringify(uploadToStoreResponse))._responseHead.statusMessage);
+                                }
                             } catch (err) {
-                                throw new Error("Error uploading part of file to store");
+                                const title = `Error uploading part of file ${itemInfo.name} to store.`
+                                new Notification({ title: title, body: err }).show();
+                                throw new Error(title + '\n' + err);
                             }
                             const responseHeaders = JSON.parse(JSON.stringify(uploadToStoreResponse.headers));
                             itemInfo.partEtags[Number(key)] = responseHeaders.etag.replace(/^"+|"+$/g, '');
@@ -98,6 +114,9 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                         if (abort) {
                             try {
                                 const completeMultipartResponse = await abortMultipartUpload(itemInfo, uploadUrlsResponseBody.data.abort);
+                                if (JSON.parse(JSON.stringify(completeMultipartResponse))._responseHead.statusCode != 200) {
+                                    throw new Error('HTTP ' + JSON.parse(JSON.stringify(completeMultipartResponse))._responseHead.statusMessage);
+                                }
                                 abort = false;
                                 return {
                                     numFiles2Upload: 0,
@@ -105,13 +124,20 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                                     numFilesUploaded: 0
                                 };
                             } catch (err) {
-                                throw new Error("Error aborting multipart uploading to store");
+                                const title = 'Error aborting multipart upload.';
+                                new Notification({ title: title, body: err }).show();
+                                throw new Error(title + '\n' + err);
                             }
                         } else {
                             try {
-                                await completeMultipartUpload(itemInfo, uploadUrlsResponseBody.data.complete);
+                                const completeMultipartResponse = await completeMultipartUpload(itemInfo, uploadUrlsResponseBody.data.complete);
+                                if (JSON.parse(JSON.stringify(completeMultipartResponse))._responseHead.statusCode != 200) {
+                                    throw new Error('HTTP ' + JSON.parse(JSON.stringify(completeMultipartResponse))._responseHead.statusCode);
+                                }
                             } catch (err) {
-                                throw new Error("Error completing multipart uploading to store");
+                                const title = 'Error completing multipart upload to store.';
+                                new Notification({ title: title, body: err }).show();
+                                throw new Error(title + '\n' + err);
                             }
                             itemInfo.etag = await calcChecksum(itemInfo);
                         }
@@ -124,9 +150,12 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                     if (uploaded.length % 1000 == 0 || i + 1 == (numberOfItems - itemsFailed)) {
                         try {
                             const addMultipleFilesResponse = await addMultipleFilesToDataset(persistentId, uploaded);
-                            if (addMultipleFilesResponse._eventsCount) throw new Error("Error adding files to dataset");
+                            if (addMultipleFilesResponse._responseHead.statusCode != 200) {
+                                throw new Error("HTTP " + JSON.stringify(addMultipleFilesResponse._responseHead.statusCode));
+                            }
                         } catch (err) {
-                            throw new Error("Error adding files to dataset");
+                            const title = 'Error adding files to dataset.';
+                            throw new Error(title + '\n' + err);
                         }
                         for (const item of uploaded) {
                             files.push(item);
@@ -135,13 +164,13 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                     }
                     i++;
                 }
-
-                resolve({
-                    // TO-DO: extract relevant info from addMultipleFilesResponse
-                    numFiles2Upload: items.length,
-                    destination: persistentId,
-                    numFilesUploaded: files.length
-                });
+                if (files.length) {
+                    resolve({
+                        numFiles2Upload: items.length,
+                        destination: persistentId,
+                        numFilesUploaded: files.length
+                    });
+                } else throw new Error("No file has been uploaded");
             } catch (err) {
                 reject(err);              
             }

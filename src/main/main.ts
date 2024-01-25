@@ -20,7 +20,7 @@ function createMainWindow() {
     width: 1600,
     height: 800,
     webPreferences: {
-      // webSecurity: true,      
+      webSecurity: true,      
       nodeIntegration: true,
       preload: path.join(__dirname, "../index-renderer/preload.js")
     },
@@ -33,8 +33,8 @@ function createMainWindow() {
   const indexPath = path.join('file://', __dirname, '../../views/index.html')
   mainWindow.loadURL(indexPath);
 
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools();
+  // for Debugging
+  //mainWindow.webContents.openDevTools();
 
   mainWindow.on('close', function () {
     app.quit();
@@ -48,7 +48,7 @@ function createSettingsWindow() {
     // resizable: false,
     title: "Settings",
     webPreferences: {
-      // webSecurity: true,      
+      webSecurity: true,      
       nodeIntegration: true,
       preload: path.join(__dirname, "../settings-renderer/preload.js")
     },
@@ -61,7 +61,7 @@ function createSettingsWindow() {
 
   settingsWindow.show();
 
-  // Open the DevTools.
+  // for Debugging
   //settingsWindow.webContents.openDevTools();
 }
 
@@ -138,7 +138,7 @@ app.on("ready", () => {
         });
       }
     } catch (err) {
-      new Notification({ title: 'Upverse', body: err.message }).show();
+      new Notification({ title: 'Upverse Settings', body: err.message }).show();
     }
   });
 
@@ -173,7 +173,7 @@ ipcMain.on('DO_TEST_CONN', async (event: IpcMainEvent, givenSettings: string[]) 
       });
     } else throw new Error('Please, check Settings');
   } catch (error) {
-    new Notification({ title: 'Settings', body: error.message }).show();
+    new Notification({ title: 'Upverse Settings', body: error.message }).show();
   }
 })
 
@@ -192,7 +192,7 @@ ipcMain.on('DO_SAVE_SETTINGS', (event: IpcMainEvent, givenSettings: string[]) =>
       }
     } else throw new Error('Please, enter values');
   } catch (error) {
-    new Notification({ title: 'Settings', body: error.message }).show();
+    new Notification({ title: 'Upverse Settings', body: error.message }).show();
   }
 })
 
@@ -209,7 +209,7 @@ ipcMain.on('DO_DS_LIST_REFRESH', async (event: IpcMainEvent) => {
       mainWindow.webContents.send('DO_DS_SELECT', datasetList);
     });
   } catch (error) {
-    new Notification({ title: 'Upverse', body: error.message }).show();
+    new Notification({ title: 'Upverse datasets', body: error.message }).show();
   }
 })
 
@@ -233,7 +233,7 @@ ipcMain.on('DO_FILE_SELECT', (event: IpcMainEvent) => {
       if (fileInfoList.length) event.reply('FILE_SELECT_DONE', fileInfoList);
     });
   } catch (error) {
-    new Notification({ title: 'File Explorer', body: 'Open file explorer failed' });
+    new Notification({ title: 'Upverse File Explorer', body: 'Open file explorer failed' });
     event.reply('FILE_SELECT_FAILED', '');
   }
 })
@@ -260,32 +260,31 @@ ipcMain.on('DO_FOLDER_SELECT', (event: IpcMainEvent) => {
         }
         if (fileInfoList.length) { 
           event.reply('FOLDER_SELECT_DONE', fileInfoList);
-        } else new Notification({ title: 'File Explorer', body: "Please, select a non empty folder" }).show();
+        } else new Notification({ title: 'Upverse File Explorer', body: "Please, select a non empty folder" }).show();
       }
     });
   } catch (error) {
-    new Notification({ title: 'File Explorer', body: error.message }).show();
+    new Notification({ title: 'Upverse File Explorer', body: error.message }).show();
     event.reply('FOLDER_SELECT_FAILED', '');
   }
 
 })
 
-ipcMain.on('DO_UPLOAD', async (event: IpcMainEvent, fileInfoList: FileInfo[]) => {
+ipcMain.on('DO_UPLOAD', async (event: IpcMainEvent, fileInfoList: FileInfo[]) => {  
   if (!fileInfoList.length) {
-    new Notification({ title: 'Upload Failed!', body: 'Nothing selected to Upload' }).show();
+    new Notification({ title: 'Upverse Upload Failed!', body: 'Nothing selected to Upload' }).show();
   } else if (!process.env.dest_dataset) {
-    new Notification({ title: 'Upload Failed!', body: 'No destination Dataset selected' }).show();
+    new Notification({ title: 'Upverse Upload Failed!', body: 'No destination Dataset selected' }).show();
   } else {
     try {
       await transferFiles(event, process.env.dest_dataset, fileInfoList).then((result: Record<string, unknown>) => {
         event.reply('UPLOAD_DONE', result, process.env.dv_base_uri);
       }).catch(error => {
-        event.reply('UPLOAD_FAILED', error.message);
-        log.error(error);
         throw error;
       })
     } catch (error) {
-      new Notification({ title: 'Upload Failed!', body: error.message }).show();
+      new Notification({ title: 'Upverse Upload Failed!', body: error.message }).show();
+      event.reply('UPLOAD_FAILED', error.message);
     }
   }
 });

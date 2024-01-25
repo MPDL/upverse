@@ -3,12 +3,13 @@ import { createReadStream } from 'fs';
 import { FileInfo } from '../../model/file-info';
 import { createHash } from 'crypto';
 import { Transfer } from "../interfaces/storage-interface";
+import log from 'electron-log/main';
 
 import { IpcMainEvent, net } from "electron";
 
 export const calcChecksum = (item: FileInfo): Promise<string> => {
     return new Promise((resolve, reject) => {
-        const hash = createHash('md5');
+        const hash = createHash('sha1');
         const stream = createReadStream(item.path);
 
         stream.on('error', function (error) {
@@ -55,6 +56,7 @@ export const getUploadUrls = (doi: String, size: Number) => {
             });
 
             request.on('error', (error) => {
+                log.error("getUploadUrls.request: \n" + error);
                 reject(error);
             });
 
@@ -91,6 +93,7 @@ export const uploadSinglepartToStore = (event: IpcMainEvent, item: FileInfo) => 
             });
 
             request.on('error', (error) => {
+                log.error("uploadSinglepartToStore.request: \n" + error);
                 reject(error);
             });
 
@@ -127,9 +130,9 @@ export const uploadSinglepartToStore = (event: IpcMainEvent, item: FileInfo) => 
                 request.end();
             });
             fileStream.on('error', (error) => {
+                log.error("uploadSinglepartToStore.fileStream: \n" + error);
                 reject(error);
             });
-
         });
 }
 
@@ -156,6 +159,7 @@ export const addMultipleFilesToDataset = (doi: string, items: FileInfo[]) => {
             });
 
             request.on('error', (error) => {
+                log.error("addMultipleFilesToDataset.request: \n" + error);
                 reject(error);
             });
 
@@ -175,7 +179,6 @@ export const addMultipleFilesToDataset = (doi: string, items: FileInfo[]) => {
                 '\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW--';
             request.write(postData);
             request.end();
-
         });
 }
 
@@ -216,6 +219,7 @@ export const uploadMultipartToStore = (event: IpcMainEvent, item: FileInfo) => {
             })
 
             request.on('error', (error) => {
+                log.error("uploadMultipartToStore.request: \n" + error);
                 reject(error);
             });
 
@@ -252,9 +256,9 @@ export const uploadMultipartToStore = (event: IpcMainEvent, item: FileInfo) => {
                 request.end();
             });
             fileStream.on('error', (error) => {
+                log.error("uploadMultipartToStore.fileStream: " + error);
                 reject(new Error(`file streaming ${item.name} failed`));
             });
-
         });
 }
 
@@ -275,6 +279,7 @@ export const completeMultipartUpload = (item: FileInfo, completeUrl: string) => 
             });
 
             request.on('error', (error) => {
+                log.error("completeMultipartUpload.request: \n" + error);
                 reject(error);
             });
 
@@ -282,7 +287,6 @@ export const completeMultipartUpload = (item: FileInfo, completeUrl: string) => 
             var jsonpartEtags = JSON.stringify(Object.assign({}, item.partEtags));
             request.write(jsonpartEtags);
             request.end();
-
         });
 }
 
@@ -303,6 +307,7 @@ export const abortMultipartUpload = (item: FileInfo, abortUrl: string) => {
             });
 
             request.on('error', (error) => {
+                log.error("abortMultipartUpload.request: \n" + error);
                 reject(error);
             });
 

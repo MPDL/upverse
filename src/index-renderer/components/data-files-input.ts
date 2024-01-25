@@ -12,6 +12,10 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
   submitButtonElement: HTMLButtonElement;
   cancelButtonElement: HTMLButtonElement;
 
+  modalElement: HTMLElement;
+  modalButtonElement: HTMLButtonElement;
+  backdropElement: HTMLElement;
+
   MAXFILES: number;
   remainingFiles: number;
   enteredFiles: FileInfo[]
@@ -34,11 +38,20 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
       '#cancel'
     ) as HTMLButtonElement;
 
+    this.modalElement = document.getElementById('alertModal') as HTMLElement;
+    this.modalButtonElement = document.getElementById(
+      'modalClose'
+    ) as HTMLButtonElement;
+  
+    this.backdropElement = document.getElementById('backdrop') as HTMLElement;
+
     this.configure();
   }
 
   configure():void {
     this.MAXFILES = 2000;
+    const regexp = /[:;#<>"\*\?\/\|]/ ;
+    const regexp2 = /[^A-Za-z0-9_ .\/\-]+/ ;
 
     this.element.addEventListener('change', this.changeHandler.bind(this));
     this.filesButtonElement.addEventListener('click', this.filesHandler.bind(this));
@@ -47,9 +60,13 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
     this.submitButtonElement.addEventListener('click', this.submitHandler.bind(this));
     this.cancelButtonElement.addEventListener('click', this.cancelHandler.bind(this)); 
 
+    this.modalButtonElement.addEventListener('click', this.closeModal.bind(this));
+
+    this.backdropElement.style.display = "none";
+    this.backdropElement.style.visibility = "hidden";
+
     ipcRenderer.on('DO_FILE_SELECT', (event: Event, folder: string, filesCount: number)  => {
-      const dsSelected = document.getElementById("dataset") as HTMLInputElement;
-      if (dsSelected.value.length > 0 && dsSelected.value[0].length > 0) {
+      if (this.isDSSelected) {
         this.filesButtonElement.disabled = false;
       } else {
         this.filesButtonElement.disabled = true;
@@ -59,26 +76,27 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
     })
 
     ipcRenderer.on('FILE_SELECT_DONE', (event: Event, enteredFiles: FileInfo[])  => { 
-      const doneElement = document.getElementById('upload-done');
-      if (doneElement) {
-        doneElement.innerHTML = '';
-      }
+      this.clearView();
       if (enteredFiles.length) {
         const files = Array.from(enteredFiles);
         enteredFiles.forEach((file) => {
-          dataFiles.addFile(file);
+          if (!regexp.test(file.name)) {
+            dataFiles.addFile(file);
+          } else {
+            this.openModal(`<strong>${file.name}</strong> excluded from your selection! <hr>File Name cannot contain any of the following characters: <br/><strong> /  :  *  ?  \"  <  >  |  ; #</strong>`);    
+          }
         });
-        const dsSelected = document.getElementById("dataset") as HTMLInputElement;
-        if (dsSelected.value.length > 0 && dsSelected.value[0].length > 0) {
-          this.submitButtonElement.disabled = false;
+        if (dataFiles.length()) {
+          if (this.isDSSelected) {
+            this.submitButtonElement.disabled = false;
+          }
+          this.resetButtonElement.disabled = false;
         }
-        this.resetButtonElement.disabled = false;
       }
     })
 
     ipcRenderer.on('DO_FOLDER_SELECT', (event: Event, folder: string, filesCount: number)  => {
-      const dsSelected = document.getElementById("dataset") as HTMLInputElement;
-      if (dsSelected.value.length > 0 && dsSelected.value[0].length > 0) {
+      if (this.isDSSelected) {
         this.folderButtonElement.disabled = false;
       } else {
         this.folderButtonElement.disabled = true;
@@ -87,29 +105,43 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
     })
 
     ipcRenderer.on('FOLDER_SELECT_DONE', (event: Event, enteredFiles: FileInfo[])  => { 
-      const doneElement = document.getElementById('upload-done');
-      if (doneElement) {
-        doneElement.innerHTML = '';
-      }
+      this.clearView();
       if (enteredFiles.length) {
+        let lastPath = '';
         const files = Array.from(enteredFiles);
         enteredFiles.forEach((file) => {
-          dataFiles.addFile(file);
+          if (!regexp2.test(file.relativePath)) {
+            if (!regexp.test(file.name)) {
+              dataFiles.addFile(file);
+            } else {
+              this.openModal(`<strong>${file.name}</strong> excluded from your selection! <hr>File Name cannot contain any of the following characters: <br/><strong> /  :  *  ?  \"  <  >  |  ; #</strong>`);    
+            }
+          } else {
+            if (file.relativePath !== lastPath) {
+              this.openModal(`Directory <strong>${file.relativePath}</strong> name cannot contain invalid characters! <hr>Valid characters are: <br/><strong> a-Z  0-9  _  -  .  \\  /  </strong>and ' ' (white space).`);    
+              lastPath = file.relativePath;
+            }
+          }
         });
-        const dsSelected = document.getElementById("dataset") as HTMLInputElement;
-        if (dsSelected.value.length > 0 && dsSelected.value[0].length > 0) {
-          this.submitButtonElement.disabled = false;
+        if (dataFiles.length()) {
+          if (this.isDSSelected) {
+            this.submitButtonElement.disabled = false;
+          }
+          this.resetButtonElement.disabled = false;
         }
-        this.resetButtonElement.disabled = false;
+      } else {
+        alert(`The selected folder is empty, please select a folder that contains files`);
       }
     })
 
     ipcRenderer.on('UPLOAD_DONE', (event: Event, result: Record<string, unknown>)  => {
       this.remainingFiles = this.remainingFiles - Number(result.numFilesUploaded);
+      this.actionButtons({cancel: true, files: false, folder: false});
       this.nextUpload();
     })  
 
     ipcRenderer.on('UPLOAD_FAILED', (event: Event, dummy: string)  => {
+      this.actionButtons({cancel: true, files: false, folder: false});
       this.nextUpload();
     })
 
@@ -142,11 +174,7 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
   private submitHandler(event: Event) {
     event.preventDefault();
     if (dataFiles.length()) {
-      this.filesButtonElement.disabled = true;
-      this.folderButtonElement.disabled = true;
-      this.resetButtonElement.disabled = true;
-      this.submitButtonElement.disabled = true;
-      this.cancelButtonElement.disabled = false; 
+      this.actionButtons({files: true, folder: true, clear: true, upload: true, cancel: false});
       ipcRenderer.send('DO_UPLOAD', dataFiles.getAll());
     } 
   }
@@ -168,17 +196,16 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
       for (const file of enteredFiles) {
         dataFiles.addFile(file);
       };
-      this.submitButtonElement.disabled = false;
-      this.resetButtonElement.disabled = false;
+      this.actionButtons({files: true, folder: true, clear: true, upload: true, cancel: false});
+    } else {
+      this.actionButtons({files: false, folder: false, clear: true, upload: true, cancel: true});
     }
   }
 
   private resetHandler(event: Event) {
     event.preventDefault();
     dataFiles.clear();
-    this.submitButtonElement.disabled = true;
-    this.resetButtonElement.disabled = true;
-    
+    this.actionButtons({files: false, folder: false, clear: true, upload: true, cancel: true});
     ipcRenderer.send('DO_CLEAR_SELECTED');
   }
 
@@ -186,12 +213,51 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
     event.preventDefault();
     dataFiles.clear();
     this.submitButtonElement.innerHTML = ' <i class="bi bi-upload d-none d-xxl-inline"></i> Upload ';
-    this.resetButtonElement.disabled = true;
-    this.submitButtonElement.disabled = true;
-    this.cancelButtonElement.disabled = true;
-    this.filesButtonElement.disabled = false;
-    this.folderButtonElement.disabled = false;
+    this.actionButtons({files: false, folder: false, clear: true, upload: true, cancel: true});
     ipcRenderer.send('DO_ABORT');
+  }
+
+  private clearView() {
+    const doneElement = document.getElementById('upload-done');
+    if (doneElement) {
+      doneElement.innerHTML = '';
+    }
+    const failedElement = document.getElementById('upload-failed');
+    if (failedElement) {
+      failedElement.innerHTML = '';
+    }
+  }
+
+  private isDSSelected(): boolean {
+    const dsSelected = document.getElementById("dataset") as HTMLInputElement;
+    if (dsSelected.value.length > 0 && dsSelected.value[0].length > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  private actionButtons(enabled: {files?: boolean, folder?: boolean , clear?: boolean, upload?: boolean, cancel?: boolean}):void {    
+    if (typeof enabled.files !== 'undefined') this.filesButtonElement.disabled = enabled.files;
+    if (typeof enabled.folder !== 'undefined') this.folderButtonElement.disabled = enabled.folder;
+    if (typeof enabled.clear !== 'undefined') this.resetButtonElement.disabled = enabled.clear;
+    if (typeof enabled.upload !== 'undefined') this.submitButtonElement.disabled = enabled.upload;
+    if (typeof enabled.cancel !== 'undefined') this.cancelButtonElement.disabled = enabled.cancel;
+  }
+
+  private openModal(message:string) {
+    this.backdropElement.style.display = "block"
+    this.backdropElement.style.visibility = "visible"
+    this.modalElement.style.display = "block"
+    this.modalElement.classList.add("show");
+    this.modalElement.children[0].children[0].children[1].innerHTML = message;
+  }
+
+  private closeModal() {
+    this.backdropElement.style.display = "none"
+    this.backdropElement.style.visibility = "hidden"
+    this.modalElement.style.display = "none"
+    this.modalElement.classList.remove("show");
   }
 
 }

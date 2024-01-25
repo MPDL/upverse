@@ -60,6 +60,7 @@ export class UserDataset extends Cmp<HTMLDivElement, HTMLDivElement> {
     ) {
       (document.getElementById("upload") as HTMLButtonElement).disabled = true;
       (document.getElementById("cancel") as HTMLButtonElement).disabled = true;  
+      this.lastSelected = '';
       alert('Please, select a Dataset');
       return;
     } else {
