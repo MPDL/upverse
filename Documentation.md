@@ -34,3 +34,5 @@ The files can now be uploaded to the repository (**Upload** icon). If, during th
 If files are uploaded multiple times, they are not replaced. Instead, the suffix is used to count up. It starts with "-1". Special characters in the file name such as !?%&'§$() lead to errors.
 
 The files can then be found in your dataset in Edmond on your web browser.
+
+The maximum number of files per dataset allowed with Upverse is set to 2000.
