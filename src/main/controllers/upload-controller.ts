@@ -77,7 +77,6 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                         } else {
                             itemInfo.storageUrls.push(uploadUrlsResponseBody.data.url);
                             try {
-                                console.log("itemInfo: " + JSON.stringify(itemInfo)); // Debug
                                 uploadToStoreResponse = await uploadSinglepartToStore(event, itemInfo);
                                 if (JSON.parse(JSON.stringify(uploadToStoreResponse))._responseHead.statusCode != 200) {
                                     throw new Error('HTTP ' + JSON.parse(JSON.stringify(uploadToStoreResponse))._responseHead.statusMessage);
