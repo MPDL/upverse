@@ -83,6 +83,7 @@ export class UserDataset extends Cmp<HTMLDivElement, HTMLDivElement> {
 
   private refreshHandler(event: Event) {
     event.preventDefault();
+    (document.getElementById("upload") as HTMLButtonElement).disabled = true;
     ipcRenderer.send('DO_DS_LIST_REFRESH');
   }
 

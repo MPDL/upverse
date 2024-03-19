@@ -1,7 +1,7 @@
 import { calcChecksum, getUploadUrls, uploadSinglepartToStore, uploadMultipartToStore, completeMultipartUpload, abortMultipartUpload, addMultipleFilesToDataset } from '../services/upload-service';
 
 import { FileInfo } from '../../model/file-info';
-import { IpcMainEvent, Notification } from "electron";
+import { IpcMainEvent, Notification, dialog } from "electron";
 import { Observable } from 'rxjs';
 
 let abort = false;
@@ -49,7 +49,7 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                         }
                     } catch (err) {
                         const title = `Error uploading file ${itemInfo.name} to store.`
-                        new Notification({ title: title, body: err }).show();
+                        alert(title, err);
                         event.sender.send('actionFor' + itemInfo.id.toString(), 'fail', 0);
                         itemsFailed++;
                         continue;
@@ -84,7 +84,7 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                                 }
                             } catch (err) {
                                 const title = `Error uploading file ${itemInfo.name} to store.`
-                                new Notification({ title: title, body: err }).show();
+                                alert(title, err);
                                 event.sender.send('actionFor' + itemInfo.id.toString(), 'fail', 0);
                                 itemsFailed++;
                                 continue;
@@ -104,7 +104,7 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                                 }
                             } catch (err) {
                                 const title = `Error uploading part of file ${itemInfo.name} to store.`
-                                new Notification({ title: title, body: err }).show();
+                                alert(title, err);
                                 throw new Error(title + '\n' + err);
                             }
                             const responseHeaders = JSON.parse(JSON.stringify(uploadToStoreResponse.headers));
@@ -125,7 +125,7 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                                 };
                             } catch (err) {
                                 const title = 'Error aborting multipart upload.';
-                                new Notification({ title: title, body: err }).show();
+                                alert(title, err);
                                 throw new Error(title + '\n' + err);
                             }
                         } else {
@@ -136,7 +136,7 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                                 }
                             } catch (err) {
                                 const title = 'Error completing multipart upload to store.';
-                                new Notification({ title: title, body: err }).show();
+                                alert(title, err);
                                 throw new Error(title + '\n' + err);
                             }
                             itemInfo.etag = await calcChecksum(itemInfo);
@@ -177,3 +177,16 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
         }
     )
 }
+
+function alert(message: string, detail: string) {
+    console.log(message);
+    new Notification({ title: 'Upverse upload alert', body: message }).show();
+    const options = {
+      buttons: ['OK'],
+      defaultId: 0,
+      title: 'Upverse upload alert',
+      message: message,
+      detail: detail,
+    };
+    dialog.showMessageBox(null, options);
+  }

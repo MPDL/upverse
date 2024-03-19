@@ -49,7 +49,6 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
   }
 
   configure():void {
-    this.MAXFILES = 2000;
     const regexp = /[:;#<>"\*\?\/\|]/ ;
     const regexp2 = /[^A-Za-z0-9_ .\/\-]+/ ;
 
@@ -66,13 +65,12 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
     this.backdropElement.style.visibility = "hidden";
 
     ipcRenderer.on('DO_FILE_SELECT', (event: Event, folder: string, filesCount: number)  => {
-      if (this.isDSSelected) {
+      if (this.isDSSelected()) {
         this.filesButtonElement.disabled = false;
       } else {
         this.filesButtonElement.disabled = true;
       }
-      //dataFiles.clear();
-      this.remainingFiles = this.MAXFILES - filesCount;
+      dataFiles.clear();
     })
 
     ipcRenderer.on('FILE_SELECT_DONE', (event: Event, enteredFiles: FileInfo[])  => { 
@@ -87,7 +85,7 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
           }
         });
         if (dataFiles.length()) {
-          if (this.isDSSelected) {
+          if (this.isDSSelected()) {
             this.submitButtonElement.disabled = false;
           }
           this.resetButtonElement.disabled = false;
@@ -96,17 +94,17 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
     })
 
     ipcRenderer.on('DO_FOLDER_SELECT', (event: Event, folder: string, filesCount: number)  => {
-      if (this.isDSSelected) {
+      if (this.isDSSelected()) {
         this.folderButtonElement.disabled = false;
       } else {
         this.folderButtonElement.disabled = true;
       }
-      this.remainingFiles = this.MAXFILES - filesCount;
+      dataFiles.clear();
     })
 
     ipcRenderer.on('FOLDER_SELECT_DONE', (event: Event, enteredFiles: FileInfo[])  => { 
       this.clearView();
-      if (enteredFiles.length) {
+      if (enteredFiles.length) {;
         let lastPath = '';
         const files = Array.from(enteredFiles);
         enteredFiles.forEach((file) => {
@@ -124,7 +122,7 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
           }
         });
         if (dataFiles.length()) {
-          if (this.isDSSelected) {
+          if (this.isDSSelected()) {
             this.submitButtonElement.disabled = false;
           }
           this.resetButtonElement.disabled = false;

@@ -14,6 +14,8 @@ import { UserInfo } from "../model/user-info";
 let mainWindow: BrowserWindow;
 let settingsWindow: BrowserWindow;
 
+const MAXFILES = 2000;
+
 function createMainWindow() {
   mainWindow = new BrowserWindow({
     title: "Research Data Uploader",
@@ -34,7 +36,7 @@ function createMainWindow() {
   mainWindow.loadURL(indexPath);
 
   // for Debugging
-  //mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 
   mainWindow.on('close', function () {
     app.quit();
@@ -62,7 +64,7 @@ function createSettingsWindow() {
   settingsWindow.show();
 
   // for Debugging
-  //settingsWindow.webContents.openDevTools();
+  // settingsWindow.webContents.openDevTools();
 }
 
 function createMenu() {
@@ -97,6 +99,18 @@ function createMenu() {
   Menu.setApplicationMenu(menu);
 }
 
+function alert(message: string) {
+  console.log(message);
+  new Notification({ title: 'Upverse alert', body: message }).show();
+  const options = {
+    buttons: ['OK'],
+    defaultId: 0,
+    title: 'Upverse alert',
+    message: message,
+  };
+  dialog.showMessageBox(null, options);
+}
+
 app.on("ready", () => {
   const userData = app.getPath("userData");
   netLog.startLogging(path.join(userData, "net-log"));
@@ -106,14 +120,12 @@ app.on("ready", () => {
 
   try {
     new Settings(); 
-    if (Settings.loadSettings()) {
-      new Notification({ title: 'Upverse', body: 'Settings successfully read' }).show();
-    } else {
-      new Notification({ title: 'Upverse', body: 'Please, set your Settings'}).show();
+    if (!Settings.loadSettings()) {
+      alert('Please, set your Settings');
       createSettingsWindow();
     } 
   } catch (err) {
-    new Notification({ title: 'Upverse !!!', body: err.message }).show();
+    alert(err.message);
   }
 
   app.on("activate", function () {
@@ -138,7 +150,7 @@ app.on("ready", () => {
         });
       }
     } catch (err) {
-      new Notification({ title: 'Upverse Settings', body: err.message }).show();
+      alert(err.message);
     }
   });
 
@@ -173,7 +185,7 @@ ipcMain.on('DO_TEST_CONN', async (event: IpcMainEvent, givenSettings: string[]) 
       });
     } else throw new Error('Please, check Settings');
   } catch (error) {
-    new Notification({ title: 'Upverse Settings', body: error.message }).show();
+   alert(error.message);
   }
 })
 
@@ -184,15 +196,15 @@ ipcMain.on('DO_SAVE_SETTINGS', (event: IpcMainEvent, givenSettings: string[]) =>
       process.env.dv_base_uri = givenSettings[1];
       if (Settings.save()) {
         event.reply('SAVE_SETTINGS_SUCCESS');
-        new Notification({ title: 'Upverse', body: 'Settings successfully saved to disk' }).show();
+        alert('Settings successfully saved to disk');
 
       } else {
         event.reply('SAVE_SETTINGS_FAILED');
-        new Notification({ title: 'Upverse', body: 'Error saving settings ' }).show();
+        alert('Error saving settings ');
       }
     } else throw new Error('Please, enter values');
   } catch (error) {
-    new Notification({ title: 'Upverse Settings', body: error.message }).show();
+    alert('Upverse Settings');
   }
 })
 
@@ -206,10 +218,12 @@ ipcMain.on('DS_SELECT_DONE', (event: IpcMainEvent, dataset: [DatasetInfo]) => {
 ipcMain.on('DO_DS_LIST_REFRESH', async (event: IpcMainEvent) => {
   try {
     await getDatasets().then((datasetList: DatasetInfo[]) => {
+      process.env.dest_dataset = null;
+      process.env.files_loaded = null;
       mainWindow.webContents.send('DO_DS_SELECT', datasetList);
     });
   } catch (error) {
-    new Notification({ title: 'Upverse datasets', body: error.message }).show();
+    alert(error.message);
   }
 })
 
@@ -222,27 +236,34 @@ ipcMain.on('DO_CLEAR_SELECTED', (event: IpcMainEvent) => {
 })
 
 ipcMain.on('DO_FILE_SELECT', (event: IpcMainEvent) => {
-  try {
     dialog.showOpenDialog(mainWindow, {
       properties: ['openFile', 'multiSelections'], buttonLabel: "Select"
     }).then(async result => {
+      if (result.filePaths.length > ( process.env.files_loaded ? (MAXFILES - Number(process.env.files_loaded.valueOf())) : MAXFILES )) { 
+        alert("Files limit reached. Please, select less files");
+        event.reply('FILE_SELECT_FAILED', '');
+        return
+      };
       let fileInfoList: FileInfo[] = [];
       for (const file of result.filePaths) {
         fileInfoList.push(getFileInfo(file, fileInfoList.length));
       }
-      if (fileInfoList.length) event.reply('FILE_SELECT_DONE', fileInfoList);
+      if (fileInfoList.length) {
+        event.reply('FILE_SELECT_DONE', fileInfoList);
+      } else {
+        event.reply('FILE_SELECT_FAILED', '');
+      }
+    }).catch (error => {
+      alert(error.message);
+      event.reply('FILE_SELECT_FAILED', '');
     });
-  } catch (error) {
-    new Notification({ title: 'Upverse File Explorer', body: 'Open file explorer failed' });
-    event.reply('FILE_SELECT_FAILED', '');
-  }
 })
 
 ipcMain.on('DO_FOLDER_SELECT', (event: IpcMainEvent) => {
-  try {
     dialog.showOpenDialog(mainWindow, {
       properties: ['openDirectory'], buttonLabel: "Select"
     }).then(async result => {
+      console.log("result: " + result.filePaths.length);
       if (result.filePaths.length ) {
         let fileList: string[] = [];
         for (const filePath of result.filePaths) {
@@ -250,6 +271,17 @@ ipcMain.on('DO_FOLDER_SELECT', (event: IpcMainEvent) => {
             fileList = fileList.concat(files);
           }
         }
+        if ( fileList.length > ( process.env.files_loaded ? (MAXFILES - Number(process.env.files_loaded.valueOf())) : MAXFILES ) ) { 
+          alert("Files limit reached. Please, select less files");
+          event.reply('FOLDER_SELECT_FAILED', '');
+          return;
+        }
+        if ( fileList.length === 0 ) { 
+          alert("Please, select a non-empty folder");
+          event.reply('FOLDER_SELECT_FAILED', '');
+          return;
+        }  
+
         let fileInfoList: FileInfo[] = [];
         const currentBasePath = path.basename(result.filePaths[0]);
 
@@ -258,23 +290,25 @@ ipcMain.on('DO_FOLDER_SELECT', (event: IpcMainEvent) => {
           uploadPath = path.join(currentBasePath, uploadPath);
           fileInfoList.push(getFileInfo(file, fileInfoList.length, uploadPath));
         }
-        if (fileInfoList.length) { 
+        if ( fileInfoList.length ) { 
           event.reply('FOLDER_SELECT_DONE', fileInfoList);
-        } else new Notification({ title: 'Upverse File Explorer', body: "Please, select a non empty folder" }).show();
+        }
+      } else {
+        event.reply('FOLDER_SELECT_FAILED', '');
       }
+    }).catch (error => {
+      alert(error.message);
+      event.reply('FOLDER_SELECT_FAILED', '');
     });
-  } catch (error) {
-    new Notification({ title: 'Upverse File Explorer', body: error.message }).show();
-    event.reply('FOLDER_SELECT_FAILED', '');
-  }
-
 })
 
 ipcMain.on('DO_UPLOAD', async (event: IpcMainEvent, fileInfoList: FileInfo[]) => {  
   if (!fileInfoList.length) {
-    new Notification({ title: 'Upverse Upload Failed!', body: 'Nothing selected to Upload' }).show();
+    alert('Nothing selected to Upload');
   } else if (!process.env.dest_dataset) {
-    new Notification({ title: 'Upverse Upload Failed!', body: 'No destination Dataset selected' }).show();
+    alert('No destination Dataset selected');
+  } else if (fileInfoList.length > ( MAXFILES - Number(process.env.files_loaded.valueOf()) ) ) {
+    alert('Files number limit for this Dataset exceeded');
   } else {
     try {
       await transferFiles(event, process.env.dest_dataset, fileInfoList).then((result: Record<string, unknown>) => {
@@ -283,7 +317,7 @@ ipcMain.on('DO_UPLOAD', async (event: IpcMainEvent, fileInfoList: FileInfo[]) =>
         throw error;
       })
     } catch (error) {
-      new Notification({ title: 'Upverse Upload Failed!', body: error.message }).show();
+      alert('error.message');
       event.reply('UPLOAD_FAILED', error.message);
     }
   }
@@ -294,7 +328,7 @@ ipcMain.on('DO_ABORT', (event: IpcMainEvent) => {
     upload_controller.setAbort.subscribe();
     event.reply('DO_LIST_CLEAR', '');
   } catch (error) {
-    new Notification({ title: 'Upload', body: 'Upload aborted' });
+    alert('Upload aborted');
     event.reply('UPLOAD_FAILED', '');
   }
 });
@@ -384,3 +418,5 @@ const getFileInfo = (file: string, id: number, uploadPath?: string): FileInfo =>
     new Date(stats.mtime)
   );
 };
+
+

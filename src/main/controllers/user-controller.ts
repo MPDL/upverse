@@ -37,7 +37,7 @@ export const getUserDatasets = () => {
           selectedPage++;
           await getMyDatasetsPage(selectedPage).then((responseBody: Datasets) => {
             responseBody.data.items.forEach((item: Item) => {
-              const datasetInfo = new DatasetInfo(item.name, item.global_id, responseBody.data.dvobject_counts.files_count);
+              const datasetInfo = new DatasetInfo(item.name, item.global_id, item.fileCount);
               datasetList.push(Object.assign({}, datasetInfo));
             })
             nextPage = responseBody.data.pagination.nextPageNumber;
