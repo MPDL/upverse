@@ -22,7 +22,7 @@ export const getMyUser = () => {
                         const body = JSON.parse(chunk.toString());
                         resolve(body);
                     });
-                } else if (response.statusCode === 400) {
+                } else if (response.statusCode === 401) {
                     reject(new Error('Invalid token!'));
                 } else {
                     reject(new Error('Invalid URL!'));

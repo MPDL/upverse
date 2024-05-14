@@ -63,8 +63,8 @@ function createSettingsWindow() {
 
   settingsWindow.show();
 
-  // for Debugging
-  // settingsWindow.webContents.openDevTools();
+  // Uncomment for Debugging
+  settingsWindow.webContents.openDevTools();
 }
 
 function createMenu() {
