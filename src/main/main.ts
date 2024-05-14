@@ -36,7 +36,7 @@ function createMainWindow() {
   mainWindow.loadURL(indexPath);
 
   // Uncomment for Debugging
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 
   mainWindow.on('close', function () {
     app.quit();
@@ -64,7 +64,7 @@ function createSettingsWindow() {
   settingsWindow.show();
 
   // Uncomment for Debugging
-  settingsWindow.webContents.openDevTools();
+  // settingsWindow.webContents.openDevTools();
 }
 
 function createMenu() {
