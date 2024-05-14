@@ -1,5 +1,5 @@
 import { JsonData } from './../../model/json-data';
-import { ipcRenderer, shell } from 'electron';
+import { ipcRenderer, IpcRendererEvent, shell } from 'electron';
 
 import Cmp from './base-component.js';
 import { FileInfo } from "../../model/file-info.js";
@@ -31,7 +31,7 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
       this.renderItem(this.selectedFiles[this.selectedFiles.length - 1]); 
     });
 
-    ipcRenderer.on("DO_FILE_CLEAR", (event: Event, file: FileInfo) => {
+    ipcRenderer.on("DO_FILE_CLEAR", (event: IpcRendererEvent, file: FileInfo) => {
       dataFiles.removeDataFile(file);
       this.selectedFiles.splice(file.id, 1);
       const element = document.getElementById(file.id.toString());
@@ -47,7 +47,7 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
       }
     });
 
-    ipcRenderer.on("UPLOAD_DONE", (event: Event, result: Record<string, unknown>, repository: string) => {
+    ipcRenderer.on("UPLOAD_DONE", (event: IpcRendererEvent, result: Record<string, unknown>, repository: string) => {
       this.selectedFiles = [];
       dataFiles.clear(); 
       
@@ -60,7 +60,7 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
       this.openDatasetElement.addEventListener('click', this.openDatasetHandler.bind(this)); 
     });
 
-    ipcRenderer.on("UPLOAD_FAILED", (event: Event, result: Record<string, unknown>, repository: string) => {
+    ipcRenderer.on("UPLOAD_FAILED", (event: IpcRendererEvent, result: Record<string, unknown>, repository: string) => {
       this.selectedFiles = [];
       dataFiles.clear(); 
 
@@ -69,7 +69,7 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
       )!.innerHTML = this.failReport(result);
     });
 
-    ipcRenderer.on("abort", (event: Event, result: Record<string, unknown>) => {
+    ipcRenderer.on("abort", (event: IpcRendererEvent, result: Record<string, unknown>) => {
       this.selectedFiles = [];
       dataFiles.clear();
       this.element.querySelector(
@@ -79,7 +79,7 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
        </div>`;  
     });
 
-    ipcRenderer.on('DO_LIST_CLEAR', (event: Event)  => {
+    ipcRenderer.on('DO_LIST_CLEAR', (event: IpcRendererEvent)  => {
       this.selectedFiles = [];
       dataFiles.clear();
       this.clearItemList();

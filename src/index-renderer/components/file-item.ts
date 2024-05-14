@@ -2,7 +2,7 @@ import * as Validation from '../../utils/validation.js';
 
 import Cmp from './base-component';
 import { FileInfo } from '../../model/file-info.js';
-import { ipcRenderer, dialog } from 'electron';
+import { ipcRenderer, IpcRendererEvent, dialog } from 'electron';
 
 export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
 {
@@ -59,11 +59,11 @@ export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
     this.backdropElement.style.display = "none"
     this.backdropElement.style.visibility = "hidden"
 
-    ipcRenderer.on('SELECTED_FILE_LIST', (event: Event, dummy: string) => {
+    ipcRenderer.on('SELECTED_FILE_LIST', (event: IpcRendererEvent, dummy: string) => {
       this.actionsElement!.innerHTML = '<i class="bi bi-hourglass"></i>'
     })
 
-    ipcRenderer.on('actionFor' + this.fileInfo.id.toString(), (event: Event, action: string, progress?: number) => {
+    ipcRenderer.on('actionFor' + this.fileInfo.id.toString(), (event: IpcRendererEvent, action: string, progress?: number) => {
       if (action === 'start') {
         this.actionsElement!.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
         this.fileListElement!.style.backgroundRepeat = "no-repeat";

@@ -1,7 +1,7 @@
 import * as Validation from '../../utils/validation.js';
 
 import Cmp from './base-component.js';
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, IpcRendererEvent } from 'electron';
 
 import { DatasetInfo } from "../../model/dataset-info.js";
 
@@ -26,7 +26,7 @@ export class UserDataset extends Cmp<HTMLDivElement, HTMLDivElement> {
     this.datasetSelectElement.addEventListener('change', this.changeHandler.bind(this));
     this.refreshButtonElement.addEventListener('click', this.refreshHandler.bind(this));
 
-    ipcRenderer.on('DO_DS_SELECT', (event: Event, datasets: DatasetInfo[]) => {
+    ipcRenderer.on('DO_DS_SELECT', (event: IpcRendererEvent, datasets: DatasetInfo[]) => {
       this.userDatasets = [];
       this.datasetSelectElement.disabled = false;
       this.datasetSelectElement.options.length = 1;

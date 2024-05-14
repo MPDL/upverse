@@ -2,7 +2,7 @@ import * as Validation from '../../utils/validation';
 
 import Cmp from './base-component.js';
 import { dataFiles } from '../data-files';
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, IpcRendererEvent } from 'electron';
 import { FileInfo } from "../../model/file-info";
 
 export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
@@ -64,7 +64,7 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
     this.backdropElement.style.display = "none";
     this.backdropElement.style.visibility = "hidden";
 
-    ipcRenderer.on('DO_FILE_SELECT', (event: Event, folder: string, filesCount: number)  => {
+    ipcRenderer.on('DO_FILE_SELECT', (event: IpcRendererEvent, folder: string, filesCount: number)  => {
       if (this.isDSSelected()) {
         this.filesButtonElement.disabled = false;
       } else {
@@ -73,7 +73,7 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
       dataFiles.clear();
     })
 
-    ipcRenderer.on('FILE_SELECT_DONE', (event: Event, enteredFiles: FileInfo[])  => { 
+    ipcRenderer.on('FILE_SELECT_DONE', (event: IpcRendererEvent, enteredFiles: FileInfo[])  => { 
       this.clearView();
       if (enteredFiles.length) {
         const files = Array.from(enteredFiles);
@@ -93,7 +93,7 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
       }
     })
 
-    ipcRenderer.on('DO_FOLDER_SELECT', (event: Event, folder: string, filesCount: number)  => {
+    ipcRenderer.on('DO_FOLDER_SELECT', (event: IpcRendererEvent, folder: string, filesCount: number)  => {
       if (this.isDSSelected()) {
         this.folderButtonElement.disabled = false;
       } else {
@@ -102,7 +102,7 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
       dataFiles.clear();
     })
 
-    ipcRenderer.on('FOLDER_SELECT_DONE', (event: Event, enteredFiles: FileInfo[])  => { 
+    ipcRenderer.on('FOLDER_SELECT_DONE', (event: IpcRendererEvent, enteredFiles: FileInfo[])  => { 
       this.clearView();
       if (enteredFiles.length) {;
         let lastPath = '';
@@ -132,13 +132,13 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
       }
     })
 
-    ipcRenderer.on('UPLOAD_DONE', (event: Event, result: Record<string, unknown>)  => {
+    ipcRenderer.on('UPLOAD_DONE', (event: IpcRendererEvent, result: Record<string, unknown>)  => {
       this.remainingFiles = this.remainingFiles - Number(result.numFilesUploaded);
       this.actionButtons({cancel: true, files: false, folder: false});
       this.nextUpload();
     })  
 
-    ipcRenderer.on('UPLOAD_FAILED', (event: Event, dummy: string)  => {
+    ipcRenderer.on('UPLOAD_FAILED', (event: IpcRendererEvent, dummy: string)  => {
       this.actionButtons({cancel: true, files: false, folder: false});
       this.nextUpload();
     })

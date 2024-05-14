@@ -35,8 +35,8 @@ function createMainWindow() {
   const indexPath = path.join('file://', __dirname, '../../views/index.html')
   mainWindow.loadURL(indexPath);
 
-  // for Debugging
-  //mainWindow.webContents.openDevTools();
+  // Uncomment for Debugging
+  mainWindow.webContents.openDevTools();
 
   mainWindow.on('close', function () {
     app.quit();
@@ -246,7 +246,13 @@ ipcMain.on('DO_FILE_SELECT', (event: IpcMainEvent) => {
       };
       let fileInfoList: FileInfo[] = [];
       for (const file of result.filePaths) {
-        fileInfoList.push(getFileInfo(file, fileInfoList.length));
+        if (fs.lstatSync(file).isDirectory()) {
+          alert("Please, select only files");
+          event.reply('FILE_SELECT_FAILED', '');
+          return
+        } else {
+          fileInfoList.push(getFileInfo(file, fileInfoList.length));
+        }
       }
       if (fileInfoList.length) {
         event.reply('FILE_SELECT_DONE', fileInfoList);
@@ -263,7 +269,6 @@ ipcMain.on('DO_FOLDER_SELECT', (event: IpcMainEvent) => {
     dialog.showOpenDialog(mainWindow, {
       properties: ['openDirectory'], buttonLabel: "Select"
     }).then(async result => {
-      console.log("result: " + result.filePaths.length);
       if (result.filePaths.length ) {
         let fileList: string[] = [];
         for (const filePath of result.filePaths) {

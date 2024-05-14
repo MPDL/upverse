@@ -1,6 +1,6 @@
 {
   "name": "upverse",
-  "version": "1.0.1",
+  "version": "1.2",
   "author": {
     "name": "Max Planck Digital Library",
     "email": "edmond@mpdl.mpg.de"
@@ -11,7 +11,7 @@
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
     "build": "tsc",
-    "start": "rm -rf ./dist && npm run build && electron ./dist/main/main.js",
+    "start": "rm -rf ./dist && npm run build && electron ./dist/main/main.js --trace-warnings",
     "deploy": "rm -rf ./dist && rm -rf ./out && npm run build && electron-builder --publish=never",
     "watch": "tsc -w",
     "lint": "eslint -c .eslintrc --ext .ts ./src"
@@ -72,23 +72,20 @@
     "upload"
   ],
   "devDependencies": {
-    "@types/bootstrap": "^5.1.11",
-    "@types/mime-types": "^2.1.1",
-    "@typescript-eslint/eslint-plugin": "^4.33.0",
-    "@typescript-eslint/parser": "^4.33.0",
-    "electron": "^24.3.0",
-    "electron-builder": "latest",
-    "electron-prebuilt-compile": "8.2.0",
-    "eslint": "^7.32.0",
-    "typescript": "^4.5.5"
+    "@types/bootstrap": "^5.2.10",
+    "@types/mime-types": "^2.1.4",
+    "electron": "^30.0.3",
+    "electron-builder": "^24.13.3",
+    "electron-prebuilt-compile": "^1.8.4",
+    "typescript": "^5.4.5"
   },
   "dependencies": {
-    "bootstrap": "^5.1.3",
-    "bootstrap-icons": "^1.8.1",
-    "electron-log": "^5.0.1",
+    "bootstrap": "^5.3.3",
+    "bootstrap-icons": "^1.11.3",
+    "electron-log": "^5.1.4",
     "form-data": "^4.0.0",
     "http": "^0.0.1-security",
     "mime-types": "^2.1.35",
-    "rxjs": "~7.8.0"
+    "rxjs": "^7.8.1"
   }
 }

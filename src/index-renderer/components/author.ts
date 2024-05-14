@@ -1,5 +1,5 @@
 import Cmp from './base-component.js';
-import { ipcRenderer, shell } from 'electron';
+import { ipcRenderer, IpcRendererEvent, shell } from 'electron';
 
 export class Author extends Cmp<HTMLDivElement, HTMLDivElement> {
   authorElement: HTMLSpanElement;
@@ -25,12 +25,12 @@ export class Author extends Cmp<HTMLDivElement, HTMLDivElement> {
     this.logoLinkElement.addEventListener('click', this.logoHandler.bind(this)); 
     this.siteLinkElement.addEventListener('click', this.siteHandler.bind(this)); 
 
-    ipcRenderer.on('CONN_SUCCESS', (event: Event, author: string, repository: string)  => {
+    ipcRenderer.on('CONN_SUCCESS', (event: IpcRendererEvent, author: string, repository: string)  => {
       this.authorElement.innerHTML = `<em>Connected as </em><strong>${author} </strong><i class="bi bi-person-check text-info"></i>`;
       this.logoLinkElement.href = repository;
     })
 
-    ipcRenderer.on('CONN_FAILED', (event: Event, msg: string)  => {
+    ipcRenderer.on('CONN_FAILED', (event: IpcRendererEvent, msg: string)  => {
       this.authorElement.innerHTML = `${msg} <i class="bi bi-person-check text-warning"></i>`;
     })
   }

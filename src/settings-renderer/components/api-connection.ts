@@ -1,7 +1,7 @@
 import * as Validation from '../../utils/validation.js';
 
 import Cmp from './base-component.js';
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, IpcRendererEvent } from 'electron';
 
 export class ApiConnection extends Cmp<HTMLDivElement, HTMLFormElement> {
   tokenInputElement: HTMLInputElement;
@@ -33,25 +33,25 @@ export class ApiConnection extends Cmp<HTMLDivElement, HTMLFormElement> {
     this.tokenInputElement.value = process.env.admin_api_key;
     this.urlInputElement.value = process.env.dv_base_uri;
 
-    ipcRenderer.on('TEST_CONN_SUCCESS', (event: Event) => {
+    ipcRenderer.on('TEST_CONN_SUCCESS', (event: IpcRendererEvent) => {
       (document.getElementById(
         'test_result'
       ) as HTMLDivElement).innerHTML = '<i class="bi bi-check2-circle text-secondary"></i>';
     });
 
-    ipcRenderer.on('TEST_CONN_FAILED', (event: Event) => {
+    ipcRenderer.on('TEST_CONN_FAILED', (event: IpcRendererEvent) => {
       (document.getElementById(
         'test_result'
       ) as HTMLDivElement).innerHTML = '<i class="bi bi-x-circle text-secondary"></i>';
     });
 
-    ipcRenderer.on('SAVE_SETTINGS_SUCCESS', (event: Event) => {
+    ipcRenderer.on('SAVE_SETTINGS_SUCCESS', (event: IpcRendererEvent) => {
       (document.getElementById(
         'save_result'
       ) as HTMLDivElement).innerHTML = '<i class="bi bi-check2-circle text-secondary"></i>';
     });
 
-    ipcRenderer.on('SAVE_SETTINGS_FAILED', (event: Event) => {
+    ipcRenderer.on('SAVE_SETTINGS_FAILED', (event: IpcRendererEvent) => {
       (document.getElementById(
         'save_result'
       ) as HTMLDivElement).innerHTML = '<i class="bi bi-x-circle text-secondary"></i>';
