@@ -76,7 +76,6 @@
     "@types/mime-types": "^2.1.4",
     "electron": "^30.0.4",
     "electron-builder": "^24.13.3",
-    "electron-prebuilt-compile": "^8.2.0",
     "typescript": "^5.4.5"
   },
   "dependencies": {
