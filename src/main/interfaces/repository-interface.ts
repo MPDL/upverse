@@ -1,6 +1,7 @@
 export interface Datasets {
     success: boolean;
     data:    DatasetsData;
+    error_message: string;
 }
 
 export interface DatasetsData {

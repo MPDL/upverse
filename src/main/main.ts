@@ -7,7 +7,7 @@ import log from 'electron-log/main';
 import { DatasetInfo } from "../model/dataset-info";
 import { FileInfo } from "../model/file-info";
 import { Settings } from "./settings";
-import { connectToRepository, getUserDatasets } from "./controllers/user-controller";
+import { connectToRepository, getUserDatasets, getDataset } from "./controllers/user-controller";
 import * as upload_controller from './controllers/upload-controller';
 import { UserInfo } from "../model/user-info";
 
@@ -36,7 +36,7 @@ function createMainWindow() {
   mainWindow.loadURL(indexPath);
 
   // Uncomment for Debugging
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools(); // for Debug !!!
 
   mainWindow.on('close', function () {
     app.quit();
@@ -137,23 +137,16 @@ app.on("ready", () => {
       if (Settings.loadSettings()) {
         await doConnection().then( async (user: UserInfo) => {
           mainWindow.webContents.send('CONN_SUCCESS', user.getAuthor(), process.env.dv_base_uri);
-          await getDatasets().then((datasetList: DatasetInfo[]) => {
-            mainWindow.webContents.send('DO_DS_SELECT', datasetList);
-          }).catch(error => {
-            log.error(error);
-            throw error;
-          });
         }).catch(error => {
           mainWindow.webContents.send('CONN_FAILED', error.message);
           log.error(error);
           throw error;
         });
-      }
+      };
     } catch (err) {
       alert(err.message);
     }
   });
-
 });
 
 app.on("window-all-closed", () => {
@@ -172,12 +165,6 @@ ipcMain.on('DO_TEST_CONN', async (event: IpcMainEvent, givenSettings: string[]) 
       await doConnection().then( async (user: UserInfo) => {
         event.reply('TEST_CONN_SUCCESS');
         mainWindow.webContents.send('CONN_SUCCESS', user.getAuthor(), process.env.dv_base_uri);
-        await getDatasets().then((datasetList: DatasetInfo[]) => {
-          mainWindow.webContents.send('DO_DS_SELECT', datasetList);
-        }).catch(error => {
-          log.error(error);
-          throw error;
-        });
       }).catch(error => {
         event.reply('TEST_CONN_FAILED');
         log.error(error);
@@ -208,10 +195,16 @@ ipcMain.on('DO_SAVE_SETTINGS', (event: IpcMainEvent, givenSettings: string[]) =>
   }
 })
 
-ipcMain.on('DS_SELECT_DONE', (event: IpcMainEvent, dataset: [DatasetInfo]) => {
+ipcMain.on('DS_SELECT_DONE', async (event: IpcMainEvent, dataset: [DatasetInfo]) => {
   if (process.env.dest_dataset !== dataset[0].global_id) {
     process.env.dest_dataset = dataset[0].global_id;
-    process.env.files_loaded = dataset[0].fileCount.toString();
+    try {
+      await getDataset(dataset[0].id).then((filesCount:number) => {
+        process.env.files_loaded = filesCount.toString();
+     });
+    } catch (error) {
+      alert(error.message);
+    }
   }
 })
 

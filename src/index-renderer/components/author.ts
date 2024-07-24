@@ -28,6 +28,7 @@ export class Author extends Cmp<HTMLDivElement, HTMLDivElement> {
     ipcRenderer.on('CONN_SUCCESS', (event: IpcRendererEvent, author: string, repository: string)  => {
       this.authorElement.innerHTML = `<em>Connected as </em><strong>${author} </strong><i class="bi bi-person-check text-info"></i>`;
       this.logoLinkElement.href = repository;
+      ipcRenderer.send('DO_DS_LIST_REFRESH');
     })
 
     ipcRenderer.on('CONN_FAILED', (event: IpcRendererEvent, msg: string)  => {

@@ -47,12 +47,16 @@ export const getUploadUrls = (doi: String, size: Number) => {
             const request = net.request(options);
 
             request.on('response', (response) => {
+                let data = "";
+
                 if (response.statusCode === 200) {
                     response.on('data', (chunk) => {
-                        const body = JSON.parse(chunk.toString());
-                        resolve(body);
+                        data += chunk;
                     });
-                } else reject(new Error('Request Rejected'));
+                    response.on('end', () => {
+                        resolve(JSON.parse(data.toString()));
+                    });
+                } else reject(new Error('Request for direct upload rejected'));
             });
 
             request.on('error', (error) => {

@@ -1,6 +1,7 @@
 import { net } from "electron";
 
 import { User, Datasets } from "../interfaces/repository-interface";
+import { DatasetInfo } from "../../model/dataset-info";
 
 export const getMyUser = () => {
     return new Promise<User>(
@@ -43,7 +44,6 @@ export const getMyUser = () => {
         })
 }
 
-
 export const getMyDatasetsPage = (selectedPageNumber: number) => {
     return new Promise<Datasets>(
         (
@@ -64,13 +64,53 @@ export const getMyDatasetsPage = (selectedPageNumber: number) => {
                 ['published_states', 'Draft'],
                 ['published_states', 'In+Review'],
                 ['selected_page', selectedPageNumber.toString()]
-            ]).toString();
-            //const apiCall = '/search?q=' + author + '&per_page=100';     
+            ]).toString();  
             const apiCall = `/api/mydata/retrieve`;
 
             const request = net.request({
                 method: 'GET',
                 url: process.env.dv_base_uri + apiCall + '?' + params
+            });
+
+            request.on('response', (response) => {
+                let data = "";
+
+                if (response.statusCode === 200) {
+                    response.on('data', (chunk) => {
+                        data += chunk;
+                    });
+                    response.on('end', () => {
+                        const body = JSON.parse(data.toString());
+                        resolve(body);
+                    });
+                } else reject(new Error('No datasets found!'));
+            });
+
+            request.on('error', (error) => {
+                reject(error);
+            });
+
+            try {
+                request.setHeader('Content-Type', 'application/json');
+                request.setHeader('X-Dataverse-key', process.env.admin_api_key);
+                request.end();
+            } catch (err) {
+                reject(err);
+            }
+        })
+}
+
+export const getMyDatasetFilesCount = (id: string) => {
+    return new Promise<DatasetInfo>(
+        (
+            resolve: (values: DatasetInfo) => void,
+            reject: (error: Error) => void
+        ) => {
+            let msg = "";
+            const apiCall = `/api/datasets/${id}/versions/:latest/files/counts`;
+            const request = net.request({
+                method: 'GET',
+                url: process.env.dv_base_uri + apiCall
             });
 
             request.on('response', (response) => {
@@ -84,7 +124,7 @@ export const getMyDatasetsPage = (selectedPageNumber: number) => {
                         const body = JSON.parse(data.toString());
                         resolve(body);
                     });
-                } else reject(new Error('No datasets found!'));
+                } else reject(new Error('No file count of dataset found!'));
             });
 
             request.on('error', (error) => {

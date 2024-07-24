@@ -1,4 +1,4 @@
-import { getMyUser, getMyDatasetsPage } from "../services/user-service";
+import { getMyUser, getMyDatasetsPage, getMyDatasetFilesCount } from "../services/user-service";
 import { DatasetInfo } from "../../model/dataset-info";
 import { UserInfo } from "../../model/user-info";
 import { User, Datasets, Item } from "../interfaces/repository-interface";
@@ -36,16 +36,44 @@ export const getUserDatasets = () => {
         do {
           selectedPage++;
           await getMyDatasetsPage(selectedPage).then((responseBody: Datasets) => {
-            responseBody.data.items.forEach((item: Item) => {
-              const datasetInfo = new DatasetInfo(item.name, item.global_id, item.fileCount);
-              datasetList.push(Object.assign({}, datasetInfo));
-            })
-            nextPage = responseBody.data.pagination.nextPageNumber;
+            if (responseBody.data) {
+              responseBody.data.items.forEach((item: Item) => {
+                const datasetInfo = new DatasetInfo(item.entity_id.toString(), item.name, item.global_id, 1);
+                datasetList.push(Object.assign({}, datasetInfo));
+              })
+              nextPage = responseBody.data.pagination.nextPageNumber;
+            } else {
+              reject(new Error('Your datasets: ' + responseBody.error_message));
+            }
           }).catch(error => {
             reject(error);
           });
         } while (selectedPage < nextPage);
         resolve(datasetList);
+      } catch (err) {
+        reject(err);
+      }
+    })
+}
+
+export const getDataset = (id: string) => {
+  return new Promise<number>(
+    async (
+      resolve: (values: number) => void,
+      reject: (error: Error) => void
+    ) => {
+      let filesCount: number;
+      try {
+          await getMyDatasetFilesCount(id).then((responseBody: any) => {
+            if (responseBody.data) {
+              filesCount = responseBody.data.total;
+            } else {
+              reject(new Error('Your dataset: ' + responseBody.error_message));
+            }
+          }).catch(error => {
+            reject(error);
+          });
+        resolve(filesCount);
       } catch (err) {
         reject(err);
       }

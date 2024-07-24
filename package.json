@@ -1,6 +1,6 @@
 {
   "name": "upverse",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "author": {
     "name": "Max Planck Digital Library",
     "email": "edmond@mpdl.mpg.de"
@@ -74,9 +74,9 @@
   "devDependencies": {
     "@types/bootstrap": "^5.2.10",
     "@types/mime-types": "^2.1.4",
-    "electron": "^30.0.4",
+    "electron": "^31.2.1",
     "electron-builder": "^24.13.3",
-    "typescript": "^5.4.5"
+    "typescript": "^5.5.3"
   },
   "dependencies": {
     "bootstrap": "^5.3.3",
