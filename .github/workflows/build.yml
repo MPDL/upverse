@@ -47,6 +47,7 @@ jobs:
         MACOS_CERTIFICATE_PWD: ${{ secrets.PROD_MACOS_DEVELOPER_ID_CERTIFICATE_PWD }}
         MACOS_CERTIFICATE_NAME: ${{ secrets.PROD_MACOS_DEVELOPER_ID_CERTIFICATE_NAME }}
         MACOS_CI_KEYCHAIN_PWD: ${{ secrets.PROD_MACOS_CI_KEYCHAIN_PWD }}
+        FORCE_JAVASCRIPT_ACTIONS_TO_NODE20: true
       run: |
         # Turn our base64-encoded certificate back to a regular .p12 file
         echo $MACOS_CERTIFICATE | base64 --decode > certificate.p12
