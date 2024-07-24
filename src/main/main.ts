@@ -36,7 +36,7 @@ function createMainWindow() {
   mainWindow.loadURL(indexPath);
 
   // Uncomment for Debugging
-  mainWindow.webContents.openDevTools(); // for Debug !!!
+  // mainWindow.webContents.openDevTools();
 
   mainWindow.on('close', function () {
     app.quit();
