@@ -49,7 +49,7 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                         }
                     } catch (err) {
                         const title = `Error uploading file ${itemInfo.name} to store.`
-                        alert(title, err);
+                        alert(title, err.message);
                         event.sender.send('actionFor' + itemInfo.id.toString(), 'fail', 0);
                         itemsFailed++;
                         continue;
@@ -83,7 +83,7 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                                 }
                             } catch (err) {
                                 const title = `Error uploading file ${itemInfo.name} to store.`
-                                alert(title, err);
+                                alert(title, err.message);
                                 event.sender.send('actionFor' + itemInfo.id.toString(), 'fail', 0);
                                 itemsFailed++;
                                 continue;
@@ -103,7 +103,7 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                                 }
                             } catch (err) {
                                 const title = `Error uploading part of file ${itemInfo.name} to store.`
-                                alert(title, err);
+                                alert(title, err.message);
                                 throw new Error(title + '\n' + err);
                             }
                             const responseHeaders = JSON.parse(JSON.stringify(uploadToStoreResponse.headers));
@@ -124,7 +124,7 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                                 };
                             } catch (err) {
                                 const title = 'Error aborting multipart upload.';
-                                alert(title, err);
+                                alert(title, err.message);
                                 throw new Error(title + '\n' + err);
                             }
                         } else {
@@ -135,7 +135,7 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                                 }
                             } catch (err) {
                                 const title = 'Error completing multipart upload to store.';
-                                alert(title, err);
+                                alert(title, err.message);
                                 throw new Error(title + '\n' + err);
                             }
                             itemInfo.etag = await calcChecksum(itemInfo);
