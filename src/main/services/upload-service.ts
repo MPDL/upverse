@@ -9,7 +9,7 @@ import { IpcMainEvent, net } from "electron";
 
 export const calcChecksum = (item: FileInfo): Promise<string> => {
     return new Promise((resolve, reject) => {
-        const hash = createHash('sha1');
+        const hash = createHash('md5');
         const stream = createReadStream(item.path);
 
         stream.on('error', function (error) {
