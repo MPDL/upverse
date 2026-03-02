@@ -50,7 +50,7 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
 
   configure():void {
     const regexp = /[:;#<>"\*\?\/\|]/ ;
-    const regexp2 = /[^A-Za-z0-9_ .\/\-]+/ ;
+    const regexp2 = /[^A-Za-z0-9_ .\/\-\\]+/ ;
 
     this.element.addEventListener('change', this.changeHandler.bind(this));
     this.filesButtonElement.addEventListener('click', this.filesHandler.bind(this));
