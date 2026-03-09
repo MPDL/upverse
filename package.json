@@ -73,18 +73,20 @@
   ],
   "devDependencies": {
     "@types/bootstrap": "^5.2.10",
-    "@types/mime-types": "^2.1.4",
-    "electron": "^31.2.1",
-    "electron-builder": "^24.13.3",
-    "typescript": "^5.5.3"
+    "@types/mime-types": "^3.0.1",
+    "@types/node": "^22.7.7",
+    "electron": "^40.8.0",
+    "electron-builder": "^26.8.1",
+    "typescript": "^5.9.3"
   },
   "dependencies": {
-    "bootstrap": "^5.3.3",
-    "bootstrap-icons": "^1.11.3",
-    "electron-log": "^5.1.4",
-    "form-data": "^4.0.0",
+    "bootstrap": "^5.3.8",
+    "bootstrap-icons": "^1.13.1",
+    "electron-log": "^5.4.3",
+    "form-data": "^4.0.5",
     "http": "^0.0.1-security",
-    "mime-types": "^2.1.35",
-    "rxjs": "^7.8.1"
+    "mime-types": "^3.0.2",
+    "rxjs": "^7.8.2",
+    "types": "^0.1.1"
   }
 }
