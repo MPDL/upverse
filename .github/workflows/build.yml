@@ -11,14 +11,18 @@ on:
 jobs:
   build_on_linux:
     runs-on: ubuntu-latest
+    env:
+        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - uses: actions/setup-node@master
       with:
         node-version: 24
 
     - name: install rpm tool
+      env:
+        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       run:
         sudo apt-get update;
         sudo apt install rpm
@@ -26,11 +30,11 @@ jobs:
     - name: install dependencies
       run: npm install
 
-    - name: package
+    - name: package 
       run: npm run deploy
 
     - name: store artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: upverse-linux-packages
         path: |
@@ -39,6 +43,8 @@ jobs:
 
   build_on_mac_with_codesign_notarization:
     runs-on: macos-latest
+    env:
+        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
     - name: "Prepare Codesigning"
       # Extract the secrets we defined earlier as environment variables
@@ -69,7 +75,7 @@ jobs:
 
     - name: get-package-version
       id: package-version
-      uses: beaconbrigade/package-json-version@v0.3.1
+      uses: beaconbrigade/package-json-version@v0.3.2
 
     - name: install dependencies
       run: npm install
@@ -84,7 +90,6 @@ jobs:
         PROD_MACOS_NOTARIZATION_APPLE_ID: ${{ secrets.PROD_MACOS_NOTARIZATION_APPLE_ID }}
         PROD_MACOS_NOTARIZATION_TEAM_ID: ${{ secrets.PROD_MACOS_NOTARIZATION_TEAM_ID }}
         PROD_MACOS_NOTARIZATION_PWD: ${{ secrets.PROD_MACOS_NOTARIZATION_APP_SPECIFIC_PWD }}
-        FORCE_JAVASCRIPT_ACTIONS_TO_NODE20: true
       run: |
         # Store the notarization credentials so that we can prevent a UI password dialog
         # from blocking the CI
@@ -124,15 +129,17 @@ jobs:
         ditto -c -k --keepParent "out/mac-arm64/upverse.app" "upverse-${{ steps.package-version.outputs.version }}-mac-arm64-signed.zip"
 
     - name: store artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: upverse-mac-packages
         path: upverse*.zip
       
   build_on_win:
     runs-on: windows-latest
+    env:
+        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - uses: actions/setup-node@master
       with:
@@ -145,7 +152,7 @@ jobs:
       run: npm run deploy
 
     - name: store artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: upverse-win-packages
         path: |
@@ -160,17 +167,17 @@ jobs:
     if: ${{ github.event.inputs.release == 'true' }}
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: get-package-version
         id: package-version
-        uses: beaconbrigade/package-json-version@v0.3.1
+        uses: beaconbrigade/package-json-version@v0.3.2
 
       - name: download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
 
       - name: release
-        uses: softprops/action-gh-release@v0.1.15
+        uses: softprops/action-gh-release@v2
         with:
           name: v${{ steps.package-version.outputs.version }}
           tag_name: v${{ steps.package-version.outputs.version }}

@@ -24,16 +24,16 @@ function createMainWindow() {
     webPreferences: {
       webSecurity: true,      
       nodeIntegration: true,
-      preload: path.join(__dirname, "../index-renderer/preload.js")
+      preload: path.join(__dirname, "..", "index-renderer", "preload.js")
     },
     // resizable: false,
     center: true,
     maximizable: true,
-    icon: path.join(__dirname, "../../../assets/favicons/favicon.png")
+    icon: path.join(__dirname, "..", "..", "..", "assets", "favicons", "favicon.png")
   });
 
-  const indexPath = path.join('file://', __dirname, '../../views/index.html')
-  mainWindow.loadURL(indexPath);
+  const indexPath = path.join(__dirname, '..', '..', 'views', 'index.html');
+  mainWindow.loadFile(indexPath);
 
   // Uncomment for Debugging
   // mainWindow.webContents.openDevTools();
@@ -52,14 +52,14 @@ function createSettingsWindow() {
     webPreferences: {
       webSecurity: true,      
       nodeIntegration: true,
-      preload: path.join(__dirname, "../settings-renderer/preload.js")
+      preload: path.join(__dirname, "..", "settings-renderer", "preload.js")
     },
     center: true
     /*, frame: false*/
   })
   settingsWindow.setMenu(null);
-  const settingsPath = path.join('file://', __dirname, '../../views/settings.html')
-  settingsWindow.loadURL(settingsPath);
+  const settingsPath = path.join(__dirname, '..', '..', 'views', 'settings.html')
+  settingsWindow.loadFile(settingsPath);
 
   settingsWindow.show();
 
