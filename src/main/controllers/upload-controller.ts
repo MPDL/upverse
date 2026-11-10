@@ -31,7 +31,7 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                         name: item.name,
                         size: item.size,
                         type: item.type ? item.type : 'application/octet-stream',
-                        lastModifiedDate: new Date(item.lastModifiedDate),
+                        lastModifiedDate: item.lastModifiedDate ? new Date(item.lastModifiedDate) : new Date(),
                         path: item.path,
                         relativePath: item.relativePath,
                         description: item.description,
@@ -49,7 +49,8 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                         }
                     } catch (err) {
                         const title = `Error uploading file ${itemInfo.name} to store.`
-                        alert(title, err.message);
+                        const errMsg = err instanceof Error ? err.message : String(err);
+                        alert(title, errMsg);
                         event.sender.send('actionFor' + itemInfo.id.toString(), 'fail', 0);
                         itemsFailed++;
                         continue;
@@ -60,7 +61,7 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                     itemInfo.storageUrls = [];
                     itemInfo.partEtags = [];
 
-                    let uploadToStoreResponse: Electron.IncomingMessage = null;
+                    let uploadToStoreResponse: Electron.IncomingMessage | null = null;
                     if (uploadUrlsResponseBody.data.url) {
                         if (abort) {
                             try {
@@ -83,7 +84,8 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                                 }
                             } catch (err) {
                                 const title = `Error uploading file ${itemInfo.name} to store.`
-                                alert(title, err.message);
+                                const errMsg = err instanceof Error ? err.message : String(err);
+                                alert(title, errMsg);
                                 event.sender.send('actionFor' + itemInfo.id.toString(), 'fail', 0);
                                 itemsFailed++;
                                 continue;
@@ -103,8 +105,9 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                                 }
                             } catch (err) {
                                 const title = `Error uploading part of file ${itemInfo.name} to store.`
-                                alert(title, err.message);
-                                throw new Error(title + '\n' + err);
+                                const errMsg = err instanceof Error ? err.message : String(err);
+                                alert(title, errMsg);
+                                throw new Error(title + '\n' + String(err));
                             }
                             const responseHeaders = JSON.parse(JSON.stringify(uploadToStoreResponse.headers));
                             itemInfo.partEtags[Number(key)] = responseHeaders.etag.replace(/^"+|"+$/g, '');
@@ -124,8 +127,9 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                                 };
                             } catch (err) {
                                 const title = 'Error aborting multipart upload.';
-                                alert(title, err.message);
-                                throw new Error(title + '\n' + err);
+                                const errMsg = err instanceof Error ? err.message : String(err);
+                                alert(title, errMsg);
+                                throw new Error(title + '\n' + String(err));
                             }
                         } else {
                             try {
@@ -135,8 +139,9 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                                 }
                             } catch (err) {
                                 const title = 'Error completing multipart upload to store.';
-                                alert(title, err.message);
-                                throw new Error(title + '\n' + err);
+                                const errMsg = err instanceof Error ? err.message : String(err);
+                                alert(title, errMsg);
+                                throw new Error(title + '\n' + String(err));
                             }
                             itemInfo.etag = await calcChecksum(itemInfo);
                         }
@@ -154,7 +159,8 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                             }
                         } catch (err) {
                             const title = 'Error adding files to dataset.';
-                            throw new Error(title + '\n' + err);
+                            const errMsg = err instanceof Error ? err.message : String(err);
+                            throw new Error(title + '\n' + errMsg);
                         }
                         for (const item of uploaded) {
                             files.push(item);
@@ -171,7 +177,8 @@ export const filesTransfer = (event: IpcMainEvent, persistentId: string, items: 
                     });
                 } else throw new Error("No file has been uploaded");
             } catch (err) {
-                reject(err);              
+                const errMsg = err instanceof Error ? err : new Error(String(err));
+                reject(errMsg);
             }
         }
     )
@@ -187,5 +194,9 @@ function alert(message: string, detail: string) {
       message: message,
       detail: detail,
     };
-    dialog.showMessageBox(null, options);
+    const { BrowserWindow } = require('electron');
+    const window = BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0];
+    if (window) {
+      dialog.showMessageBox(window, options);
+    }
   }

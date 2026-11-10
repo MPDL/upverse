@@ -111,9 +111,9 @@ export class FileItem extends Cmp<HTMLUListElement, HTMLFormElement>
 
       if (
         !Validation.validate(relativePathValidatable)
-      ) { 
+      ) {
         this.relativePathElement.value = this.fileInfo.relativePath;
-        this.openModal(relativePathValidatable.alert);
+        this.openModal(relativePathValidatable.alert || '');
         return;
       }
     }

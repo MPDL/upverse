@@ -17,7 +17,8 @@ export const connectToRepository = () => {
           reject(error);
         });
       } catch (err) {
-        reject(err);
+        const errMsg = err instanceof Error ? err : new Error(String(err));
+        reject(errMsg);
       }
     })
 }
@@ -51,7 +52,8 @@ export const getUserDatasets = () => {
         } while (selectedPage < nextPage);
         resolve(datasetList);
       } catch (err) {
-        reject(err);
+        const errMsg = err instanceof Error ? err : new Error(String(err));
+        reject(errMsg);
       }
     })
 }
@@ -62,7 +64,7 @@ export const getDataset = (id: string) => {
       resolve: (values: number) => void,
       reject: (error: Error) => void
     ) => {
-      let filesCount: number;
+      let filesCount: number = 0;
       try {
           await getMyDatasetFilesCount(id).then((responseBody: any) => {
             if (responseBody.data) {
@@ -75,7 +77,8 @@ export const getDataset = (id: string) => {
           });
         resolve(filesCount);
       } catch (err) {
-        reject(err);
+        const errMsg = err instanceof Error ? err : new Error(String(err));
+        reject(errMsg);
       }
     })
 }

@@ -30,8 +30,8 @@ export class ApiConnection extends Cmp<HTMLDivElement, HTMLFormElement> {
     this.element.addEventListener('input', this.resetHandler.bind(this));
     this.element.addEventListener('submit', this.submitHandler.bind(this));
     this.testButtonElement.addEventListener('click', this.testHandler.bind(this));
-    this.tokenInputElement.value = process.env.admin_api_key;
-    this.urlInputElement.value = process.env.dv_base_uri;
+    this.tokenInputElement.value = process.env.admin_api_key || '';
+    this.urlInputElement.value = process.env.dv_base_uri || '';
 
     ipcRenderer.on('TEST_CONN_SUCCESS', (event: IpcRendererEvent) => {
       (document.getElementById(
@@ -58,7 +58,7 @@ export class ApiConnection extends Cmp<HTMLDivElement, HTMLFormElement> {
     });
   }
 
-  private gatherUserInput(): [string, string] | void {
+  private gatherUserInput(): [string, string] | undefined {
     const enteredToken = this.tokenInputElement.value;
     const enteredUrl = this.urlInputElement.value;
 
@@ -68,7 +68,7 @@ export class ApiConnection extends Cmp<HTMLDivElement, HTMLFormElement> {
       regexp: /^[a-zA-Z0-9]{8}\-[a-zA-Z0-9]{4}\-[a-zA-Z0-9]{4}\-[a-zA-Z0-9]{4}\-[a-zA-Z0-9]{12}$/,
       alert: 'Invalid token, please try again!'
     };
-    
+
     const urlValidatable: Validation.Validatable = {
       value: enteredUrl,
       required: true,
@@ -77,11 +77,11 @@ export class ApiConnection extends Cmp<HTMLDivElement, HTMLFormElement> {
     };
 
     if (!Validation.validate(tokenValidatable)) {
-      alert(tokenValidatable.alert);
-      return;
+      alert(tokenValidatable.alert || '');
+      return undefined;
     } else if (!Validation.validate(urlValidatable)) {
-      alert(urlValidatable.alert);
-      return;
+      alert(urlValidatable.alert || '');
+      return undefined;
     } else {
       return [enteredToken, enteredUrl];
     }

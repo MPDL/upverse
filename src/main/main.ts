@@ -108,7 +108,9 @@ function alert(message: string) {
     title: 'Upverse alert',
     message: message,
   };
-  dialog.showMessageBox(null, options);
+  if (mainWindow) {
+    dialog.showMessageBox(mainWindow, options);
+  }
 }
 
 app.on("ready", () => {
@@ -125,7 +127,8 @@ app.on("ready", () => {
       createSettingsWindow();
     } 
   } catch (err) {
-    alert(err.message);
+    const errMsg = err instanceof Error ? err.message : String(err);
+    alert(errMsg);
   }
 
   app.on("activate", function () {
@@ -144,7 +147,8 @@ app.on("ready", () => {
         });
       };
     } catch (err) {
-      alert(err.message);
+      const errMsg = err instanceof Error ? err.message : String(err);
+      alert(errMsg);
     }
   });
 });
@@ -168,11 +172,13 @@ ipcMain.on('DO_TEST_CONN', async (event: IpcMainEvent, givenSettings: string[]) 
       }).catch(error => {
         event.reply('TEST_CONN_FAILED');
         log.error(error);
-        throw error;
+        const errMsg = error instanceof Error ? error.message : String(error);
+        alert(errMsg);
       });
     } else throw new Error('Please, check Settings');
   } catch (error) {
-   alert(error.message);
+    const errMsg = error instanceof Error ? error.message : String(error);
+    alert(errMsg);
   }
 })
 
@@ -203,7 +209,8 @@ ipcMain.on('DS_SELECT_DONE', async (event: IpcMainEvent, dataset: [DatasetInfo])
         process.env.files_loaded = filesCount.toString();
      });
     } catch (error) {
-      alert(error.message);
+      const errMsg = error instanceof Error ? error.message : String(error);
+      alert(errMsg);
     }
   }
 })
@@ -211,12 +218,13 @@ ipcMain.on('DS_SELECT_DONE', async (event: IpcMainEvent, dataset: [DatasetInfo])
 ipcMain.on('DO_DS_LIST_REFRESH', async (event: IpcMainEvent) => {
   try {
     await getDatasets().then((datasetList: DatasetInfo[]) => {
-      process.env.dest_dataset = null;
-      process.env.files_loaded = null;
+      process.env.dest_dataset = undefined;
+      process.env.files_loaded = undefined;
       mainWindow.webContents.send('DO_DS_SELECT', datasetList);
     });
   } catch (error) {
-    alert(error.message);
+    const errMsg = error instanceof Error ? error.message : String(error);
+    alert(errMsg);
   }
 })
 
@@ -253,7 +261,8 @@ ipcMain.on('DO_FILE_SELECT', (event: IpcMainEvent) => {
         event.reply('FILE_SELECT_FAILED', '');
       }
     }).catch (error => {
-      alert(error.message);
+      const errMsg = error instanceof Error ? error.message : String(error);
+      alert(errMsg);
       event.reply('FILE_SELECT_FAILED', '');
     });
 })
@@ -305,7 +314,7 @@ ipcMain.on('DO_UPLOAD', async (event: IpcMainEvent, fileInfoList: FileInfo[]) =>
     alert('Nothing selected to Upload');
   } else if (!process.env.dest_dataset) {
     alert('No destination Dataset selected');
-  } else if (fileInfoList.length > ( MAXFILES - Number(process.env.files_loaded.valueOf()) ) ) {
+  } else if (fileInfoList.length > ( MAXFILES - Number((process.env.files_loaded || '0').valueOf()) ) ) {
     alert('Files number limit for this Dataset exceeded');
   } else {
     try {
@@ -315,8 +324,9 @@ ipcMain.on('DO_UPLOAD', async (event: IpcMainEvent, fileInfoList: FileInfo[]) =>
         throw error;
       })
     } catch (error) {
-      alert('error.message');
-      event.reply('UPLOAD_FAILED', error.message);
+      const errMsg = error instanceof Error ? error.message : String(error);
+      alert(errMsg);
+      event.reply('UPLOAD_FAILED', errMsg);
     }
   }
 });
@@ -345,7 +355,8 @@ const transferFiles = (event: IpcMainEvent, persistentId: string, files: FileInf
           reject(error);
         })
       } catch (err) {
-        reject(err);
+        const errMsg = err instanceof Error ? err.message : String(err);
+        reject(new Error(errMsg));
       }
     }
   )
@@ -364,7 +375,8 @@ const doConnection = () => {
           reject(error);
         });
       } catch (err) {
-        reject(err);
+        const errMsg = err instanceof Error ? err.message : String(err);
+        reject(new Error(errMsg));
       }
     }
   )
@@ -383,7 +395,8 @@ const getDatasets = () => {
           reject(error);
         });
       } catch (err) {
-        reject(err);
+        const errMsg = err instanceof Error ? err.message : String(err);
+        reject(new Error(errMsg));
       }
     }
   )

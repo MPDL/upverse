@@ -10,7 +10,7 @@
   "main": "dist/main/main.js",
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
-    "build": "tsc && node scripts/set-version.js",
+    "build": "tsc",
     "start": "rm -rf ./dist && npm run build && electron ./dist/main/main.js --trace-warnings --ozone-platform=x11",
     "deploy": "rm -rf ./dist && rm -rf ./out && npm run build && electron-builder --publish=never",
     "watch": "tsc -w",
@@ -54,7 +54,7 @@
       ]
     },
     "linux": {
-      "icon": "assets/favicons/favicon.icns",
+      "icon": "assets/favicons/favicon.png",
       "target": [
         "deb",
         "tar.gz"
@@ -74,10 +74,10 @@
   "devDependencies": {
     "@types/bootstrap": "^5.2.10",
     "@types/mime-types": "^3.0.1",
-    "@types/node": "^25.4.0",
-    "electron": "^40.8.0",
-    "electron-builder": "^26.8.1",
-    "typescript": "^5.9.3"
+    "@types/node": "^26.6.6",
+    "electron": "^45.2.3",
+    "electron-builder": "^26.18.0",
+    "typescript": "^7.0.2"
   },
   "dependencies": {
     "bootstrap": "^5.3.8",
@@ -90,7 +90,7 @@
     "types": "^0.1.1"
   },
   "allowScripts": {
-    "electron@40.10.6": true,
+    "electron@45.2.3": true,
     "electron-winstaller@5.4.0": true
   }
 }

@@ -14,7 +14,7 @@ export const getMyUser = () => {
 
             const request = net.request({
                 method: 'GET',
-                url: process.env.dv_base_uri + apiCall
+                url: (process.env.dv_base_uri || '') + apiCall
             });
 
             request.on('response', (response) => {
@@ -36,10 +36,11 @@ export const getMyUser = () => {
 
             try {
                 request.setHeader('Content-Type', 'application/json');
-                request.setHeader('X-Dataverse-key', process.env.admin_api_key);
+                request.setHeader('X-Dataverse-key', process.env.admin_api_key || '');
                 request.end();
             } catch (err) {
-                reject(err);
+                const errMsg = err instanceof Error ? err : new Error(String(err));
+                reject(errMsg);
             }
         })
 }
@@ -52,7 +53,7 @@ export const getMyDatasetsPage = (selectedPageNumber: number) => {
         ) => {
             let msg = "";
             const params = new URLSearchParams([
-                ['key', `${process.env.admin_api_key}`],
+                ['key', `${process.env.admin_api_key || ''}`],
                 ['role_ids', '1'],
                 ['role_ids', '3'],
                 ['role_ids', '5'],
@@ -65,12 +66,12 @@ export const getMyDatasetsPage = (selectedPageNumber: number) => {
                 ['published_states', 'Draft'],
                 ['published_states', 'In+Review'],
                 ['selected_page', selectedPageNumber.toString()]
-            ]).toString();  
+            ]).toString();
             const apiCall = `/api/mydata/retrieve`;
 
             const request = net.request({
                 method: 'GET',
-                url: process.env.dv_base_uri + apiCall + '?' + params
+                url: (process.env.dv_base_uri || '') + apiCall + '?' + params
             });
 
             request.on('response', (response) => {
@@ -93,10 +94,11 @@ export const getMyDatasetsPage = (selectedPageNumber: number) => {
 
             try {
                 request.setHeader('Content-Type', 'application/json');
-                request.setHeader('X-Dataverse-key', process.env.admin_api_key);
+                request.setHeader('X-Dataverse-key', process.env.admin_api_key || '');
                 request.end();
             } catch (err) {
-                reject(err);
+                const errMsg = err instanceof Error ? err : new Error(String(err));
+                reject(errMsg);
             }
         })
 }
@@ -111,7 +113,7 @@ export const getMyDatasetFilesCount = (id: string) => {
             const apiCall = `/api/datasets/${id}/versions/:latest/files/counts`;
             const request = net.request({
                 method: 'GET',
-                url: process.env.dv_base_uri + apiCall
+                url: (process.env.dv_base_uri || '') + apiCall
             });
 
             request.on('response', (response) => {
@@ -134,10 +136,11 @@ export const getMyDatasetFilesCount = (id: string) => {
 
             try {
                 request.setHeader('Content-Type', 'application/json');
-                request.setHeader('X-Dataverse-key', process.env.admin_api_key);
+                request.setHeader('X-Dataverse-key', process.env.admin_api_key || '');
                 request.end();
             } catch (err) {
-                reject(err);
+                const errMsg = err instanceof Error ? err : new Error(String(err));
+                reject(errMsg);
             }
         })
 }

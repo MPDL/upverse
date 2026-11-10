@@ -16,9 +16,9 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
   modalButtonElement: HTMLButtonElement;
   backdropElement: HTMLElement;
 
-  MAXFILES: number;
-  remainingFiles: number;
-  enteredFiles: FileInfo[]
+  MAXFILES: number = 0;
+  remainingFiles: number = 0;
+  enteredFiles: FileInfo[] = [];
 
   constructor() {
     super('data-files', 'app-files', true, 'files2upload');
@@ -150,7 +150,7 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
     this.submitButtonElement.innerHTML = ' <i class="bi bi-upload d-none d-xxl-inline"></i> Upload ';
   }
 
-  private gatherUserInput(): FileInfo[] {
+  private gatherUserInput(): FileInfo[] | undefined {
     const enteredFiles = dataFiles.getAll();
     const filesValidatable: Validation.Validatable = {
       value: enteredFiles.length,
@@ -163,7 +163,7 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
       !Validation.validate(filesValidatable)
     ) {
       alert(`Dataset files limited to ${this.MAXFILES}, \n${this.MAXFILES - this.remainingFiles} uploaded, \n${this.remainingFiles} more files available, \nfor a larger amount of files, please use a zip file!`);
-      return;
+      return undefined;
     } else {
       return enteredFiles;
     }
@@ -189,8 +189,8 @@ export class DataFilesInput extends Cmp<HTMLDivElement, HTMLFormElement> {
 
   private changeHandler(event: Event) {
     event.preventDefault();
-    const enteredFiles = this.gatherUserInput(); 
-    if (enteredFiles.length) {
+    const enteredFiles = this.gatherUserInput();
+    if (enteredFiles && enteredFiles.length) {
       for (const file of enteredFiles) {
         dataFiles.addFile(file);
       };

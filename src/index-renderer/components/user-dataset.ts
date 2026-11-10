@@ -8,8 +8,8 @@ import { DatasetInfo } from "../../model/dataset-info.js";
 export class UserDataset extends Cmp<HTMLDivElement, HTMLDivElement> {
   datasetSelectElement: HTMLSelectElement;
   refreshButtonElement: HTMLButtonElement;
-  userDatasets: DatasetInfo[];
-  lastSelected: string;
+  userDatasets: DatasetInfo[] = [];
+  lastSelected: string = '';
 
   constructor() {
     super('user-dataset', 'app-dataset', true, 'dest-dataset');

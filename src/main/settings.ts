@@ -15,8 +15,8 @@ export class Settings {
 
   static save(): boolean {
     try {
-      Settings.settingsData.setToken(process.env.admin_api_key);
-      Settings.settingsData.setUrl(process.env.dv_base_uri);
+      Settings.settingsData.setToken(process.env.admin_api_key || '');
+      Settings.settingsData.setUrl(process.env.dv_base_uri || '');
       writeFileSync(Settings.settingsPath, JSON.stringify(Settings.settingsData, null, 2), 'utf8');
       return true;
     } catch (err) {

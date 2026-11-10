@@ -1,6 +1,6 @@
 export class Connection {
-    private url: string;
-    private token: string;
+    private url: string = '';
+    private token: string = '';
 
     setUrl(url: string) {
         this.url = url;

@@ -8,7 +8,7 @@ import { dataFiles } from '../data-files';
 
 export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
   fileListElement: HTMLUListElement;
-  openDatasetElement: HTMLLinkElement;
+  openDatasetElement: HTMLLinkElement | null = null;
 
   selectedFiles: FileInfo[];
 
@@ -35,14 +35,16 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
       dataFiles.removeDataFile(file);
       this.selectedFiles.splice(file.id, 1);
       const element = document.getElementById(file.id.toString());
-      element.remove();
+      if (element) {
+        element.remove();
+      }
       if (dataFiles.length() === 0) {
         (document.querySelector(
           '#clear'
         ) as HTMLButtonElement).disabled = true;
         (document.querySelector(
           '#upload'
-        ) as HTMLButtonElement).disabled = true;  
+        ) as HTMLButtonElement).disabled = true;
         ipcRenderer.send('DO_CLEAR_SELECTED');
       }
     });
@@ -97,7 +99,9 @@ export class DataFileList extends Cmp<HTMLDivElement, HTMLDivElement> {
   private openDatasetHandler(event: Event) {
     event.preventDefault();
 
-    shell.openExternal(this.openDatasetElement.href); 
+    if (this.openDatasetElement) {
+      shell.openExternal(this.openDatasetElement.href);
+    }
   }
 
   private successReport(result: any, repository: any): string {

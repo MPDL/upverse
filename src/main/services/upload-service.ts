@@ -42,7 +42,7 @@ export const getUploadUrls = (doi: String, size: Number) => {
 
             const options = {
                 method: "GET",
-                url: process.env.dv_base_uri + apiCall + '?' + params
+                url: (process.env.dv_base_uri || '') + apiCall + '?' + params
             };
             const request = net.request(options);
 
@@ -64,7 +64,7 @@ export const getUploadUrls = (doi: String, size: Number) => {
                 reject(error);
             });
 
-            request.setHeader('X-Dataverse-key', process.env.admin_api_key);
+            request.setHeader('X-Dataverse-key', process.env.admin_api_key || '');
             request.end();
         });
 }
@@ -80,18 +80,18 @@ export const uploadSinglepartToStore = (event: IpcMainEvent, item: FileInfo) => 
 
             const options = {
                 method: 'PUT',
-                url: item.storageUrls[0]
+                url: (item.storageUrls && item.storageUrls[0]) ? item.storageUrls[0] : ''
             };
             const request = net.request(options);
             request.setHeader('x-amz-tagging', 'dv-state=temp');
 
             let streamed = 0, uploaded = 0, pctStreamed = 0, pctUploaded = 0, prevPctStreamed = 0, prevPctUploaded = 0;
 
-            let streamInterval: ReturnType<typeof setTimeout> = null; 
-            let requestInterval: ReturnType<typeof setTimeout> = null;
+            let streamInterval: ReturnType<typeof setTimeout> | null = null;
+            let requestInterval: ReturnType<typeof setTimeout> | null = null;
 
             request.on('response', (response) => {
-                clearInterval(requestInterval);
+                if (requestInterval) clearInterval(requestInterval);
                 item.uploaded = uploaded;
                 resolve(response);
             });
@@ -127,7 +127,7 @@ export const uploadSinglepartToStore = (event: IpcMainEvent, item: FileInfo) => 
                 streamed += data.length;
             });
             fileStream.on('close', () => {
-                clearInterval(streamInterval);
+                if (streamInterval) clearInterval(streamInterval);
                 item.streamed = streamed;
             });
             fileStream.on("end", () => {
@@ -154,7 +154,7 @@ export const addMultipleFilesToDataset = (doi: string, items: FileInfo[]) => {
 
             const options = {
                 method: 'POST',
-                url: process.env.dv_base_uri + apiCall + '?' + params
+                url: (process.env.dv_base_uri || '') + apiCall + '?' + params
             };
             const request = net.request(options);
 
@@ -167,7 +167,7 @@ export const addMultipleFilesToDataset = (doi: string, items: FileInfo[]) => {
                 reject(error);
             });
 
-            request.setHeader('X-Dataverse-key', process.env.admin_api_key);
+            request.setHeader('X-Dataverse-key', process.env.admin_api_key || '');
             request.setHeader('content-type', 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW');
 
             const json = [];
@@ -192,20 +192,20 @@ export const uploadMultipartToStore = (event: IpcMainEvent, item: FileInfo) => {
             resolve: (values: Electron.IncomingMessage) => void,
             reject: (error: Error) => void
         ) => {
-            const partNumber: number = item.storageUrls.length;
-            const url = item.storageUrls[partNumber - 1];
-            const start = (partNumber - 1) * item.partSize;
-            let end = (partNumber * item.partSize) - 1;
+            const partNumber: number = (item.storageUrls || []).length;
+            const url = item.storageUrls && item.storageUrls[partNumber - 1] ? item.storageUrls[partNumber - 1] : '';
+            const start = (partNumber - 1) * (item.partSize || 0);
+            let end = (partNumber * (item.partSize || 0)) - 1;
             if (item.size < end + 1) {
                 end = item.size - 1;
             }
             const currentPartSize = end - start + 1;
 
-            let streamed = item.streamed, uploaded = start;
-            let pctStreamed = Math.round((item.streamed * 50) / item.size), pctUploaded = Math.round((item.uploaded * 50) / item.size), prevPctStreamed = pctStreamed, prevPctUploaded = pctUploaded;
- 
-            let streamInterval: ReturnType<typeof setTimeout> = null; 
-            let requestInterval: ReturnType<typeof setTimeout> = null;
+            let streamed = item.streamed || 0, uploaded = start;
+            let pctStreamed = Math.round(((item.streamed || 0) * 50) / item.size), pctUploaded = Math.round(((item.uploaded || 0) * 50) / item.size), prevPctStreamed = pctStreamed, prevPctUploaded = pctUploaded;
+
+            let streamInterval: ReturnType<typeof setTimeout> | null = null;
+            let requestInterval: ReturnType<typeof setTimeout> | null = null;
 
             const fileStream = createReadStream(item.path, { start: start, end: end, highWaterMark: 64 * 1024 * 1024 });
 
@@ -217,8 +217,8 @@ export const uploadMultipartToStore = (event: IpcMainEvent, item: FileInfo) => {
             request.setHeader('x-amz-tagging', 'dv-state=temp');
 
             request.on('response', (response) => {
-                clearInterval(requestInterval);
-                item.uploaded += uploaded;
+                if (requestInterval) clearInterval(requestInterval);
+                item.uploaded = (item.uploaded || 0) + uploaded;
                 resolve(response);
             })
 
@@ -238,7 +238,7 @@ export const uploadMultipartToStore = (event: IpcMainEvent, item: FileInfo) => {
 
                 requestInterval = setInterval(() => {
                     if (request.getUploadProgress().started) {
-                        uploaded = request.getUploadProgress().current + item.uploaded;
+                        uploaded = request.getUploadProgress().current + (item.uploaded || 0);
                         pctUploaded = Math.round((uploaded * 50) / item.size);
                         if (pctUploaded > prevPctUploaded) {
                             event.sender.send('actionFor' + item.id.toString(), 'progress', pctStreamed + pctUploaded);
@@ -253,8 +253,8 @@ export const uploadMultipartToStore = (event: IpcMainEvent, item: FileInfo) => {
                 streamed += data.length;
             });
             fileStream.on('close', () => {
-                clearInterval(streamInterval);
-                item.streamed += streamed;
+                if (streamInterval !== null) clearInterval(streamInterval);
+                item.streamed = (item.streamed || 0) + streamed;
             });
             fileStream.on('end', () => {
                 request.end();
@@ -274,7 +274,7 @@ export const completeMultipartUpload = (item: FileInfo, completeUrl: string) => 
         ) => {
             const options = {
                 method: "PUT",
-                url: process.env.dv_base_uri + completeUrl
+                url: (process.env.dv_base_uri || '') + completeUrl
             };
             const request = net.request(options);
 
@@ -287,7 +287,7 @@ export const completeMultipartUpload = (item: FileInfo, completeUrl: string) => 
                 reject(error);
             });
 
-            request.setHeader('X-Dataverse-key', process.env.admin_api_key);
+            request.setHeader('X-Dataverse-key', process.env.admin_api_key || '');
             var jsonpartEtags = JSON.stringify(Object.assign({}, item.partEtags));
             request.write(jsonpartEtags);
             request.end();
@@ -302,7 +302,7 @@ export const abortMultipartUpload = (item: FileInfo, abortUrl: string) => {
         ) => {
             const options = {
                 method: "DELETE",
-                url: process.env.dv_base_uri + abortUrl
+                url: (process.env.dv_base_uri || '') + abortUrl
             };
             const request = net.request(options);
 
@@ -315,7 +315,7 @@ export const abortMultipartUpload = (item: FileInfo, abortUrl: string) => {
                 reject(error);
             });
 
-            request.setHeader('X-Dataverse-key', process.env.admin_api_key);
+            request.setHeader('X-Dataverse-key', process.env.admin_api_key || '');
             request.end();
         });
 }
