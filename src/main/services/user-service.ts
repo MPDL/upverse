@@ -58,6 +58,7 @@ export const getMyDatasetsPage = (selectedPageNumber: number) => {
                 ['role_ids', '5'],
                 ['role_ids', '6'],
                 ['role_ids', '7'],
+                ['role_ids', '10'],
                 ['dvobject_types', 'Dataset'],
                 ['published_states', 'Unpublished'],
                 ['published_states', 'Published'],
